@@ -33,6 +33,7 @@ jobs:
         with:
           envkey_PORT: ${{ secrets.PORT }}
           envkey_BACKENDPORT: ${{ secrets.BACKENDPORT }}
+          envkey_BACKENDHOST: ${{ secrets.BACKENDHOST }}
           file_name: .env
           directory: ./src/
       -
