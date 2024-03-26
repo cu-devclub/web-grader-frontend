@@ -4,5 +4,5 @@
 make .env file in root directory of reactJs
 
     PORT=80
-    BACKENDPORT=5000
-    BACKENDHOST=
+    REACT_APP_BACKENDPORT=5000
+    REACT_APP_BACKENDHOST=
