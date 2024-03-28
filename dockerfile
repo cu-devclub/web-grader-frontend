@@ -5,8 +5,7 @@ WORKDIR /
 
 COPY src/. .
 
-RUN npm install
-RUN npm install react-scripts -g
+RUN npm i
 
 EXPOSE 80
 
