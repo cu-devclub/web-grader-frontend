@@ -2,7 +2,7 @@ name: FRONTEND
 
 on:
   push:
-    branches: [main, testing]
+    branches: [main, testing, latest]
     paths: [src/**]
     tags: [ v* ]
   pull_request:
@@ -51,7 +51,6 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           flavor: |
             latest=auto
-            prefix=frontend-,onlatest=true
           tags: |
             type=ref,event=branch
             type=ref,event=pr
