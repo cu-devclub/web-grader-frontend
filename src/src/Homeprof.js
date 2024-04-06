@@ -12,7 +12,7 @@ function Homeprof() {
   const [showAlert, setShowAlert] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
-  const Email = '9876543210@student.chulac.ac.th';
+  const Email = '9876543210@student.chula.ac.th';
 
 
   const handleChange = (e) => {
@@ -29,32 +29,32 @@ function Homeprof() {
     SchoolYear: ''
   });
 
-  
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/ST/user/profile?Email=${Email}`);
+      const data = await response.json();
+      console.log('user:', data);
+      setUserData(data);
+      fetchClassData(data.ID);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  };
+
+  const fetchClassData = async (UID) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:5000/ST/class/classes?UID=${UID}`);
+      const data = await response.json();
+      console.log('class:', data);
+      setClassData(data);
+    } catch (error) {
+      console.error('Error fetching class data:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchClassData = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:5000/class/classes?Email=${Email}`);
-        const data = await response.json();
-        console.log('class:', data);
-        setClassData(data);
-      } catch (error) {
-        console.error('Error fetching class data:', error);
-      }
-    };
-  
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:5000/ST/user/profile?Email=${Email}`);
-        const data = await response.json();
-        console.log('user:', data);
-        setUserData(data);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
+    
     fetchUserData();
-    fetchClassData();
   }, []);
 
   const handleToggleExpand = () => {
@@ -86,11 +86,11 @@ function Homeprof() {
     console.log('Form Data:', formData);
     try {
       const response = await axios.post('http://127.0.0.1:5000/TA/class/create', formData);
+      console.log(response)
       if (response.data.Status) {
-        console.log("True"); // Log "True" if response.data is true
+        fetchClassData(); // Log "True" if response.data is true
         setShowAlert(true);
-      } else {
-        console.log("False"); // Log "False" if response.data is false
+      } else { // Log "False" if response.data is false
       }
       
     } catch (error) {

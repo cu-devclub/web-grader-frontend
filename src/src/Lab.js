@@ -7,18 +7,34 @@ function Lab() {
   const location = useLocation();
   const labData = location.state;
 
-  const classId = labData.classid;
+  const Email = labData.Email;
+  const csyid = labData.classid;
   const speclab = labData.lab;
   const schoolYear = labData.schoolyear;
 
   const [assignmentData, setAssignmentData] = useState(null);
   const [fileSelectedMap, setFileSelectedMap] = useState({}); // Map to track file selection for each question
   const [submissionResponses, setSubmissionResponses] = useState({}); // Map to hold submission responses for each question
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:5000/ST/assignment/specific?class_id=${classId}&speclab=${speclab}&school_year=${schoolYear}`);
+      const fetchUserData = async () => {
+        try {
+          const response = await fetch(`http://127.0.0.1:5000/ST/user/profile?Email=${Email}`);
+          const userdata = await response.json();
+          console.log('user:', userdata);
+          setUserData(userdata);
+          console.log(userdata.ID);
+          // Call fetchData here after setting userData
+          fetchData(userdata.ID);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
+        }
+      };
+  
+      const fetchData = async (UID) => {
+        try {
+          const response = await fetch(`http://127.0.0.1:5000/ST/assignment/specific?UID=${UID}&CSYID=${csyid}&speclab=${speclab}`);
         const data = await response.json();
         console.log(data);
         setAssignmentData(data);
@@ -39,25 +55,21 @@ function Lab() {
       }
     };
 
-    fetchData();
-  }, [classId, speclab, schoolYear]);
-
-  const handleFileChange = (event, questionKey) => {
-    // Update fileSelectedMap for the specific question with the file selection status
-    setFileSelectedMap((prevMap) => ({
-      ...prevMap,
-      [questionKey]: event.target.files.length > 0,
-    }));
-  };
+    fetchUserData();
+  }, [csyid, speclab]);
 
   const handleSubmit = async (event, questionKey) => {
     event.preventDefault();
-  
+
     const formData = new FormData();
     formData.append('file', event.target.file.files[0]);
-  
+    formData.append('UID',userData.ID)
+    formData.append('CSYID',csyid)
+    formData.append('Lab',speclab)
+    formData.append('Question',questionKey.slice(1))
+
     try {
-      const response = await fetch('http://127.0.0.1:5000/upload', {
+      const response = await fetch('http://127.0.0.1:5000/upload/SMT', {
         method: 'POST',
         body: formData,
       });
@@ -66,7 +78,7 @@ function Lab() {
       // Update the submission response state for the specific question
       setSubmissionResponses((prevResponses) => ({
         ...prevResponses,
-        [questionKey]: responseData.message,
+        [questionKey]:responseData,
       }));
     } catch (error) {
       console.error('Error submitting data:', error);
@@ -103,7 +115,7 @@ function Lab() {
               </div>
             </div>
             <br />
-            <button className="btn btn-primary" style={{ marginLeft: '5em' }} onClick={() => navigate("/", { state: { classid: classId, schoolyear: schoolYear } })}>Back</button>
+            <button className="btn btn-primary" style={{ marginLeft: '5em' }} onClick={() => navigate("/", { state: { Email: Email,classid: csyid } })}>Back</button>
           </div>
           <div className="col">
             {assignmentData?.Questions && Object.keys(assignmentData.Questions).map((questionKey, index) => {
@@ -114,7 +126,7 @@ function Lab() {
                     <div className="card">
                       <div className="card-body row">
                         <h5 className="card-title col-sm-6">Question {question.QuestionNum}</h5>
-                        <p className="card-text col-sm-5" style={{ textAlign: 'right' }}>{submissionResponses[questionKey]}</p>
+                        <p className="card-text col-sm-5" style={{ textAlign: 'right' }}>{submissionResponses[questionKey].message}</p>
                         
                         {/* Upload */}
                         <form 
@@ -132,11 +144,12 @@ function Lab() {
                               onChange={(event) => handleFileChange(event, questionKey)} // Pass questionKey to handleFileChange
                             />
                           </div>
+                          <p className="card-text col-sm-9">Last submission: {submissionResponses[questionKey].FileName||question.Submission.FileName}</p>
                           <div className="col-sm-10" style={{ display: 'inline' }}>
-                            <p className="card-text">Last Submitted: {question.Submission.FileName}</p>
+                            
                             <div className="row">
-                              <p className="card-text col-sm-6">At: {new Date(question.Submission.Date).toLocaleString()}</p>
-                              <p className="card-text col-sm-6">Score: {question.Score}</p>
+                              <p className="card-text col-sm-9">At: {submissionResponses[questionKey].At ? new Date(submissionResponses[questionKey].At).toLocaleString():question.Submission.Date ? new Date(question.Submission.Date).toLocaleString():""}</p>
+                              <p className="card-text col-sm-3">Score: {submissionResponses[questionKey].Score||question.Score}</p>
                             </div>
                           </div>
                           <div className="col-sm-2" style={{ display: 'inline' }}>
