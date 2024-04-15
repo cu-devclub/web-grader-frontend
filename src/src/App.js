@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Navbar from './Navbar.js';
 import { useNavigate,useLocation } from 'react-router-dom';
-import { Link, Redirect } from 'react-router-dom';
+// import { Link, Redirect } from 'react-router-dom';
 
 
 function App() {
@@ -14,7 +14,7 @@ function App() {
   const location = useLocation();
   const classData = location.state;
   if(classData == undefined || classData.login == undefined || classData.login == false){
-    return <Redirect to='/login'/>
+    this.props.history.push('/login')
   }
   const Email = classData.Email;
   const classId = classData.classid;
