@@ -19,6 +19,8 @@ import StudentList from './StudentList';
 import ClassCreate from './ClassCreate';
 import ClassEdit from './ClassEdit';
 import Testernaja from './Testernaja';
+import Login from './Login';
+import Callback from './Callback';
 
 
 const router = createBrowserRouter([
@@ -66,9 +68,17 @@ const router = createBrowserRouter([
     path: "ClassEdit",
     element: <ClassEdit/>,
   },
+  // {
+  //   path:"Testernaja",
+  //   element: <Testernaja/>,
+  // },
   {
-    path:"Testernaja",
-    element: <Testernaja/>,
+    path:"Login",
+    element: <Login/>,
+  },
+  {
+    path:"Callback",
+    element: <Callback/>,
   },
   
 ]);
