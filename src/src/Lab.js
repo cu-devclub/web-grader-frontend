@@ -89,7 +89,7 @@ function Lab() {
     formData.append('Question',questionKey.slice(1))
   
     try {
-      const response = await fetch('http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/upload/SMT', {
+      const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/upload/SMT`, {
         method: 'POST',
         body: formData,
       });
@@ -151,7 +151,7 @@ function Lab() {
                         
                         {/* Upload */}
                         <form 
-                          action="http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/upload" 
+                          action={`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/upload`} 
                           method="POST" 
                           encType="multipart/form-data" 
                           className="row"

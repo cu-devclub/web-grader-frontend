@@ -101,7 +101,7 @@ function AssignEdit() {
     formData.append('CSYID',classId)
     formData.append('oldlabNum',oldlab)
     try {
-      const response = await fetch('http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/delete', {
+      const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/delete`, {
         method: 'POST',
         body: formData,
       });
@@ -209,7 +209,7 @@ function AssignEdit() {
     if (isFormValid()) {
       try {
         
-        const response = await fetch('http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/Assign/Edit', {
+        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/Assign/Edit`, {
               method: 'POST',
               body: formData,
         })

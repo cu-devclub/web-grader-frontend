@@ -115,7 +115,7 @@ function Homeprof() {
     console.log('Form Data:', formData);
     try {
       
-      const response = await axios.post('http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/create', formData)
+      const response = await axios.post(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/create`, formData)
       console.log(response)
       if (response.data.Status) {
         fetchCourses();

@@ -136,7 +136,7 @@ function Sentin({ Q = 2 }) {
           }),)
           console.log(formData)
           try {
-            const response = await fetch('http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/SentEdit', {
+            const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/SentEdit`, {
                   method: 'POST',
                   body: formData,
             });
