@@ -36,7 +36,7 @@ function ClassEdit() {
         formData.append('CSYID',CSYID)
   
     try {
-        const response = await fetch('http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/edit', {
+        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/edit`, {
             method: 'POST',
             body: formData,
       });
@@ -68,7 +68,7 @@ function ClassEdit() {
         formData.append('file',fileThumbnail)
 
         try {
-            const response = await fetch('http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/upload/Thumbnail', {
+            const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/upload/Thumbnail`, {
                 method: 'POST',
                 body: formData,
           });
@@ -90,7 +90,7 @@ function ClassEdit() {
         formData.append('CSYID', CSYID)
         formData.append('file', fileCSV)
         try {
-            const response = await fetch('http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/upload/CSV', {
+            const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/upload/CSV`, {
                 method: 'POST',
                 body: formData,
             });
@@ -128,7 +128,7 @@ function ClassEdit() {
             formData.append('CSYID',CSYID)
   
     try {
-        const response = await fetch('http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/delete', {
+        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/delete`, {
             method: 'POST',
             body: formData,
       });

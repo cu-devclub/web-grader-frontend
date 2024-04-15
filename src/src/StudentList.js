@@ -69,7 +69,7 @@ function StudentList() {
         CSYID: classId
     }),);
   
-      const response = await fetch('http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/Student/List/CSV', {
+      const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/Student/List/CSV`, {
             method: 'POST',
             body: formData
       })

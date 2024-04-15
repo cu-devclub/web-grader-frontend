@@ -174,7 +174,7 @@ function Testernaja() {
     if (isFormValid()) {
       try {
         
-        const response = await fetch('http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/Assign/Create', {
+        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/Assign/Create`, {
               method: 'POST',
               body: formData,
         })
