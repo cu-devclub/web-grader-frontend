@@ -14,7 +14,7 @@ function App() {
   const location = useLocation();
   const classData = location.state;
   if(classData == undefined || classData.login == undefined || classData.login == false){
-    this.props.history.push('/login')
+    navigate("/login")
   }
   const Email = classData.Email;
   const classId = classData.classid;
