@@ -13,8 +13,11 @@ function App() {
   const [userData, setUserData] = useState(null);
   const location = useLocation();
   const classData = location.state;
-  if(classData == undefined || classData.login == undefined || classData.login == false){
-    navigate("/login")
+  if(classData == undefined){
+    return navigate("/login")
+  }
+  if(classData.login == undefined || classData.login == false){
+    return navigate("/login")
   }
   const Email = classData.Email;
   const classId = classData.classid;

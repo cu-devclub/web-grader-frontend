@@ -7,14 +7,6 @@ import { Link } from 'react-router-dom';
 
 
 function Login() {
-  const navigate = useNavigate();
-
-  const [assignmentData, setAssignmentData] = useState(null);
-  const [userData, setUserData] = useState(null);
-  const location = useLocation();
-  const classData = location.state;
-  const Email = classData.Email;
-  const classId = classData.classid;
 
 
 //   useEffect(() => {
