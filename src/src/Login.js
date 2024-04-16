@@ -6,7 +6,7 @@ import { useNavigate,useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 
-function App() {
+function Login() {
   const navigate = useNavigate();
 
   const [assignmentData, setAssignmentData] = useState(null);
@@ -117,11 +117,11 @@ function App() {
 
 
     return (
-        <div className="App">
+        <div>
             <h1>Login</h1>
         </div>
     );
 }
 
 
-export default App;
+export default Login;
