@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import Navbar from './Navbar.js';
+import Navbar from './src/Navbar.js';
 import { useNavigate,useLocation, Redirect } from 'react-router-dom';
 // import { Link, Redirect } from 'react-router-dom';
 
