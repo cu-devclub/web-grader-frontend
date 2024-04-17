@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import Navbar from '../components/Navbar.js';
+import Navbar from '../src/components/Navbar.js';
 import { useNavigate,useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 

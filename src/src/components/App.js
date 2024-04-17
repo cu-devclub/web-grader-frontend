@@ -1,22 +1,22 @@
 import { Routes, Route } from 'react-router-dom'
-import PrivateRoutes from "./components/privateRoutes"
-import PublicRoutes from './components/publicRoutes'
+import PrivateRoutes from "./src/components/privateRoutes"
+import PublicRoutes from './src/components/publicRoutes'
 
-import Index from './pages/Index';
-import AssignCreate from './pages/AssignCreate';
-import AssignEdit from './pages/AssignEdit';
-import AssignList from './pages/AssignList';
-import Callback from './pages/Callback';
-import ClassCreate from './pages/ClassCreate';
-import ClassEdit from './pages/ClassEdit';
-import ErrorComp from './pages/error'
-import Home from './pages/Home';
-import Homeprof from './pages/Homeprof';
-import Lab from './pages/Lab';
-import Login from './pages/Login';
-import Sentin from './pages/Sentin';
-import StudentList from './pages/StudentList';
-import Testernaja from './pages/Testernaja';
+import Index from './src/pages/Index';
+import AssignCreate from './src/pages/AssignCreate';
+import AssignEdit from './src/pages/AssignEdit';
+import AssignList from './src/pages/AssignList';
+import Callback from './src/pages/Callback';
+import ClassCreate from './src/pages/ClassCreate';
+import ClassEdit from './src/pages/ClassEdit';
+import ErrorComp from './src/pages/error'
+import Home from './src/pages/Home';
+import Homeprof from './src/pages/Homeprof';
+import Lab from './src/pages/Lab';
+import Login from './src/pages/Login';
+import Sentin from './src/pages/Sentin';
+import StudentList from './src/pages/StudentList';
+import Testernaja from './src/pages/Testernaja';
 
 function App() {
   return (
