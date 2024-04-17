@@ -1,26 +1,27 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import reportWebVitals from './components/reportWebVitals';
 import "bootstrap/dist/css/bootstrap.min.css";
-import Home from './Home';
-import Lab from './Lab';
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import AssignCreate from './AssignCreate';
-import AssignEdit from './AssignEdit';
-import Homeprof from './Homeprof';
-import Sentin from './Sentin';
-import AssignList from './AssignList';
-import StudentList from './StudentList';
-import ClassCreate from './ClassCreate';
-import ClassEdit from './ClassEdit';
-import Testernaja from './Testernaja';
-import Login from './Login';
-import Callback from './Callback';
+
+import App from './components/App';
+import AssignCreate from './pages/AssignCreate';
+import AssignEdit from './pages/AssignEdit';
+import AssignList from './pages/AssignList';
+import Callback from './pages/Callback';
+import ClassCreate from './pages/ClassCreate';
+import ClassEdit from './pages/ClassEdit';
+import Home from './pages/Home';
+import Homeprof from './pages/Homeprof';
+import Lab from './pages/Lab';
+import Login from './pages/Login';
+import Sentin from './pages/Sentin';
+import StudentList from './pages/StudentList';
+import Testernaja from './pages/Testernaja';
 
 
 const router = createBrowserRouter([

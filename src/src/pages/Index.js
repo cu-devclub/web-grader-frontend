@@ -2,23 +2,17 @@ import React,{ useState,useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Navbar from './Navbar.js';
-import { useNavigate,useLocation } from 'react-router-dom';
+import { useNavigate,useLocation, Redirect } from 'react-router-dom';
 // import { Link, Redirect } from 'react-router-dom';
 
 
-function App() {
+function Index() {
   const navigate = useNavigate();
 
   const [assignmentData, setAssignmentData] = useState(null);
   const [userData, setUserData] = useState(null);
   const location = useLocation();
   const classData = location.state;
-  if(classData == undefined){
-    return navigate("/login")
-  }
-  if(classData.login == undefined || classData.login == false){
-    return navigate("/login")
-  }
   const Email = classData.Email;
   const classId = classData.classid;
 
@@ -203,4 +197,4 @@ function App() {
 }
 
 
-export default App;
+export default Index;
