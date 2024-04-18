@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar.js';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 function Home() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ function Home() {
   const [expandedYear, setExpandedYear] = useState(null);
   const [ready, setReady] = useState(null);
 
-  const Email = '6331234567@student.chula.ac.th';
+  const Email = Cookies.get('Email');
 
   
   useEffect(() => {
