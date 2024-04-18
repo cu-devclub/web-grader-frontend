@@ -1,5 +1,5 @@
 import React from 'react'
-import Navbarprof from '../src/components/Navbarprof'
+import Navbarprof from '../components/Navbarprof'
 import { Link } from 'react-router-dom'
 import { useState } from 'react';
 

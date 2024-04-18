@@ -1,7 +1,7 @@
 import React,{ useState,useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import Navbar from './src/Navbar.js';
+import Navbar from '../components/Navbar';
 import { useNavigate,useLocation, Redirect } from 'react-router-dom';
 // import { Link, Redirect } from 'react-router-dom';
 
@@ -13,8 +13,8 @@ function Index() {
   const [userData, setUserData] = useState(null);
   const location = useLocation();
   const classData = location.state;
-  const Email = classData.Email;
-  const classId = classData.classid;
+  const Email = "6634473123@student.chula.ac.th"//classData.Email;
+  const classId = ""//classData.classid;
 
 
   useEffect(() => {

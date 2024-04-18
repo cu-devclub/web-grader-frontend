@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../src/components/Navbar.js';
+import Navbar from '../components/Navbar.js';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
@@ -127,7 +127,7 @@ function Home() {
                             <h5 className="card-title">{course.ClassName}</h5>
                             <p className="card-text">{course.ClassID}</p>
                             <p className='card-text'>Sec{course.Section}</p>
-                            <button onClick={() => navigate("/", { state: { Email: Email,classid: course.ID} })} className="btn btn-primary">View course</button>
+                            <button onClick={() => navigate("/Class", { state: { Email: Email,classid: course.ID} })} className="btn btn-primary">View course</button>
                           </div>
                         </div>
                       </div>
