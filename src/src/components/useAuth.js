@@ -28,14 +28,27 @@ async function easy_fetch(host, path, method, body='{}', XCSRF=false){
 
 export const useAuth = async () => {
 
-    const [err, dt] = await easy_fetch(`${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`, "glob/auth/checkauth", "GET", XCSRF=true)
-    if(err){
+    const response = await fetch(`${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/checkauth`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "X-CSRF-TOKEN": Cookies.get("csrf_access_token")
+        }
+    })
+    if (!response.ok) {
         return false
     }
+    var dt = await response.json();
+
     Cookies.set('Name', dt['data']['Name'], { expires: 1 })
     Cookies.set('Email', dt['data']['Email'], { expires: 1 })
     Cookies.set('ID', dt['data']['ID'], { expires: 1 })
     Cookies.set('Role', dt['data']['Role'], { expires: 1 })
 
     return true;
+
+
+
+    
 };
