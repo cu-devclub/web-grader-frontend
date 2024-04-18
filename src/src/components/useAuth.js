@@ -1,12 +1,12 @@
 import Cookies from 'js-cookie';
 
 async function easy_fetch(host, path, method, body='{}', XCSRF=false){
-    head = {"Content-type": "application/json; charset=UTF-8"}
+    const head = {"Content-type": "application/json; charset=UTF-8"}
     if(XCSRF){
-        head["X-CSRF-TOKEN"] = getCookie("csrf_access_token")
+        head["X-CSRF-TOKEN"] = Cookies.get("csrf_access_token")
     }
 
-    fetchdt = {
+    const fetchdt = {
         method: method,
         credentials: "include",
         
@@ -28,7 +28,7 @@ async function easy_fetch(host, path, method, body='{}', XCSRF=false){
 
 export const useAuth = async () => {
 
-    [err, dt] = await easy_fetch(`${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`, "glob/auth/checkauth", "GET", XCSRF=true)
+    const [err, dt] = await easy_fetch(`${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`, "glob/auth/checkauth", "GET", XCSRF=true)
     if(err){
         return false
     }
