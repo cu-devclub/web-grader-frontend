@@ -28,7 +28,7 @@ async function easy_fetch(host, path, method, body='{}', XCSRF=false){
 
 export const useAuth = async () => {
 
-    const response = await fetch(`${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/checkauth`, {
+    const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/checkauth`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -50,5 +50,4 @@ export const useAuth = async () => {
 
 
 
-    
 };
