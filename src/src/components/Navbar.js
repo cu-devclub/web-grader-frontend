@@ -2,7 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
-function Navbarprof() {
+function Navbar() {
         const handleButtonClick = () => {
           console.log('Button clicked. Preparing to navigate to page...');
         };
@@ -21,11 +21,11 @@ function Navbarprof() {
   return (
     <div>
          <nav className="navbar navbar-dark bg-primary justify-content-between ">
-          <a className="navbar-brand" href="#"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;NameID</a>
+          <a className="navbar-brand" href="#"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Grader</a>
           <form className="form-inline">
-          <Link to="/Homeprof">
+          <Link to="/Home">
               <button onClick={handleButtonClick} className="btn btn-outline-light" type="button">Home
-                </button> 
+                </button>
                 </Link>
                 <span style={{ margin: '0 10px' }}></span>
           <button type="button" className="btn btn-outline-light" onClick={handleOpenModal}>
@@ -61,4 +61,4 @@ function Navbarprof() {
   )
 }
 
-export default Navbarprof
+export default Navbar

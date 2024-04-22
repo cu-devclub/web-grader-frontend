@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './Navbar';
+import Navbar from '../components/Navbar';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 function Lab() {
@@ -18,23 +18,24 @@ function Lab() {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-      const fetchUserData = async () => {
-        try {
-          const response = await fetch(`http://127.0.0.1:5000/ST/user/profile?Email=${Email}`);
-          const userdata = await response.json();
-          console.log('user:', userdata);
-          setUserData(userdata);
-          console.log(userdata.ID);
-          // Call fetchData here after setting userData
-          fetchData(userdata.ID);
-        } catch (error) {
-          console.error('Error fetching user data:', error);
-        }
-      };
-  
-      const fetchData = async (UID) => {
-        try {
-          const response = await fetch(`http://127.0.0.1:5000/ST/assignment/specific?UID=${UID}&CSYID=${csyid}&speclab=${speclab}`);
+
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/ST/user/profile?Email=${Email}`);
+        const userdata = await response.json();
+        console.log('user:', userdata);
+        setUserData(userdata);
+        console.log(userdata.ID);
+        // Call fetchData here after setting userData
+        fetchData(userdata.ID);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    const fetchData = async (UID) => {
+      try {
+        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/ST/assignment/specific?UID=${UID}&CSYID=${csyid}&speclab=${speclab}`);
         const data = await response.json();
         console.log(data);
         setAssignmentData(data);
@@ -58,18 +59,37 @@ function Lab() {
     fetchUserData();
   }, [csyid, speclab]);
 
+  function generateBadge(status) {
+    if (status){
+      return (
+          <h5>
+              <span className={`badge bg-danger`}>
+                  Late
+              </span>
+          </h5>
+      );}
+  }
+
+  const handleFileChange = (event, questionKey) => {
+    // Update fileSelectedMap for the specific question with the file selection status
+    setFileSelectedMap((prevMap) => ({
+      ...prevMap,
+      [questionKey]: event.target.files.length > 0,
+    }));
+  };
+
   const handleSubmit = async (event, questionKey) => {
     event.preventDefault();
-
+  
     const formData = new FormData();
     formData.append('file', event.target.file.files[0]);
     formData.append('UID',userData.ID)
     formData.append('CSYID',csyid)
     formData.append('Lab',speclab)
     formData.append('Question',questionKey.slice(1))
-
+  
     try {
-      const response = await fetch('http://127.0.0.1:5000/upload/SMT', {
+      const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/upload/SMT`, {
         method: 'POST',
         body: formData,
       });
@@ -125,12 +145,13 @@ function Lab() {
                   <div className="col-sm-10">
                     <div className="card">
                       <div className="card-body row">
-                        <h5 className="card-title col-sm-6">Question {question.QuestionNum}</h5>
-                        <p className="card-text col-sm-5" style={{ textAlign: 'right' }}>{submissionResponses[questionKey].message}</p>
+                        <h5 className="card-title col-sm-4">Question {question.QuestionNum}</h5>
+                        <p className="card-text col-sm-6" style={{ textAlign: 'right' }}>{submissionResponses[questionKey].message}</p>
+                        <span className="col-sm-2">{generateBadge(question.Late)}</span>
                         
                         {/* Upload */}
                         <form 
-                          action="http://127.0.0.1:5000/upload" 
+                          action={`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/upload`} 
                           method="POST" 
                           encType="multipart/form-data" 
                           className="row"
@@ -144,14 +165,15 @@ function Lab() {
                               onChange={(event) => handleFileChange(event, questionKey)} // Pass questionKey to handleFileChange
                             />
                           </div>
+                          
                           <p className="card-text col-sm-9">Last submission: {submissionResponses[questionKey].FileName||question.Submission.FileName}</p>
                           <div className="col-sm-10" style={{ display: 'inline' }}>
-                            
                             <div className="row">
                               <p className="card-text col-sm-9">At: {submissionResponses[questionKey].At ? new Date(submissionResponses[questionKey].At).toLocaleString():question.Submission.Date ? new Date(question.Submission.Date).toLocaleString():""}</p>
-                              <p className="card-text col-sm-3">Score: {submissionResponses[questionKey].Score||question.Score}</p>
+                              <p className="card-text col-sm-3">Score: {submissionResponses[questionKey].Score||question.Score || '-'}/{question.MaxScore}</p>
                             </div>
                           </div>
+              
                           <div className="col-sm-2" style={{ display: 'inline' }}>
                             <input 
                               type="submit" 
