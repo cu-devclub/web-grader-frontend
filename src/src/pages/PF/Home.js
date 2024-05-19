@@ -6,7 +6,6 @@ import Navbarprof from '../../components/Navbarprof'
 import { useNavigate } from 'react-router-dom';
 import { Gear, ChevronDown, ChevronRight } from 'react-bootstrap-icons';
 // import { Link } from 'react-router-dom';
-import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
@@ -102,7 +101,10 @@ function HomePF() {
     e.preventDefault();
     console.log('Form Data:', formData);
     try {
-      const response = await axios.post(`${host}/TA/class/create`, formData)
+      const response = await fetch(`${host}/TA/class/create`, {
+        method: 'POST',
+        body: formData,
+    });
       console.log(response)
       if (response.data.Status) {
         fetchCourses();
