@@ -1,28 +1,28 @@
 import React,{ useState,useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import Navbar from '../components/Navbar';
-import { useNavigate,useLocation, Redirect } from 'react-router-dom';
+import Navbar from '../../components/Navbar';
+import { useNavigate } from 'react-router-dom';
 // import { Link, Redirect } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
+const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
 
 function Index() {
   const navigate = useNavigate();
 
   const [assignmentData, setAssignmentData] = useState(null);
   const [userData, setUserData] = useState(null);
-  const location = useLocation();
-  const classData = location.state;
-  const Email = "6634473123@student.chula.ac.th"//classData.Email;
-  const classId = ""//classData.classid;
+  const classId = sessionStorage.getItem("classid")
+
+  const [Email,] = useState(Cookies.get('email'));
 
 
   useEffect(() => {
-    console.log('getHome:',classData);
 
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/ST/user/profile?Email=${Email}`);
+        const response = await fetch(`${host}/ST/user/profile?Email=${Email}`);
         const userdata = await response.json();
         console.log('user:', userdata);
         setUserData(userdata);
@@ -37,7 +37,7 @@ function Index() {
     const fetchData = async (userId) => {
       try {
         console.log(classId)
-        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/ST/assignment/all?SID=${userId}&CID=${classId}`);
+        const response = await fetch(`${host}/ST/assignment/all?SID=${userId}&CID=${classId}`);
         const data = await response.json();
         console.log(data);
         setAssignmentData(data);
@@ -144,7 +144,7 @@ function Index() {
                  return (
                    <div key={lab} className="card-body">
                      <ol className="list-group">
-                       <button onClick={() => navigate("/Lab", { state:{ Email: Email,lab:lab.slice(-1),classid:classId} })} className="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+                       <button onClick={() => {sessionStorage.setItem("lab", lab.slice(-1));navigate("/Lab")}} className="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
                          <div className="ms-2 me-auto">
                            <div className="fw-bold">
                              {lab}: {labInfo.Name}

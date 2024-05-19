@@ -1,27 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import { useNavigate, useLocation } from 'react-router-dom';
+import Navbar from '../../components/Navbar';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+
+const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
 
 function Lab() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const labData = location.state;
+  // const location = useLocation();
+  // const labData = location.state;
 
-  const Email = labData.Email;
-  const csyid = labData.classid;
-  const speclab = labData.lab;
-  const schoolYear = labData.schoolyear;
+  const csyid = sessionStorage.getItem("classid");
+  const speclab = sessionStorage.getItem("lab");
+  // const schoolYear = labData.schoolyear;
 
   const [assignmentData, setAssignmentData] = useState(null);
   const [fileSelectedMap, setFileSelectedMap] = useState({}); // Map to track file selection for each question
   const [submissionResponses, setSubmissionResponses] = useState({}); // Map to hold submission responses for each question
   const [userData, setUserData] = useState(null);
 
+  const [Email,] = useState(Cookies.get('email'));
+
   useEffect(() => {
 
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/ST/user/profile?Email=${Email}`);
+        const response = await fetch(`${host}/ST/user/profile?Email=${Email}`);
         const userdata = await response.json();
         console.log('user:', userdata);
         setUserData(userdata);
@@ -35,7 +39,7 @@ function Lab() {
 
     const fetchData = async (UID) => {
       try {
-        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/ST/assignment/specific?UID=${UID}&CSYID=${csyid}&speclab=${speclab}`);
+        const response = await fetch(`${host}/ST/assignment/specific?UID=${UID}&CSYID=${csyid}&speclab=${speclab}`);
         const data = await response.json();
         console.log(data);
         setAssignmentData(data);
@@ -89,7 +93,7 @@ function Lab() {
     formData.append('Question',questionKey.slice(1))
   
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/upload/SMT`, {
+      const response = await fetch(`${host}/upload/SMT`, {
         method: 'POST',
         body: formData,
       });
@@ -151,7 +155,7 @@ function Lab() {
                         
                         {/* Upload */}
                         <form 
-                          action={`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/upload`} 
+                          action={`${host}/upload`} 
                           method="POST" 
                           encType="multipart/form-data" 
                           className="row"

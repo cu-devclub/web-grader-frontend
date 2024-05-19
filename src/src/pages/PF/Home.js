@@ -1,29 +1,25 @@
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content';
+
 import React, { useState, useEffect } from 'react';
-import Navbarprof from '../components/Navbarprof'
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import Navbarprof from '../../components/Navbarprof'
+import { useNavigate } from 'react-router-dom';
+import { Gear, ChevronDown, ChevronRight } from 'react-bootstrap-icons';
+// import { Link } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
+const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
 
-function Homeprof() {
+function HomePF() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const classData = location.state;
-  const Email = '9876543210@student.chula.ac.th';
-  /* const Email = classData.Email; */
-  console.log(classData)
 
   const [userData, setUserData] = useState(null);
   const [courses, setCourses] = useState(null);
-  const [showAlert, setShowAlert] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [ready, setReady] = useState(null);
-  const [deleteAlert, setDeleteAlert] = useState(true);
-
   const [expandedYear, setExpandedYear] = useState(null);
-  const [isdelete, setdelete] = useState(false);
-  
-
+  const [Email,] = useState(Cookies.get('email'));
   
 
   const handleChange = (e) => {
@@ -42,7 +38,7 @@ function Homeprof() {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/ST/user/profile?Email=${Email}`);
+      const response = await fetch(`${host}/ST/user/profile?Email=${Email}`);
       const data = await response.json();
       console.log('user:', data);
       setUserData(data);
@@ -53,7 +49,7 @@ function Homeprof() {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/classes?Email=${Email}`);
+      const response = await fetch(`${host}/TA/class/classes?Email=${Email}`);
       const data = await response.json();
       console.log('class:', data);
       const sortedCourses = Object.fromEntries(Object.entries(data).sort((a, b) => b[0].localeCompare(a[0])));
@@ -67,7 +63,6 @@ function Homeprof() {
   
 
   useEffect(() => {
-    try{if(location.state.delete)setdelete(true)}catch{setdelete(false)}
     fetchUserData();
     fetchCourses();
     setReady(true);
@@ -101,48 +96,38 @@ function Homeprof() {
     });
     setExpanded(false);
   };
-
-  const handleAlertClose = () => {
-    setShowAlert(false);
-  };
-
-  const handleDeleteClose = () => {
-    setDeleteAlert(false);
-  };
   
   const handleCreateClick = async (e) => {
     e.preventDefault();
     console.log('Form Data:', formData);
     try {
-      
-      const response = await axios.post(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/create`, formData)
+      const response = await axios.post(`${host}/TA/class/create`, formData)
       console.log(response)
       if (response.data.Status) {
         fetchCourses();
-        setShowAlert(true);
-      } else {
+        handleCancel()
+        withReactContent(Swal).fire({
+            title: "Class created successfully",
+            icon: "success"
+        })
+      }else{
+        withReactContent(Swal).fire({
+          title: "Error!",
+          icon: "error"
+        })
       }
     } catch (error) {
-      console.error('Error');
+      withReactContent(Swal).fire({
+        title: "Please contact admin!",
+        text: error,
+        icon: "error"
+      })
     }
   };
 
   return (
     <div>
       <Navbarprof />
-      {isdelete && deleteAlert ? (
-                  <div className="alert alert-danger d-flex align-items-center" role="alert">
-                    Class delete successfully
-                    <button type="button" className="btn-close align-items-right" aria-label="Close" onClick={handleDeleteClose}></button>
-                  </div>
-                ):(null)}
-
-      {showAlert && (
-                  <div className="alert alert-success d-flex align-items-center" role="alert">
-                    Class created successfully
-                    <button type="button" className="btn-close align-items-right" aria-label="Close" onClick={handleAlertClose}></button>
-                  </div>
-                )}
       <br />
       <div className="d-flex align-items-center">
         <h5 className="me-2" style={{marginLeft:'10px'}}>Course</h5>
@@ -189,29 +174,45 @@ function Homeprof() {
             {/* วนลูปเพื่อแสดง container แยกตามปีการศึกษา */}
             {Object.entries(courses).map(([year, classes]) => (
               <div key={year} className="container-lg mb-3 bg-light" style={{ padding: '10px' }}>
-                <h5 onClick={() => toggleYear(year)} style={{ cursor: 'pointer' }}>
-                  {year} {expandedYear === year ? " (- Click to collapse)" : " (+ Click to expand)"}
+                <h5 className='unselectable' onClick={() => toggleYear(year)} style={{ cursor: 'pointer' }}>
+                  {expandedYear === year ? <ChevronDown /> : <ChevronRight />} {year}
                 </h5>
                 {expandedYear === year && (
                   <div className="row row-cols-1 row-cols-md-5 g-2">
                     {/* วนลูปเพื่อแสดงข้อมูลคอร์สในแต่ละปีการศึกษา */}
                     {classes.map(course => (
-                      <div key={course.ID} className="col">
-                        <div className="card h-100" style={{width: '15rem'}}><div>
-                          
-                          <img src={course.Thumbnail ? "/Thumbnail/" + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} className="card-img-top" style={{ padding:'15px',width: '100%', height: '100%'}}  alt="..."/>
-
-                          </div>
-                          <div className="card-body" style={{ overflowY: 'scroll' }}>
-                            <h5 className="card-title">{course.ClassName}</h5>
-                            <p className="card-text">{course.ClassID}</p>
-                            <button onClick={() => navigate("/AssignList", { state: { Email: Email,classid: course.ID} })} className="btn btn-primary">View course</button>
-                          </div>
-                          <div class="card-footer">
-                            <div style={{textDecoration: 'underline',color: 'blue',cursor: 'pointer',}} onClick={() => navigate("/ClassEdit", { state: { Email: Email,classid: course.ID, ClassID:course.ClassID, SchoolYear:year, ClassName:course.ClassName} })}>Edit</div>
-                          </div>
+                      <div className="card" style={{width: '200px'}}>
+                        <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
+                        {/* <img class="" style="width: 198px;height: 198px;"/> */}
+                        <div className="card-body">
+                          <h4 className="card-title">{course.ClassName}</h4>
+                          <p className="card-text">ID: {course.ClassID}</p>
+                          <button className="btn btn-primary" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);  sessionStorage.setItem("Email", Email);  navigate("/AssignList");}}>
+                            View course
+                          </button>
+                          <button className="btn btn-warning float-end" type="button" onClick={() => {sessionStorage.setItem("Thumbnail", course.Thumbnail);sessionStorage.setItem("classid", course.ID);sessionStorage.setItem("ClassID", course.ClassID);sessionStorage.setItem("SchoolYear", year);sessionStorage.setItem("ClassName", course.ClassName);navigate("/ClassEdit")}}>
+                            <Gear />
+                          </button>
                         </div>
                       </div>
+
+
+                      // <div key={course.ID} className="col">
+                      //   <div className="card h-100" style={{width: '15rem'}}><div>
+                          
+                      //     <img src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} className="card-img-top" style={{ padding:'15px',width: '100%', height: '100%'}}  alt="..."/>
+
+                      //     </div>
+                      //     <div className="card-body" style={{ overflowY: 'scroll' }}>
+                      //       <h5 className="card-title">{course.ClassName}</h5>
+                      //       <p className="card-text">{course.ClassID}</p>
+                      //       <button onClick={() => {sessionStorage.setItem("classId", course.ID);  sessionStorage.setItem("Email", Email);  navigate("/AssignList");}} className="btn btn-primary">View course</button>
+                      //     </div>
+                      //     <div class="card-footer">
+                      //       <div style={{textDecoration: 'underline',color: 'blue',cursor: 'pointer',}} onClick={() => navigate("/ClassEdit", { state: { Email: Email,classid: course.ID, ClassID:course.ClassID, SchoolYear:year, ClassName:course.ClassName} })}>Edit</div>
+                      //     </div>
+                      //   </div>
+                      // </div>
                     ))}
                   </div>
                 )}
@@ -226,4 +227,4 @@ function Homeprof() {
   )
 }
 
-export default Homeprof
+export default HomePF

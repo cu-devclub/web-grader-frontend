@@ -10,4 +10,4 @@ RUN npm i
 EXPOSE 80
 
 # start app
-CMD ["npm", "start"]
+CMD ["npm", "run", "build;", "npm", "install", "-g", "serve;", "npm", "start"]

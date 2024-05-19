@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import Navbarprof from '../components/Navbarprof'
+import Navbarprof from '../../components/Navbarprof'
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+
+const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
 
 function AssignEdit() {
   const navigate = useNavigate();
-  const location = useLocation();
+  // const location = useLocation();
 
-  const classData = location.state;
-  const Email = classData.Email;
-  const classId = classData.classid;
-  const oldlab = classData.lab;
-  const oldlabname = classData.labname;
+  // const classData = location.state;
+  // const Email = classData.Email;
+  // const classId = classData.classid;
+  // const oldlab = classData.lab;
+  // const oldlabname = classData.labname;
 
   const [showAlert, setShowAlert] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -31,10 +32,16 @@ function AssignEdit() {
   const [submittedDates, setSubmittedDates] = useState({});
   const [isLoading, setIsLoading] = useState(true); // Add isLoading state
   const [inputQnum, setInputQnum] = useState('');
+  const [ClassInfo, setClassInfo] = useState({});
+
+  const [Email,] = useState(sessionStorage.getItem("Email"));
+  const [classId,] = useState(sessionStorage.getItem("classId"));
+  const [oldlab,] = useState(sessionStorage.getItem("lab"));
+  const [oldlabname,] = useState(sessionStorage.getItem("labname"));
 
   const fetchLab = async () => {
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/Assign/data?CSYID=${classId}&labnumber=${oldlab}`);
+      const response = await fetch(`${host}/TA/class/Assign/data?CSYID=${classId}&labnumber=${oldlab}`);
       const data = await response.json();
       console.log('sections:', data);
       setTotalQNum(data.Question.length);
@@ -49,7 +56,7 @@ function AssignEdit() {
 
   const fetchSection = async () => {
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/section?CSYID=${classId}`);
+      const response = await fetch(`${host}/section?CSYID=${classId}`);
       const data = await response.json();
       console.log('sections:', data);
       setSections(data);
@@ -59,9 +66,21 @@ function AssignEdit() {
       console.error('Error fetching user data:', error);
     }
   };
-  useEffect(() => {
-    
 
+  const fetchClass = async () => {
+    try {
+      const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+      const data = await response.json();
+      console.log(data);
+      // setAssignmentsData(data);
+      setClassInfo(data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchClass()
     fetchLab()
     fetchSection()
 
@@ -101,7 +120,7 @@ function AssignEdit() {
     formData.append('CSYID',classId)
     formData.append('oldlabNum',oldlab)
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/delete`, {
+      const response = await fetch(`${host}/TA/class/delete`, {
         method: 'POST',
         body: formData,
       });
@@ -209,7 +228,7 @@ function AssignEdit() {
     if (isFormValid()) {
       try {
         
-        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/Assign/Edit`, {
+        const response = await fetch(`${host}/TA/class/Assign/Edit`, {
               method: 'POST',
               body: formData,
         })
@@ -244,29 +263,25 @@ function AssignEdit() {
           
 <div className="media d-flex align-items-center">
       <span style={{ margin: '0 10px' }}></span>
-        <img
-          className="mr-3"
-          src="https://cdn-icons-png.flaticon.com/512/3426/3426653.png"
-          style={{ width: '40px', height: '40px' }}
-        />
+      <img className="mr-3" alt="thumbnail" src={ClassInfo['Thumbnail'] ? `${host}/Thumbnail/` + ClassInfo['Thumbnail'] : "https://cdn-icons-png.flaticon.com/512/3426/3426653.png"} style={{ width: '40px', height: '40px' }} />
         <span style={{ margin: '0 10px' }}></span>
         <div className="card" style={{ width: '30rem', padding: '10px' }}>
-          <h5>210xxx comp prog 2566/2 sec1</h5>
-          <h6>Instructor: Name Surname</h6>
+          <h5>{ClassInfo['ClassID']} {ClassInfo['ClassName']} {ClassInfo['ClassYear']}</h5>
+          <h6>Instructor: {ClassInfo['Instructor']}</h6>
         </div>
       </div>
       <br />
       <div className="card" style={{ marginLeft: '10em', marginRight: '10em' }}>
         <div className="card-header">
-                <ul className="nav nav-tabs card-header-tabs">
-                    <li className="nav-item">
-                        <button className="nav-link active">Edit</button>
-                    </li>
-                    <li className="nav-item">
-                        <button className="nav-link link" onClick={() => navigate("/Sentin", { state: { Email: Email,classid:classId,lab:oldlab,labname:oldlabname} })} >Sent in</button>
-                    </li>
-                </ul>
-            </div>
+            <ul className="nav nav-tabs card-header-tabs">
+              <li className="nav-item">
+                  <button className="nav-link active">Edit</button>
+              </li>
+              <li className="nav-item">
+                  <button className="nav-link link" onClick={() => navigate("/Sentin", { state: { Email: Email,classid:classId,lab:oldlab,labname:oldlabname} })} >Sent in</button>
+              </li>
+            </ul>
+          </div>
         <div className="card-body">
           <form className="row g-3">
             <div className="col-md-6">
@@ -335,7 +350,7 @@ function AssignEdit() {
           id={`publishdate${section}`}
           value={submittedDates[section]?.publishDate || ''}
           onChange={(e) => handlePublishDateChange(e, section)}
-          min={currentDate}
+          // min={currentDate}
         />
       </div>
       <div className="col-md-6">

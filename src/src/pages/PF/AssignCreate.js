@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import Navbarprof from '../components/Navbarprof'
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import Navbarprof from '../../components/Navbarprof'
+import { useNavigate } from 'react-router-dom';
+
+const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
+
+
 
 function AssignCreate() {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const classData = location.state;
-  const Email = classData.Email;
-  const classId = classData.classid;
-
-  console.log(classData)
 
   const [showAlert, setShowAlert] = useState(false);
   const [labNum, setLabNum] = useState('');
@@ -24,18 +20,22 @@ function AssignCreate() {
   const [checkedSections, setCheckedSections] = useState([]);
   const currentDate = new Date().toISOString().slice(0, 16);
   const [submittedDates, setSubmittedDates] = useState({});
+  const [ClassInfo, setClassInfo] = useState({});
+  const [Email,] = useState(sessionStorage.getItem("Email"));
+  const [classId,] = useState(sessionStorage.getItem("classId"));
 
 
 
   const handlePublishDateChange = (e, section) => {
     const selectedPublishDate = new Date(e.target.value);
-    const currentDate = new Date();
+    // const currentDate = new Date();
     const selectedDueDate = new Date(submittedDates[section]?.dueDate); // ใช้ข้อมูล dueDate ของ section เดียวกัน
   
-    if (selectedPublishDate < currentDate) {
-      alert('Publish Date cannot be in the past.');
-      e.target.value = '';
-    } else if (selectedPublishDate > selectedDueDate) {
+    // if (selectedPublishDate < currentDate) {
+    //   alert('Publish Date cannot be in the past.');
+    //   e.target.value = '';
+    // } else if (selectedPublishDate > selectedDueDate) {
+    if (selectedPublishDate > selectedDueDate) {
       alert('Publish Date cannot be after Due Date.');
       e.target.value = '';
     } else {
@@ -52,7 +52,7 @@ function AssignCreate() {
   useEffect(() => {
     const fetchSection = async () => {
       try {
-        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/section?CSYID=${classId}`);
+        const response = await fetch(`${host}/section?CSYID=${classId}`);
         const data = await response.json();
         console.log('sections:', data);
         setSections(data);
@@ -60,7 +60,21 @@ function AssignCreate() {
         console.error('Error fetching user data:', error);
       }
     };
+
+    const fetchClass = async () => {
+      try {
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const data = await response.json();
+        console.log(data);
+        // setAssignmentsData(data);
+        setClassInfo(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
     fetchSection()
+    fetchClass();
   }, []);
   
   const handleDueDateChange = (e, section) => {
@@ -138,7 +152,7 @@ function AssignCreate() {
     if (isFormValid()) {
       try {
         
-        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/Assign/Create`, {
+        const response = await fetch(`${host}/TA/class/Assign/Create`, {
               method: 'POST',
               body: formData,
         })
@@ -168,15 +182,11 @@ function AssignCreate() {
       <br />
       <div className="media d-flex align-items-center">
       <span style={{ margin: '0 10px' }}></span>
-        <img
-          className="mr-3"
-          src="https://cdn-icons-png.flaticon.com/512/3426/3426653.png"
-          style={{ width: '40px', height: '40px' }}
-        />
+        <img className="mr-3" alt="thumbnail" src={ClassInfo['Thumbnail'] ? `${host}/Thumbnail/` + ClassInfo['Thumbnail'] : "https://cdn-icons-png.flaticon.com/512/3426/3426653.png"} style={{ width: '40px', height: '40px' }} />
         <span style={{ margin: '0 10px' }}></span>
         <div className="card" style={{ width: '30rem', padding: '10px' }}>
-          <h5>210xxx comp prog 2566/2 sec1</h5>
-          <h6>Instructor: Name Surname</h6>
+          <h5>{ClassInfo['ClassID']} {ClassInfo['ClassName']} {ClassInfo['ClassYear']}</h5>
+          <h6>Instructor: {ClassInfo['Instructor']}</h6>
         </div>
       </div>
       <br />
@@ -196,8 +206,8 @@ function AssignCreate() {
             </div>
 
             <div className="col-6">
-              <label htmlFor="inputlink" className="form-label">Attach Link</label>
-              <input type="text" className="form-control" id="inputlink" placeholder="link1,link2 (seperated by comma)" />
+              <label htmlFor="inputlink" className="form-label">Attach Files</label>
+              <input type="file" className="form-control" id="inputlink" placeholder="Select file" accept=".ipynb" multiple/>
             </div>
             <div className="col-md-6">
               <label htmlFor="inputQnum" className="form-label">Total Question Number*</label>
@@ -252,7 +262,7 @@ function AssignCreate() {
           id={`publishdate${section}`}
           value={submittedDates[section]?.publishDate || ''}
           onChange={(e) => handlePublishDateChange(e, section)}
-          min={currentDate}
+          // min={currentDate}
         />
       </div>
       <div className="col-md-6">

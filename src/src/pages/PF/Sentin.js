@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Navbarprof from '../components/Navbarprof'
+import Navbarprof from '../../components/Navbarprof'
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+
+
+const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
 
 function Sentin({ Q = 2 }) {
   const navigate = useNavigate();
@@ -20,6 +22,8 @@ function Sentin({ Q = 2 }) {
   const [newScores, setNewScores] = useState({}); // เก็บค่า New Scores สำหรับแต่ละคอลัมน์ Q
   const [searchQuery, setSearchQuery] = useState('');
   const [lastEditedTimestamp, setLastEditedTimestamp] = useState(null);
+
+  const [ClassInfo, setClassInfo] = useState({});
 
 
   const [assignments, setassignments] = useState({
@@ -75,7 +79,7 @@ function Sentin({ Q = 2 }) {
   useEffect(() => {
     const fetchSection = async () => {
       try {
-        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/score?CSYID=${classId}&Lab=${oldlab}`);
+        const response = await fetch(`${host}/TA/class/score?CSYID=${classId}&Lab=${oldlab}`);
         const data = await response.json();
         console.log('sections:', data);
         setassignments(data);
@@ -83,6 +87,19 @@ function Sentin({ Q = 2 }) {
         console.error('Error fetching user data:', error);
       }
     };
+    const fetchClass = async () => {
+      try {
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const data = await response.json();
+        console.log(data);
+        // setAssignmentsData(data);
+        setClassInfo(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchClass();
     fetchSection()
   }, []);
 
@@ -136,7 +153,7 @@ function Sentin({ Q = 2 }) {
           }),)
           console.log(formData)
           try {
-            const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/SentEdit`, {
+            const response = await fetch(`${host}/TA/class/SentEdit`, {
                   method: 'POST',
                   body: formData,
             });
@@ -180,15 +197,11 @@ function Sentin({ Q = 2 }) {
       <br />
       <div className="media d-flex align-items-center">
         <span style={{ margin: '0 10px' }}></span>
-        <img
-          className="mr-3"
-          src="https://cdn-icons-png.flaticon.com/512/3426/3426653.png"
-          style={{ width: '40px', height: '40px' }}
-        />
+        <img className="mr-3" alt="thumbnail" src={ClassInfo['Thumbnail'] ? `${host}/Thumbnail/` + ClassInfo['Thumbnail'] : "https://cdn-icons-png.flaticon.com/512/3426/3426653.png"} style={{ width: '40px', height: '40px' }} />
         <span style={{ margin: '0 10px' }}></span>
         <div className="card" style={{ width: '30rem', padding: '10px' }}>
-          <h5>210xxx comp prog 2566/2 sec1</h5>
-          <h6>Instructor: Name Surname</h6>
+          <h5>{ClassInfo['ClassID']} {ClassInfo['ClassName']} {ClassInfo['ClassYear']}</h5>
+          <h6>Instructor: {ClassInfo['Instructor']}</h6>
         </div>
       </div>
       <br />

@@ -16,14 +16,18 @@ function Navbar() {
         const handleCloseModal = () => {
           setShowModal(false);
         };
+
+        const handleLogout = async () => {
+          window.location.href = "/Logout"
+        };
     
 
   return (
     <div>
          <nav className="navbar navbar-dark bg-primary justify-content-between ">
-          <a className="navbar-brand" href="#"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Grader</a>
+          <a className="navbar-brand" href="/"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Grader</a>
           <form className="form-inline">
-          <Link to="/Home">
+          <Link to="/">
               <button onClick={handleButtonClick} className="btn btn-outline-light" type="button">Home
                 </button>
                 </Link>
@@ -49,7 +53,7 @@ function Navbar() {
               <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
                 Cancel
               </button>
-              <button type="button" className="btn btn-primary">
+              <button type="button" className="btn btn-primary" onClick={handleLogout}>
                 Exit
               </button>
             </div>

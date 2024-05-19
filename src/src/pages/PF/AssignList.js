@@ -1,70 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import Navbarprof from '../components/Navbarprof'
-import { useNavigate, useLocation } from 'react-router-dom';
+import Navbarprof from '../../components/Navbarprof'
+import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+
+const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
 
 function AssignList() {
   
-  const [expandedLabs, setExpandedLabs] = useState({});
+  // const [expandedLabs, setExpandedLabs] = useState({});
   const navigate = useNavigate();
-  const location = useLocation();
   const [isCreate, setAssignCreate] = useState(false);
   const [isEdit, setAssignEdit] = useState(false);
-
-  const classData = location.state;
-  const Email = classData.Email;
-  const classId = classData.classid;
+  const [ClassInfo, setClassInfo] = useState({});
   
-  console.log(classData)
-
-  const [userData, setUserData] = useState(null);
+  const [Email,] = useState(sessionStorage.getItem("Email"));
+  const [classId,] = useState(sessionStorage.getItem("classId"));
 
   const [assignmentsData, setAssignmentsData] = useState({
-    "Assignment": {
-      "1": {
-        "LabName": "Genmaicha",
-        "Section": {
-          "1": {
-            "Due": "Tue, 28 Nov 2023 14:45:00 GMT",
-            "Publish": "Wed, 18 Oct 2023 14:45:00 GMT"
-          },
-          "2": {
-            "Due": "Sat, 20 Jan 2024 14:45:00 GMT",
-            "Publish": "Tue, 28 Nov 2023 14:45:00 GMT"
-          }
-        }
-      }
-    }
+    "Assignment": {}
   });
 
-  const handleToggleLab = (labIndex) => {
-    setExpandedLabs((prevExpandedLabs) => ({
-      ...prevExpandedLabs,
-      [labIndex]: !prevExpandedLabs[labIndex],
-    }));
-  };
+  // const handleToggleLab = (labIndex) => {
+  //   setExpandedLabs((prevExpandedLabs) => ({
+  //     ...prevExpandedLabs,
+  //     [labIndex]: !prevExpandedLabs[labIndex],
+  //   }));
+  // };
 
   useEffect(() => {
-    console.log('getHome:',classData);
 
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/ST/user/profile?Email=${Email}`);
-        const userdata = await response.json();
-        console.log('user:', userdata);
-        setUserData(userdata);
-        console.log(userdata.ID);
-        // Call fetchData here after setting userData
-        fetchData(userdata.ID);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
+    // const fetchUserData = async () => {
+    //   try {
+    //     const response = await fetch(`${host}/ST/user/profile?Email=${Email}`);
+    //     const userdata = await response.json();
+    //     console.log('user:', userdata);
+    //     setUserData(userdata);
+    //     console.log(userdata.ID);
+    //     // Call fetchData here after setting userData
+    //     fetchData(userdata.ID);
+    //   } catch (error) {
+    //     console.error('Error fetching user data:', error);
+    //   }
+    // };
   
     const fetchData = async () => {
       try {
-        console.log(classId)
-        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/Assign?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/Assign?CSYID=${classId}`);
         const data = await response.json();
         console.log(data);
         setAssignmentsData(data);
@@ -72,9 +53,23 @@ function AssignList() {
         console.error('Error fetching data:', error);
       }
     };
-    try{setAssignCreate(classData.statusCreate)}catch{}
-    try{setAssignEdit(classData.statusEdit)}catch{}
-    fetchUserData();
+
+    const fetchClass = async () => {
+      try {
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const data = await response.json();
+        console.log(data);
+        // setAssignmentsData(data);
+        setClassInfo(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchClass();
+    try{setAssignCreate(sessionStorage.getItem("statusCreate"))}catch{}
+    try{setAssignEdit(sessionStorage.getItem("statusEdit"))}catch{}
+    // fetchUserData();
     fetchData()
   }, []);
 
@@ -86,11 +81,11 @@ function AssignList() {
       <br></br>
       <div className="media d-flex align-items-center">
         <span style={{ margin: '0 10px' }}></span>
-        <img className="mr-3" src="https://cdn-icons-png.flaticon.com/512/3426/3426653.png" style={{ width: '40px', height: '40px' }} />
+        <img className="mr-3" alt="thumbnail" src={ClassInfo['Thumbnail'] ? `${host}/Thumbnail/` + ClassInfo['Thumbnail'] : "https://cdn-icons-png.flaticon.com/512/3426/3426653.png"} style={{ width: '40px', height: '40px' }} />
         <span style={{ margin: '0 10px' }}></span>
         <div className="card" style={{ width: '30rem', padding: '10px' }}>
-          <h5>210xxx comp prog 2566/2 sec1</h5>
-          <h6>Instructor: Name Surname</h6>
+          <h5>{ClassInfo['ClassID']} {ClassInfo['ClassName']} {ClassInfo['ClassYear']}</h5>
+          <h6>Instructor: {ClassInfo['Instructor']}</h6>
         </div>
           <button type="button" className="btn btn-secondary" onClick={() => navigate("/StudentList", { state: { Email: Email,classid:classId} })} style={{ marginLeft: 40 + 'em' }}>Student lists</button>
       </div>
@@ -116,9 +111,9 @@ function AssignList() {
           <div>
             {Object.keys(assignmentsData.Assignment).map((labNumber, labIndex) => {
               const lab = assignmentsData.Assignment[labNumber];
-              const isLabExpanded = expandedLabs[labIndex];
+              // const isLabExpanded = expandedLabs[labIndex];
               return (
-                <div key={labIndex} className='card ' style={{ marginBottom: '2rem' }} onClick={() => navigate("/AssignEdit", { state: { Email: Email,classid:classId,lab:labNumber,labname:lab.LabName} })}>
+                <div key={labIndex} className='card ' style={{ marginBottom: '2rem' }} onClick={() => {sessionStorage.setItem("lab", labNumber);sessionStorage.setItem("labname", lab.LabName); navigate("/AssignEdit")}}>
                   <button  style={{ fontSize: '1.2rem', height:'4rem'}} class="fw-bold ">
                     <span>{`Lab ${labNumber}: ${lab.LabName}`}</span>
                     {Object.keys(lab.Section).length > 0 && (
@@ -131,7 +126,7 @@ function AssignList() {
               );
             })}
             <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-              <Link to="/Homeprof">
+              <Link to="/">
                 <button type="button" className="btn btn-primary">Back</button>
               </Link>
             </div>
