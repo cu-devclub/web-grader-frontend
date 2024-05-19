@@ -104,9 +104,10 @@ function HomePF() {
       const response = await fetch(`${host}/TA/class/create`, {
         method: 'POST',
         body: formData,
-    });
+      });
+      const responseData = await response.json();
       console.log(response)
-      if (response.data.Status) {
+      if (responseData.Status) {
         fetchCourses();
         handleCancel()
         withReactContent(Swal).fire({
