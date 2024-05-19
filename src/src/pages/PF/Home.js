@@ -14,12 +14,13 @@ const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_AP
 function HomePF() {
   const navigate = useNavigate();
 
-  const [userData, setUserData] = useState(null);
+  const [Email,] = useState(Cookies.get('email'));
+  const [userData, setUserData] = useState({Email: Email});
   const [courses, setCourses] = useState(null);
   const [expanded, setExpanded] = useState(false);
   const [ready, setReady] = useState(null);
   const [expandedYear, setExpandedYear] = useState(null);
-  const [Email,] = useState(Cookies.get('email'));
+  
   
 
   const handleChange = (e) => {
