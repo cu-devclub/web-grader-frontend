@@ -14,7 +14,6 @@ function HomePF() {
   const navigate = useNavigate();
 
   const [Email,] = useState(Cookies.get('email'));
-  const [userData, setUserData] = useState({Email: Email});
   const [courses, setCourses] = useState(null);
   const [expanded, setExpanded] = useState(false);
   const [ready, setReady] = useState(null);
@@ -36,17 +35,6 @@ function HomePF() {
     SchoolYear: ''
   });
 
-  const fetchUserData = async () => {
-    try {
-      const response = await fetch(`${host}/ST/user/profile?Email=${Email}`);
-      const data = await response.json();
-      console.log('user:', data);
-      setUserData(data);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
-
   const fetchCourses = async () => {
     try {
       const response = await fetch(`${host}/TA/class/classes?Email=${Email}`);
@@ -63,7 +51,6 @@ function HomePF() {
   
 
   useEffect(() => {
-    fetchUserData();
     fetchCourses();
     setReady(true);
   }, []);
@@ -80,7 +67,7 @@ function HomePF() {
   const handleToggleExpand = () => {
     setExpanded(!expanded);
     setFormData({
-      Creator: userData.Email,
+      Creator: Email,
       ClassName: '',
       ClassID: '',
       SchoolYear: ''
@@ -102,8 +89,11 @@ function HomePF() {
     console.log('Form Data:', formData);
     try {
       const response = await fetch(`${host}/TA/class/create`, {
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        },
         method: 'POST',
-        body: formData,
+        body: formData
       });
       const responseData = await response.json();
       console.log(response)
