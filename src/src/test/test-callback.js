@@ -19,6 +19,9 @@ function Callback() {
 
         const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/testCallback`, {
                 method: "POST",
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                },
                 body: JSON.stringify({
                     'email': Email
                 })
