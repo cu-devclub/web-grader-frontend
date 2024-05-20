@@ -197,13 +197,13 @@ function StudentList() {
           ) : (
             showname.length !== 0 ? (
               showname.filter(element => {
-                if((element["UID"] + element["Name"]).toLowerCase().includes(searchQuery.toLowerCase()) && (checkedSections.length === 0 || checkedSections.includes(element["Section"])))
+                if((element["ID"] + element["Name (English)"]).toLowerCase().includes(searchQuery.toLowerCase()) && (checkedSections.length === 0 || checkedSections.includes(element["Section"])))
                   return element;
               }).map((element, index) => (
                   <tr key={index}>
                       <th scope="row">{index + 1}</th>
-                      <td>{element["UID"]}</td>
-                      <td>{element["Name"]}</td>
+                      <td>{element["ID"]}</td>
+                      <td>{element["Name (English)"]}</td>
                       <td className='text-center'>{element["Section"]}</td>
                       <td className='text-center'>{element["Score"]}/{maxTotal}</td>
                   </tr>
