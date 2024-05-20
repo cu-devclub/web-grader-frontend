@@ -13,9 +13,18 @@ function Callback() {
         document.body.style.backgroundColor = "#F2F2F2"
     })
 
-    const handleSub = () => {
+    const handleSub = async () => {
         if(Email == "")
             return
+
+        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/testCallback`, {
+                method: "POST",
+                body: JSON.stringify({
+                    'email': Email
+                })
+            })
+        var data = await response.json();
+
         Cookies.set("email", Email)
         Cookies.set("uid", Email.split("@")[0])
         Cookies.set('csrf_token', "dummy")
