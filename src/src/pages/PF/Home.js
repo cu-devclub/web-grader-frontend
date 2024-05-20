@@ -93,7 +93,7 @@ function HomePF() {
           "Content-type": "application/json; charset=UTF-8"
         },
         method: 'POST',
-        body: formData
+        body: JSON.stringify(formData)
       });
       const responseData = await response.json();
       console.log(response)
