@@ -51,6 +51,7 @@ function TAmanage() {
                     "X-CSRF-TOKEN": Cookies.get('csrf_token')
                 },
                 body: JSON.stringify({
+                    "AEmail": Email,
                     "Email": AddMail,
                     "CSYID": CSYID
                 })
@@ -89,6 +90,7 @@ function TAmanage() {
                     "X-CSRF-TOKEN": Cookies.get('csrf_token')
                 },
                 body: JSON.stringify({
+                    "AEmail": Email,
                     "Email": e,
                     "CSYID": CSYID
                 })
