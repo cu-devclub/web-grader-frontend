@@ -107,7 +107,7 @@ function ClassEdit() {
           });
             const responseData = await response.json();
             console.log(responseData);
-            if (responseData.Status){
+            if (responseData["success"]){
                 withReactContent(Swal).fire({
                     title: "Thumbnail uploaded successfully",
                     icon: "success"
@@ -144,7 +144,7 @@ function ClassEdit() {
             });
             const responseData = await response.json();
             console.log(responseData);
-            if (responseData.Status){
+            if (responseData["success"]){
                 withReactContent(Swal).fire({
                     title: "CSV uploaded successfully",
                     icon: "success"
