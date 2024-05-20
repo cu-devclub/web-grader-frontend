@@ -148,10 +148,7 @@ function ClassEdit() {
                 withReactContent(Swal).fire({
                     title: "CSV uploaded successfully",
                     icon: "success"
-                }).then(ok => {
-                    if(ok)
-                        window.location.href = "/"
-                });
+                })
             }else{
                 withReactContent(Swal).fire({
                   title: "Error!",
