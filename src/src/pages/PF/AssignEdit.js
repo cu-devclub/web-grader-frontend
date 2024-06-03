@@ -1,197 +1,101 @@
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content';
+
 import React, { useState, useEffect } from 'react';
 import Navbarprof from '../../components/Navbarprof'
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
 
 function AssignEdit() {
   const navigate = useNavigate();
-  // const location = useLocation();
+  // User Data
+  const [ClassInfo, setClassInfo] = useState({});
+  const [classId,] = useState(sessionStorage.getItem("classId"));
+  const [LID,] = useState(sessionStorage.getItem("LID"));
 
-  // const classData = location.state;
-  // const Email = classData.Email;
-  // const classId = classData.classid;
-  // const oldlab = classData.lab;
-  // const oldlabname = classData.labname;
-
-  const [showAlert, setShowAlert] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-
-
-
+  // Normal field
   const [labNum, setLabNum] = useState('');
   const [labName, setLabName] = useState('');
-  const [publishDate, setPublishDate] = useState('');
-  const [dueDate, setDueDate] = useState('');
-  const [totalQNum, setTotalQNum] = useState('');
-  const [sections, setSections] = useState([1, 2, 3, 4, 5]); //ใส่ sec ที่จะเอา
-  const [Question, setScores] = useState([]);
-  const [submittedData, setSubmittedData] = useState(null);
-  const [checkedSections, setCheckedSections] = useState([]);
-  const currentDate = new Date().toISOString().slice(0, 16);
-  const [submittedDates, setSubmittedDates] = useState({});
-  const [isLoading, setIsLoading] = useState(true); // Add isLoading state
-  const [inputQnum, setInputQnum] = useState('');
-  const [ClassInfo, setClassInfo] = useState({});
+  const [publishDate, setPublishDate] = useState('')
+  const [dueDate, setDueDate] = useState('')
 
-  const [Email,] = useState(sessionStorage.getItem("Email"));
-  const [classId,] = useState(sessionStorage.getItem("classId"));
-  const [oldlab,] = useState(sessionStorage.getItem("lab"));
-  const [oldlabname,] = useState(sessionStorage.getItem("labname"));
+  // Question Sys
+  const [totalQNum, setTotalQNum] = useState(1);
+  const [Question, setScores] = useState([{id: 1, score: 1}]);
 
-  const fetchLab = async () => {
-    try {
-      const response = await fetch(`${host}/TA/class/Assign/data?CSYID=${classId}&labnumber=${oldlab}`);
-      const data = await response.json();
-      console.log('sections:', data);
-      setTotalQNum(data.Question.length);
-      setScores(data.Question)
-      setCheckedSections(data.section)
-      setSubmittedDates(data.LabTime)
-      console.log(submittedDates)
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
-
-  const fetchSection = async () => {
-    try {
-      const response = await fetch(`${host}/section?CSYID=${classId}`);
-      const data = await response.json();
-      console.log('sections:', data);
-      setSections(data);
-      
-
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
-
-  const fetchClass = async () => {
-    try {
-      const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
-      const data = await response.json();
-      console.log(data);
-      // setAssignmentsData(data);
-      setClassInfo(data);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+  // Group/Section Sys
+  const [isGroup, setIsGroup] = useState(false)
+  const [SelectList, setSelectList] = useState([]);
+  const [Selected, setSelected] = useState([]);
 
   useEffect(() => {
-    fetchClass()
-    fetchLab()
-    fetchSection()
-
-    setLabNum(oldlab)
-    setLabName(oldlabname)
-
-    //Set QuestionNumber
-    const event = {
-      target: {
-        value: totalQNum 
+    const fetchLab = async () => {
+      try {
+        const response = await fetch(`${host}/TA/class/Assign/data?LID=${LID}`);
+        const data = await response.json();
+        if(data.success){
+          setLabNum(data.data.LabNum)
+          setLabName(data.data.LabName)
+  
+          setPublishDate(data.data.PubDate)
+          setDueDate(data.data.DueDate)
+  
+          setIsGroup(data.data.IsGroup)
+          setSelectList(data.data.SelectList)
+          setSelected(data.data.Selected)
+  
+          setTotalQNum(data.data.Question.length)
+          setScores(data.data.Question)
+        }else{
+          throw Error(data.msg)
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
       }
     };
-    handleTotalQNumChangeWrapper(event);
 
-    //Set QuestionScore
-    Question.forEach(item => {
-      const id = item.id;
-      const score = item.score;
-      handleScoreChange(id, score);
-    });
-    
-    //Set Publish&Due
-    
+    const fetchClass = async () => {
+      try {
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const data = await response.json();
+        // setAssignmentsData(data);
+        setClassInfo(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-    setIsLoading(false)
-  }, []);
+    fetchClass()
+    fetchLab()
+  }, [classId, LID]);
 
-  const handleShowModal = () => {
-    setShowModal(true);
-  };
-  const handleCloseModal = () => {
-    setShowModal(false);
-  };
-
-  const handleDelete = async () =>{
-    const formData = new FormData();
-    formData.append('CSYID',classId)
-    formData.append('oldlabNum',oldlab)
-    try {
-      const response = await fetch(`${host}/TA/class/delete`, {
-        method: 'POST',
-        body: formData,
-      });
-        const responseData = await response.json();
-        console.log(responseData);
-        if (responseData.Status)
-          navigate("/AssignList", { state: { Email: Email,classid: classId,delete:true} })
-    } catch (error) {
-      console.error('Error delete class:', error);
-    }
+  const handlePublishDateChange = (e) => {
+    setPublishDate(e.target.value)
   }
 
-  
-  const handlePublishDateChange = (e, section) => {
-    const selectedPublishDate = new Date(e.target.value);
-    const formattedPublishDate = selectedPublishDate.toISOString().slice(0, 16);
-    // Update state with formatted date
-    setSubmittedDates(prevState => ({
-      ...prevState,
-      [section]: {
-        ...prevState[section],
-        publishDate: formattedPublishDate,
-      }
-    }));
-  };
-  
-  const handleDueDateChange = (e, section) => {
-    const selectedDueDate = new Date(e.target.value);
-    const formattedDueDate = selectedDueDate.toISOString().slice(0, 16);
-    // Update state with formatted date
-    setSubmittedDates(prevState => ({
-      ...prevState,
-      [section]: {
-        ...prevState[section],
-        dueDate: formattedDueDate,
-      }
-    }));
-  };
-  
-  
-  
-  const handleCheckboxChange = (section) => {
-    if (checkedSections.includes(section)) {
-      setCheckedSections(checkedSections.filter((item) => item !== section));
-    } else {
-      setCheckedSections([...checkedSections, section]);
-    }
-    setSections([...sections].sort((a, b) => a - b));
-  };
+  const handleDueDateChange = (e) => {
+    setDueDate(e.target.value)
+  }
 
-  const handleTotalQNumChangeWrapper = (e) => {
-    handleTotalQNumChange(e);
+  const handleCheckboxChange = (e) => {
+    if(Selected.includes(e)){
+      setSelected(Selected.filter((item) => item !== e));
+    }else{
+      setSelected([...Selected, e]);
+    }
   };
 
   const handleTotalQNumChange = (e) => {
-    let numQuestions = parseInt(e.target.value);
-    if (isNaN(numQuestions) || numQuestions < 1 || numQuestions === null) {
-        numQuestions = 1;
-    } else if (numQuestions > 20) {
-        numQuestions = 20;
-    }
+    const numQuestions = parseInt(e.target.value, 10);
     setTotalQNum(numQuestions);
 
     const newScores = Array.from({ length: numQuestions }, (_, index) => ({
-        id: index + 1,
-        score: 1,
+      id: index + 1,
+      score: 1,
     }));
     setScores(newScores);
-};
-
-  
+  };
 
   const handleScoreChange = (id, score) => {
     const updatedScores = Question.map((item) =>
@@ -200,70 +104,100 @@ function AssignEdit() {
     setScores(updatedScores);
   };
 
-  const isFormValid = () => {
-    return (
-      labNum !== '' &&
-      labName !== '' &&
-      checkedSections !== null &&
-      checkedSections !== undefined &&
-      checkedSections.length > 0 &&
-      checkedSections.every(section => 
-        submittedDates[section] && 
-        submittedDates[section].publishDate && 
-        submittedDates[section].dueDate &&
-        new Date(submittedDates[section].publishDate) <= new Date(submittedDates[section].dueDate)
-      )
-    );
-  };
-  
   const handleButtonClick = async () => {
-    const formData = new FormData();
-    formData.append('oldlabNum', oldlab);
-    formData.append('Creator', Email);
-    formData.append('labNum', labNum);
-    formData.append('labName', labName);
+    if(!isFormValid()){
+      withReactContent(Swal).fire({
+        title: "Please fill required field in form",
+        icon: "warning"
+      })
+      return;
+    }
+
+    const formData = new FormData()
+    const addFiles = await document.getElementById('inputlink').files
+    for(let i=0;i<addFiles.length;i++){
+      formData.append(`Add${i}`, addFiles[i])
+    }
+
+    for(let i = 0;i < Question.length;i++){
+      formData.append(`Source${i}`, document.getElementById(`QSource${Question[i].id}`).files[0])
+      formData.append(`Release${i}`, document.getElementById(`QRelease${Question[i].id}`).files[0])
+    }
+    
+    formData.append('LID', LID);
+    formData.append('LabNum', labNum);
+    formData.append('LabName', labName);
+    
+    formData.append("PubDate", publishDate);
+    formData.append("DueDate", dueDate);
+
     formData.append('CSYID', classId);
-    formData.append('Question', JSON.stringify(Question)); // Stringify Question array
-    formData.append('submittedDates', JSON.stringify(submittedDates)); // Stringify submittedDates object
-    if (isFormValid()) {
-      try {
-        
-        const response = await fetch(`${host}/TA/class/Assign/Edit`, {
-              method: 'POST',
-              body: formData,
+
+    formData.append("IsGroup", isGroup);
+    formData.append("Selected", Selected);
+
+    formData.append("QNum", totalQNum);
+    formData.append("Question", JSON.stringify(Question))
+
+    
+
+    try {
+      const response = await fetch(`${host}/TA/class/Assign/Edit`, {
+        method: 'POST',
+        body: formData,
+      })
+      const Data = await response.json()
+
+      if (Data.success){
+        withReactContent(Swal).fire({
+            title: "Assignment created successfully",
+            icon: "success"
+        }).then(ok => {
+            if(ok)
+                window.location.href = "/AssignList"
+        });
+    }else{
+        withReactContent(Swal).fire({
+          title: Data.msg,
+          icon: Data.data
         })
-        console.log(response)
-
-      } catch (error) {
-        console.error('Error');
-      }
-
-      
-  
-      setShowAlert(true);
-      console.log('Form submitted!',formData);
-    } else {
-      console.log('Please fill in all fields correctly.');
+    }
+    }catch (error) {
+      withReactContent(Swal).fire({
+          title: "Please contact admin!",
+          text: error,
+          icon: "error"
+      })
     }
   };
-  
 
-  const handleAlertClose = () => {
-    setShowAlert(false);
+  const isFormValid = () => {
+    return (
+      true &&
+      labNum !== '' &&
+      labName !== '' &&
+      dueDate !== '' &&
+      new Date(publishDate) <= new Date(dueDate)
+      // isAllQHaveFile()
+      // checkedSections !== null &&
+      // checkedSections !== undefined &&
+      // checkedSections.length > 0 &&
+      // checkedSections.every(section => 
+      //   submittedDates[section] && 
+      //   submittedDates[section].publishDate && 
+      //   submittedDates[section].dueDate &&
+      //   new Date(submittedDates[section].publishDate) <= new Date(submittedDates[section].dueDate)
+      // )
+    );
   };
 
   return (
     <div>
       <Navbarprof />
       <br />
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <div>
-          
-<div className="media d-flex align-items-center">
-      <span style={{ margin: '0 10px' }}></span>
-      <img className="mr-3" alt="thumbnail" src={ClassInfo['Thumbnail'] ? `${host}/Thumbnail/` + ClassInfo['Thumbnail'] : "https://cdn-icons-png.flaticon.com/512/3426/3426653.png"} style={{ width: '40px', height: '40px' }} />
+      <div className="media d-flex align-items-center">
+        <span style={{ margin: '0 10px' }}></span>
+        <img className="mr-3" alt="thumbnail" src={ClassInfo['Thumbnail'] ? `${host}/Thumbnail/` + ClassInfo['Thumbnail'] : "https://cdn-icons-png.flaticon.com/512/3426/3426653.png"} style={{ width: '40px', height: '40px' }} />
         <span style={{ margin: '0 10px' }}></span>
         <div className="card" style={{ width: '30rem', padding: '10px' }}>
           <h5>{ClassInfo['ClassID']} {ClassInfo['ClassName']} {ClassInfo['ClassYear']}</h5>
@@ -273,137 +207,130 @@ function AssignEdit() {
       <br />
       <div className="card" style={{ marginLeft: '10em', marginRight: '10em' }}>
         <div className="card-header">
-            <ul className="nav nav-tabs card-header-tabs">
-              <li className="nav-item">
-                  <button className="nav-link active">Edit</button>
-              </li>
-              <li className="nav-item">
-                  <button className="nav-link link" onClick={() => navigate("/Sentin", { state: { Email: Email,classid:classId,lab:oldlab,labname:oldlabname} })} >Sent in</button>
-              </li>
-            </ul>
+          <div className="row" style={{marginBottom:"-5px"}}>
+              <div className="col">
+                <ul className="nav nav-tabs card-header-tabs">
+                  <li className="nav-item">
+                      <button className="nav-link active">Edit</button>
+                  </li>
+                  <li className="nav-item">
+                      <button className="nav-link link" onClick={() => navigate("/Sentin")} >Sent in</button>
+                  </li>
+                </ul>
+              </div>
+              <div className="col-md-2">
+                <button type="button" className="btn btn-primary float-end" style={{marginLeft:"20px"}} id="liveToastBtn" onClick={handleButtonClick}>Save</button>
+                <button type="button" className="btn btn-primary float-end" onClick={() => navigate("/AssignList")}>Back</button>
+              </div>
+            </div>
           </div>
-        <div className="card-body">
+          <div className="card-body">
           <form className="row g-3">
-            <div className="col-md-6">
-              <label htmlFor="LabNum" className="form-label">Lab Number*</label>
-              <input type="number" min="1" className="form-control" id="LabNum" value={labNum} onChange={(e) => setLabNum(e.target.value)} />
-            </div>
-            <div className="col-md-6">
-              <label htmlFor="LabName" className="form-label">Lab Name*</label>
-              <input type="name" className="form-control" id="LabName" value={labName} onChange={(e) => setLabName(e.target.value)} />
-            </div>
-
-            <div className="col-6">
-              <label htmlFor="inputlink" className="form-label">Attach Link</label>
-              <input type="text" className="form-control" id="inputlink" placeholder="link1,link2 (seperated by comma)" />
-            </div>
-            <div className="col-md-6">
-              <label htmlFor="inputQnum" className="form-label">Total Question Number*</label>
-              <input type="number" min="1" className="form-control" id="inputQnum" value={totalQNum} onChange={(e) => {handleTotalQNumChange(e)}} />
-            </div>
-
-            {Question.map((scoreItem) => (
-              <div key={scoreItem.id} className="col-md-2">
-                <label htmlFor={`inputScore${scoreItem.id}`} className="form-label">
-                  Score Q.{scoreItem.id}
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  className="form-control"
-                  id={`inputScore${scoreItem.id}`}
-                  value={scoreItem.score}
-                  onChange={(e) => handleScoreChange(scoreItem.id, e.target.value)}
-                />
-              </div>
-            ))}
-
-            <div className="col-md-12">
-              <label htmlFor="inputState" className="form-label">Section*</label>
-              <br />
-              {sections.map((section) => (
-                <div key={section} className="form-check form-check-inline">
-                  <input
-                    className="form-check-input"
-                    type="checkbox"
-                    id={`inlineCheckbox${section}`}
-                    value={section}
-                    checked={checkedSections.includes(section)}
-                    onChange={() => handleCheckboxChange(section)}
-                  />
-                  <label className="form-check-label" htmlFor={`inlineCheckbox${section}`}>
-                    {section}
-                  </label>
+            <div className="row" style={{marginBottom: "1rem", marginTop: "1rem"}}>
+              <div className="col">
+                <div className="row">
+                  <div className="col">
+                    <label htmlFor="LabNum" className="form-label">Lab Number*</label>
+                    <input type="number" min="1" className="form-control" id="LabNum" value={labNum} onChange={(e) => setLabNum(e.target.value)} />
+                  </div>
+                  <div className="col">
+                    <label htmlFor="LabName" className="form-label">Lab Name*</label>
+                    <input type="name" className="form-control" id="LabName" value={labName} onChange={(e) => setLabName(e.target.value)} />
+                  </div>
                 </div>
-              ))}
-            </div>
-              <br></br>
-              {sections
-  .filter(section => checkedSections.includes(section))
-  .map((section) => (
-    <div key={section} className="row">
-      <div className="col-md-6">
-        <label htmlFor={`PublishDate${section}`} className="form-label">Publish Date* for sec{section}</label>
-        <input
-          type="datetime-local"
-          className="form-control"
-          id={`publishdate${section}`}
-          value={submittedDates[section]?.publishDate || ''}
-          onChange={(e) => handlePublishDateChange(e, section)}
-          // min={currentDate}
-        />
-      </div>
-      <div className="col-md-6">
-        <label htmlFor={`DueDate${section}`} className="form-label">Due Date* for sec{section}</label>
-        <input
-          type="datetime-local"
-          className="form-control"
-          id={`duedate${section}`}
-          value={submittedDates[section]?.dueDate || ''}
-          onChange={(e) => handleDueDateChange(e, section)}
-          min={submittedDates[section]?.publishDate || currentDate}
-        />
-      </div>
-    </div>
-  ))}
-
-
-            <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-              <button type="button" className="btn btn-primary" onClick={() => navigate("/AssignList", { state: { Email: Email,classid:classId} })}>Back</button>
-              <button type="button" className="btn btn-primary" id="liveToastBtn" onClick={handleButtonClick} disabled={!isFormValid()}>Submit</button>
-              <button type="button" className="btn btn-danger" onClick={handleShowModal}>Delete</button>
-            </div>
-
-            {showAlert && (
-              <div className="alert alert-success d-flex align-items-center" role="alert">
-                Assignment created successfully
               </div>
-            )}
+              <div className="col">
+                <label htmlFor="inputlink" className="form-label">Additional Files</label>
+                <input type="file" className="form-control" id="inputlink" placeholder="Select file" multiple/>
+              </div>
+            </div>
+            <div className="row" style={{marginBottom: "1rem"}}>
+              <div className="col">
+                <div className='row'>
+                <div className="col-md-6">
+                  <label htmlFor={`PublishDate`} className="form-label">Publish Date*</label>
+                  <input
+                    type="datetime-local"
+                    className="form-control"
+                    id={`publishdate`}
+                    value={publishDate}
+                    onChange={handlePublishDateChange}
+                  />
+                </div>
+                <div className="col-md-6">
+                  <label htmlFor={`DueDate`} className="form-label">Due Date*</label>
+                  <input
+                    type="datetime-local"
+                    className="form-control"
+                    id={`duedate`}
+                    value={dueDate}
+                    onChange={handleDueDateChange}
+                    min={publishDate}
+                  />
+                </div>
+                </div>
+              </div>
+              <div className="col-md-6">
+                <label htmlFor="inputQnum" className="form-label">Total Question Number*</label>
+                <input type="number" min="1" className="form-control" id="inputQnum" value={totalQNum} onChange={handleTotalQNumChange} />
+              </div>
+            </div>
+            <div className="row">
+              <div className="col">
+                <div className="card">
+                  <div className='card-header'>
+                    {(!isGroup) ? "Section" : "Group"}*
+                  </div>
+                  <div className='card-body'>
+                    {SelectList.map((element) => (
+                    <div key={element} className="form-check form-check-inline">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id={`inlineCheckbox${element}`}
+                        value={element}
+                        checked={Selected.includes(element)}
+                        onChange={() => handleCheckboxChange(element)}
+                      />
+                      <label className="form-check-label" htmlFor={`inlineCheckbox${element}`}>
+                        {element}
+                      </label>
+                    </div>
+                  ))}
+                  </div>
+                </div>
+              </div>
+              <div className='col'>
+                <div className="card">
+                  <div className='card-header'>
+                    Questions*
+                  </div>
+                  <div className='card-body'>
+                    {Question.map((scoreItem) => (
+                      <div key={scoreItem.id} className="col" style={{marginBottom: "1rem"}}>
+                        <b>Question {scoreItem.id}</b>
+                        <br />
+                        <label htmlFor={`QScore${scoreItem.id}`} className="form-label">Score</label>
+                        <input 
+                          id={`QScore${scoreItem.id}`}
+                          type="number"
+                          min="1"
+                          className="form-control"
+                          value={scoreItem.score}
+                          onChange={(e) => handleScoreChange(scoreItem.id, e.target.value)}
+                        />
+                        <label htmlFor={`QSource${scoreItem.id}`} className="form-label">ipynb source*</label>
+                        <input type="file" id={`QSource${scoreItem.id}`} className="form-control" accept=".ipynb"/> 
+                        <label htmlFor={`QRelease${scoreItem.id}`} className="form-label">ipynb release*</label>
+                        <input type="file" id={`QRelease${scoreItem.id}`} className="form-control" accept=".ipynb"/> 
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br></br>
           </form>
-        </div>
-      </div>
-        </div>
-      )}
-      {/* Modal */}
-      <div className={`modal fade ${showModal ? 'show' : ''}`} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLabel">Remove Class</h5>
-              <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Close"></button>
-            </div>
-            <div className="modal-body">
-              Do you want to delete this Assignment?
-            </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
-                Cancel
-              </button>
-              <button type="button" className="btn btn-primary" onClick={handleDelete}>
-                Delete
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </div>

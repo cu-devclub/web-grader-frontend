@@ -2,9 +2,9 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content';
 
 import Navbarprof from '../../components/Navbarprof'
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { PassFill, Search, X } from 'react-bootstrap-icons';
+import { Search, X } from 'react-bootstrap-icons';
 import Cookies from 'js-cookie';
 
 const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
@@ -19,7 +19,6 @@ function TAmanage() {
     const [ClassCreator, setClassCreator] = useState("")
 
     const [Email,] = useState(Cookies.get('email'));
-
 
     const fetchTA = async () => {
         try {
@@ -37,8 +36,23 @@ function TAmanage() {
     };
 
     useEffect(() => {
+        const fetchTA = async () => {
+            try {
+                const response = await fetch(`${host}/TA/class/TAList?CSYID=${CSYID}`);
+                const data = await response.json();
+                if(!data['success']){
+                    console.error('Error fetching data:', data['msg']);
+                    return
+                }
+                setTAList(data['data'][0]);
+                setClassCreator(data['data'][1]);
+            } catch (error) {
+              console.error('Error fetching data:', error);
+            }
+        };
+
         fetchTA();
-    }, []);
+    }, [CSYID]);
 
     const handleAdd = async () => {
         try {
@@ -182,6 +196,7 @@ function TAmanage() {
                                 TAList.filter(element => {
                                     if((element[0]+element[1]).toLowerCase().includes(Keyword.toLowerCase()))
                                         return element;
+                                    return false
                                 }).map((element, index) => (
                                     <tr key={index}>
                                         <th scope="row">{index + 1}</th>

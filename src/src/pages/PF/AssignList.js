@@ -16,9 +16,7 @@ function AssignList() {
   const [Email,] = useState(sessionStorage.getItem("Email"));
   const [classId,] = useState(sessionStorage.getItem("classId"));
 
-  const [assignmentsData, setAssignmentsData] = useState({
-    "Assignment": {}
-  });
+  const [assignmentsData, setAssignmentsData] = useState([]);
 
   // const handleToggleLab = (labIndex) => {
   //   setExpandedLabs((prevExpandedLabs) => ({
@@ -47,8 +45,7 @@ function AssignList() {
       try {
         const response = await fetch(`${host}/TA/class/Assign?CSYID=${classId}`);
         const data = await response.json();
-        console.log(data);
-        setAssignmentsData(data);
+        setAssignmentsData(data.data.Assignment);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -58,8 +55,6 @@ function AssignList() {
       try {
         const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
         const data = await response.json();
-        console.log(data);
-        // setAssignmentsData(data);
         setClassInfo(data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -71,7 +66,7 @@ function AssignList() {
     try{setAssignEdit(sessionStorage.getItem("statusEdit"))}catch{}
     // fetchUserData();
     fetchData()
-  }, []);
+  }, [classId]);
 
 
   return (
@@ -109,9 +104,28 @@ function AssignList() {
         </div>
         <div className="card-body" style={{ overflowY: 'scroll' }}>
           <div>
-            {Object.keys(assignmentsData.Assignment).map((labNumber, labIndex) => {
+            {(assignmentsData.length !== 0) && (
+              assignmentsData.map(assign => {
+                return (
+                <div key={assign["LID"]} className='card' style={{ marginBottom: '2rem' }} onClick={() => {sessionStorage.setItem("LID", assign["LID"]); navigate("/AssignEdit")}}>
+                  <button  style={{ fontSize: '1.2rem', height:'4rem'}} className="fw-bold ">
+                    <span>{`Lab ${assign["Lab"]}: ${assign["Name"]}`}</span>
+                    <span style={{ marginLeft: '2rem', fontWeight:'normal'}}>
+                      {`Publish: ${assign["Publish"]} | Due: ${assign["Due"]}`}
+                    </span>
+                  </button>
+                </div>
+                )
+              })
+            )
+            }
+
+
+
+
+
+            {/* {Object.keys(assignmentsData.Assignment).map((labNumber, labIndex) => {
               const lab = assignmentsData.Assignment[labNumber];
-              // const isLabExpanded = expandedLabs[labIndex];
               return (
                 <div key={labIndex} className='card ' style={{ marginBottom: '2rem' }} onClick={() => {sessionStorage.setItem("lab", labNumber);sessionStorage.setItem("labname", lab.LabName); navigate("/AssignEdit")}}>
                   <button  style={{ fontSize: '1.2rem', height:'4rem'}} class="fw-bold ">
@@ -124,7 +138,16 @@ function AssignList() {
                   </button>
                 </div>
               );
-            })}
+            })} */}
+
+
+
+
+
+
+
+
+
             <div className="d-grid gap-2 d-md-flex justify-content-md-end">
               <Link to="/">
                 <button type="button" className="btn btn-primary">Back</button>

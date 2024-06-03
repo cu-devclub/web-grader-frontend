@@ -14,10 +14,10 @@ function Callback() {
     })
 
     const handleSub = async () => {
-        if(Email == "")
+        if(Email === "")
             return
 
-        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/testCallback`, {
+        await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/testCallback`, {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json; charset=UTF-8",
@@ -26,7 +26,6 @@ function Callback() {
                     'email': Email
                 })
             })
-        var data = await response.json();
 
         Cookies.set("email", Email)
         Cookies.set("uid", Email.split("@")[0])

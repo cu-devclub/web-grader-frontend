@@ -9,12 +9,9 @@ function StudentList() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [maxTotal, setMaxTotal] = useState('');
-  const [userData, setUserData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [showname, setshowname] = useState([])
   
-  const [sections, setSections] = useState([]); //ใส่ sec ที่จะเอา
-  const [students, setStudents] = useState([]);
+  const [sections, setSections] = useState([]); //ใส่ sec ที่จะเอา]
   const [checkedSections, setCheckedSections] = useState([])
 
   const [ClassInfo, setClassInfo] = useState({});
@@ -36,12 +33,34 @@ function StudentList() {
       }
     };
 
+    const fetchSection = async () => {
+      try {
+        const response = await fetch(`${host}/section?CSYID=${classId}`);
+        const data = await response.json();
+        setSections(data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+  
+    const fetchName = async () => {
+      try {
+        const response = await fetch(`${host}/TA/Student/List?CSYID=${classId}`);
+        const dataname = await response.json();
+        setshowname(dataname["data"]["Students"]);
+        setMaxTotal(dataname["data"]["MaxScore"])
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        // Display an error message to the user
+      }
+    };
+
     fetchClass();
     fetchSection();
-    // fetchData();
-    fetchUserData();
     fetchName();
-  }, []);
+  }, [classId]);
+  // ID,Name (English),Section,Group\n
+
 
   // const fetchData = async () => {
   //   try {
@@ -59,39 +78,6 @@ function StudentList() {
   //   }
   // };
 
-  const fetchSection = async () => {
-    try {
-      const response = await fetch(`${host}/section?CSYID=${classId}`);
-      const data = await response.json();
-      setSections(data);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
-
-  const fetchUserData = async () => {
-    try {
-      const response = await fetch(`${host}/ST/user/profile?Email=${Email}`);
-      const userdata = await response.json();
-      setUserData(userdata);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      // Display an error message to the user
-    }
-  };
-
-  const fetchName = async () => {
-    try {
-      const response = await fetch(`${host}/TA/Student/List?CSYID=${classId}`);
-      const dataname = await response.json();
-      setshowname(dataname["data"]["Students"]);
-      setMaxTotal(dataname["data"]["MaxScore"])
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      // Display an error message to the user
-    }
-  };
-
   const handleExport = async () => {
     try {
       const formData = new FormData();
@@ -100,13 +86,13 @@ function StudentList() {
         MaxTotal: maxTotal,
         CSYID: classId
     }),);
-  
+
       const response = await fetch(`${host}/TA/Student/List/CSV`, {
             method: 'POST',
             body: formData
       })
       const data = await response.json();
-
+      
       const url = window.URL.createObjectURL(new Blob([data["data"]["csv"]], { type: 'text/csv' }));
       const link = document.createElement('a');
       link.href = url;
@@ -188,23 +174,23 @@ function StudentList() {
                       <th scope="col" className="col-2">Student ID</th>
                       <th scope="col">Name</th>
                       <th scope="col" className="col-1 text-center">Section</th>
+                      <th scope="col" className="col-1 text-center">Group</th>
                       <th scope="col" className="col-1 text-center">Score</th>
                   </tr>
               </thead>
               <tbody>
-          {isLoading ? (
-            <div>Loading...</div>
-          ) : (
-            showname.length !== 0 ? (
+          {showname.length !== 0 ? (
               showname.filter(element => {
                 if((element["ID"] + element["Name (English)"]).toLowerCase().includes(searchQuery.toLowerCase()) && (checkedSections.length === 0 || checkedSections.includes(element["Section"])))
                   return element;
+                return false
               }).map((element, index) => (
                   <tr key={index}>
                       <th scope="row">{index + 1}</th>
                       <td>{element["ID"]}</td>
                       <td>{element["Name (English)"]}</td>
                       <td className='text-center'>{element["Section"]}</td>
+                      <td className='text-center'>{element["Group"]}</td>
                       <td className='text-center'>{element["Score"]}/{maxTotal}</td>
                   </tr>
               ))
@@ -266,7 +252,7 @@ function StudentList() {
 
 
 
-          )}
+          }
             </tbody>
           </table>
           </div>

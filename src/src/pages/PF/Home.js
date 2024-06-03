@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Navbarprof from '../../components/Navbarprof'
 import { useNavigate } from 'react-router-dom';
 import { Gear, ChevronDown, ChevronRight } from 'react-bootstrap-icons';
@@ -35,25 +35,24 @@ function HomePF() {
     SchoolYear: ''
   });
 
-  const fetchCourses = async () => {
+  const fetchCourses = useCallback(async () => {
     try {
       const response = await fetch(`${host}/TA/class/classes?Email=${Email}`);
       const data = await response.json();
-      console.log('class:', data);
       const sortedCourses = Object.fromEntries(Object.entries(data).sort((a, b) => b[0].localeCompare(a[0])));
   
       setCourses(sortedCourses);
     } catch (error) {
       console.error('Error fetching class data:', error);
     }
-  };
+  }, [Email])
   
   
 
   useEffect(() => {
     fetchCourses();
     setReady(true);
-  }, []);
+  }, [ready, fetchCourses]);
   
 
   const toggleYear = (year) => {
@@ -175,7 +174,7 @@ function HomePF() {
                   <div className="row row-cols-1 row-cols-md-5 g-2">
                     {/* วนลูปเพื่อแสดงข้อมูลคอร์สในแต่ละปีการศึกษา */}
                     {classes.map(course => (
-                      <div className="card" style={{width: '200px'}}>
+                      <div className="card" style={{width: '200px'}} key={course.ClassID}>
                         <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
                         {/* <img class="" style="width: 198px;height: 198px;"/> */}
                         <div className="card-body">
