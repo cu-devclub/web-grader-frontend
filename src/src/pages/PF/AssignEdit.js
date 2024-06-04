@@ -150,7 +150,7 @@ function AssignEdit() {
 
       if (Data.success){
         withReactContent(Swal).fire({
-            title: "Assignment created successfully",
+            title: "Assignment edited successfully",
             icon: "success"
         }).then(ok => {
             if(ok)
