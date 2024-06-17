@@ -2,7 +2,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import Navbarprof from '../../components/Navbarprof'
+import Navbar from '../../components/Navbar'
 import { useNavigate } from 'react-router-dom';
 import { Gear, ChevronDown, ChevronRight } from 'react-bootstrap-icons';
 // import { Link } from 'react-router-dom';
@@ -120,7 +120,7 @@ function HomePF() {
 
   return (
     <div>
-      <Navbarprof />
+      <Navbar />
       <br />
       <div className="d-flex align-items-center">
         <h5 className="me-2" style={{marginLeft:'10px'}}>Course</h5>
@@ -188,24 +188,6 @@ function HomePF() {
                           </button>
                         </div>
                       </div>
-
-
-                      // <div key={course.ID} className="col">
-                      //   <div className="card h-100" style={{width: '15rem'}}><div>
-                          
-                      //     <img src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} className="card-img-top" style={{ padding:'15px',width: '100%', height: '100%'}}  alt="..."/>
-
-                      //     </div>
-                      //     <div className="card-body" style={{ overflowY: 'scroll' }}>
-                      //       <h5 className="card-title">{course.ClassName}</h5>
-                      //       <p className="card-text">{course.ClassID}</p>
-                      //       <button onClick={() => {sessionStorage.setItem("classId", course.ID);  sessionStorage.setItem("Email", Email);  navigate("/AssignList");}} className="btn btn-primary">View course</button>
-                      //     </div>
-                      //     <div class="card-footer">
-                      //       <div style={{textDecoration: 'underline',color: 'blue',cursor: 'pointer',}} onClick={() => navigate("/ClassEdit", { state: { Email: Email,classid: course.ID, ClassID:course.ClassID, SchoolYear:year, ClassName:course.ClassName} })}>Edit</div>
-                      //     </div>
-                      //   </div>
-                      // </div>
                     ))}
                   </div>
                 )}

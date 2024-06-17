@@ -2,7 +2,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content';
 
 import React, { useState, useEffect } from 'react';
-import Navbarprof from '../../components/Navbarprof'
+import Navbar from '../../components/Navbar'
 import { useNavigate } from 'react-router-dom';
 
 const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
@@ -11,7 +11,8 @@ const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_AP
 
 function AssignCreate() {
   const navigate = useNavigate();
-  const currentDate = new Date().toISOString().slice(0, 16);
+  const currentDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date()).replace(', ', 'T')
+
   // User Data
   const [ClassInfo, setClassInfo] = useState({});
   const [Email,] = useState(sessionStorage.getItem("Email"));
@@ -242,7 +243,7 @@ function AssignCreate() {
 
   return (
     <div>
-      <Navbarprof />
+      <Navbar />
       <br />
       <div className="media d-flex align-items-center">
       <span style={{ margin: '0 10px' }}></span>
@@ -263,7 +264,7 @@ function AssignCreate() {
             <div className="col-md-2">
               <button type="button" className="btn btn-primary float-end" style={{marginLeft:"20px"}} id="liveToastBtn" onClick={handleButtonClick}>Submit</button>
               {/* <button type="button" className="btn btn-primary float-end" style={{marginLeft:"20px"}} id="liveToastBtn" onClick={handleButtonClick} disabled={!isFormValid()}>Submit</button> */}
-              <button type="button" className="btn btn-primary float-end" onClick={() => navigate("/AssignList", { state: { Email: Email,classid:classId} })}>Back</button>
+              <button type="button" className="btn btn-primary float-end" onClick={() => navigate("/AssignList")}>Back</button>
             </div>
           </div>
         </div>

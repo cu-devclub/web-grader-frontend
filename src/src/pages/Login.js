@@ -96,7 +96,7 @@ function Login() {
         	<div className="col align-self-center">
           		<h1>Login</h1>
           		<button onClick={() => loginRedir()} className="btn btn-outline-dark" type="button" style={{marginTop: "20px", marginLeft: "20px"}}>
-            		<img src="/gg-con.svg" width="20" />&nbsp; with Google
+            		<img src="/gg-con.svg" width="20" alt='...'/>&nbsp; with Google
           		</button>
 				{/* <div class="input-group mb-3" style={{paddingRight: "10vw"}}>
 					<input value={username} onChange={e => setUsername(e.target.value)} type="text" class="form-control" placeholder="Username" aria-label="Username" required/>

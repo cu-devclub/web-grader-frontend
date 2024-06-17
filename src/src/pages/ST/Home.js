@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar.js';
-import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { Gear, ChevronDown, ChevronRight } from 'react-bootstrap-icons';
 import Cookies from 'js-cookie';
 
 const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
@@ -55,7 +55,7 @@ function HomeST() {
     fetchData()
     fetchCourses()
     setReady(true);
-  }, []);
+  }, [Email]);
   
   const toggleYear = (year) => {
     if (expandedYear === year) {
@@ -79,26 +79,25 @@ function HomeST() {
             {/* วนลูปเพื่อแสดง container แยกตามปีการศึกษา */}
             {Object.entries(courses).map(([year, classes]) => (
               <div key={year} className="container-lg mb-3 bg-light" style={{ padding: '10px' }}>
-                  <div className="row row-cols-1 row-cols-md-5 g-2">
-                    {/* วนลูปเพื่อแสดงข้อมูลคอร์สในแต่ละปีการศึกษา */}
-                    {classes.map(course => (
-                      <div key={course.ID} className="col">
-                        <div className="card h-100" style={{width: '15rem'}}><div>
-                          <img src={course.Thumbnail ? "/Thumbnail/" + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} className="card-img-top" style={{ padding:'15px',width: '100%', height: '100%'}}  alt="..."/>
-                          </div>
-                          <div className="card-body" style={{ overflowY: 'scroll', height:'10rem',margin:'0',paddingBottom:"0"}}>
-                            <h5 style={{margin:"0"}} className="card-title">{course.ClassName}</h5>
-                            <p style={{margin:"0",marginTop:"5px"}} className="card-text">{course.ClassID}</p>
-                            <p style={{margin:"0",marginBottom:"15px"}} className="card-text">{year}</p>
-                            <button onClick={() => navigate("/AssignList", { state: { Email: Email,classid: course.ID} })} className="btn btn-primary">View course</button>
-                          </div>
-                          <div className="card-footer">
-                            <Link onClick={() => navigate("/ClassEdit", { state: { Email: Email,classid: course.ID} })} className="lini text-muted">Edit</Link>
-                          </div>
-                        </div>
+                <div className="row row-cols-1 row-cols-md-5 g-2">
+                  {/* วนลูปเพื่อแสดงข้อมูลคอร์สในแต่ละปีการศึกษา */}
+                  {classes.map(course => (
+                    <div className="card" style={{width: '200px'}} key={course.ClassID}>
+                      <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
+                      {/* <img class="" style="width: 198px;height: 198px;"/> */}
+                      <div className="card-body">
+                        <h4 className="card-title">{course.ClassName}</h4>
+                        <p className="card-text">ID: {course.ClassID}</p>
+                        <button className="btn btn-primary" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);  sessionStorage.setItem("Email", Email);  navigate("/AssignList");}}>
+                          View course
+                        </button>
+                        <button className="btn btn-warning float-end" type="button" onClick={() => {sessionStorage.setItem("Thumbnail", course.Thumbnail);sessionStorage.setItem("classid", course.ID);sessionStorage.setItem("ClassID", course.ClassID);sessionStorage.setItem("SchoolYear", year);sessionStorage.setItem("ClassName", course.ClassName);navigate("/ClassEdit")}}>
+                          <Gear />
+                        </button>
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
@@ -111,26 +110,23 @@ function HomeST() {
             {/* วนลูปเพื่อแสดง container แยกตามปีการศึกษา */}
             {Object.entries(classes).map(([year, classes]) => (
               <div key={year} className="container-lg mb-3 bg-light" style={{ padding: '10px' }}>
-                <div className='btn align-items-left' style={{width:'100%'}}>
-                    <h5 className="text-start" onClick={() => toggleYear(year)} style={{ cursor: 'pointer' }}>
-                        {year} {expandedYear === year ? " (- Click to collapse)" : " (+ Click to expand)"}
-                    </h5>
-                </div>
+                <h5 className='unselectable' onClick={() => toggleYear(year)} style={{ cursor: 'pointer' }}>
+                  {expandedYear === year ? <ChevronDown /> : <ChevronRight />} {year}
+                </h5>
 
                 {expandedYear === year && (
                   <div className="row row-cols-1 row-cols-md-5 g-2">
                     {/* วนลูปเพื่อแสดงข้อมูลคอร์สในแต่ละปีการศึกษา */}
                     {classes.map(course => (
-                      <div key={course.ID} className="col">
-                        <div className="card h-100" style={{width: '15rem'}}><div>
-                          <img src={course.Thumbnail ? "/Thumbnail/" + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} className="card-img-top" style={{ padding:'15px',width: '100%', height: '100%'}}  alt="..."/>
-                          </div>
-                          <div className="card-body" style={{ overflowY: 'scroll' }}>
-                            <h5 className="card-title">{course.ClassName}</h5>
-                            <p className="card-text">{course.ClassID}</p>
-                            <p className='card-text'>Sec{course.Section}</p>
-                            <button onClick={() => {sessionStorage.setItem("classid", course.ID);navigate("/Class")}} className="btn btn-primary">View course</button>
-                          </div>
+                      <div className="card" style={{width: '200px'}} key={course.ClassID}>
+                        <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
+                        {/* <img class="" style="width: 198px;height: 198px;"/> */}
+                        <div className="card-body">
+                          <h4 className="card-title">{course.ClassName}</h4>
+                          <p className="card-text">ID: {course.ClassID}</p>
+                          <button className="btn btn-primary" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);  sessionStorage.setItem("Email", Email);  navigate("/Class");}}>
+                            View course
+                          </button>
                         </div>
                       </div>
                     ))}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Navbarprof from '../../components/Navbarprof'
+import Navbar from '../../components/Navbar'
 import { useNavigate, useLocation } from 'react-router-dom';
 
 
@@ -193,7 +193,7 @@ function Sentin({ Q = 2 }) {
 
   return (
     <div>
-      <Navbarprof />
+      <Navbar />
       <br />
       <div className="media d-flex align-items-center">
         <span style={{ margin: '0 10px' }}></span>

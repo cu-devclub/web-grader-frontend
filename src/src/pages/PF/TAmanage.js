@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content';
 
-import Navbarprof from '../../components/Navbarprof'
+import Navbar from '../../components/Navbar'
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { Search, X } from 'react-bootstrap-icons';
@@ -143,7 +143,7 @@ function TAmanage() {
         
     return (
         <div>
-            <Navbarprof></Navbarprof> 
+            <Navbar></Navbar> 
             <br></br>
             <div className="card" style={{ marginLeft: 10 +'em', marginRight: 10 + 'em' }}>
                 <div className="card-header">

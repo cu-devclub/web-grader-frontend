@@ -1,5 +1,5 @@
 import React from 'react'
-import Navbarprof from '../../components/Navbarprof'
+import Navbar from '../../components/Navbar'
 import { Link } from 'react-router-dom'
 import { useState } from 'react';
 
@@ -23,7 +23,7 @@ function ClassCreate() {
 
   return (
     <div>
-        <Navbarprof></Navbarprof> 
+        <Navbar></Navbar> 
       <br></br>
       <div class="card" style={{ marginLeft: 10 +'em', marginRight: 10 + 'em' }}>
         <div class="card-header">

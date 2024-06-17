@@ -3,7 +3,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Navbar from '../../components/Navbar';
 import { useNavigate } from 'react-router-dom';
-// import { Link, Redirect } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
@@ -12,106 +11,37 @@ function Index() {
   const navigate = useNavigate();
 
   const [assignmentData, setAssignmentData] = useState(null);
-  const [userData, setUserData] = useState(null);
-  const classId = sessionStorage.getItem("classid")
+  const classId = sessionStorage.getItem("classId")
 
+  const [ClassInfo, setClassInfo] = useState(null)
   const [Email,] = useState(Cookies.get('email'));
 
 
   useEffect(() => {
-
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`${host}/ST/user/profile?Email=${Email}`);
-        const userdata = await response.json();
-        console.log('user:', userdata);
-        setUserData(userdata);
-        console.log(userdata.ID);
-        // Call fetchData here after setting userData
-        fetchData(userdata.ID);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-  
     const fetchData = async (userId) => {
       try {
-        console.log(classId)
         const response = await fetch(`${host}/ST/assignment/all?SID=${userId}&CID=${classId}`);
         const data = await response.json();
-        console.log(data);
-        setAssignmentData(data);
+        setAssignmentData(data.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-  
-    fetchUserData();
+
+    const fetchClass = async () => {
+      try {
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const data = await response.json();
+        setClassInfo(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchClass()
+    fetchData(Email.split("@")[0]);
     
-  }, []);
-  
-  //Check TurnIn Late
-  function CheckSend(labData) {
-    let turnInCount = 0;
-    let totalQuestions = 0;
-    for (const question in labData) {
-        if (question.startsWith("Q")) {
-            totalQuestions++;
-            if (labData[question].IsTurnIn) {
-                turnInCount++;
-            }}}
-    return `${turnInCount}/${totalQuestions}`;
-}
-
-  //Check Status
-  function generateBadge(labData) {
-    const sendStatus = CheckSend(labData);
-    const [turnInCount, totalQuestions] = sendStatus.split('/');
-    
-    // Convert string to numbers
-    const numTurnIn = parseInt(turnInCount);
-    const numTotalQuestions = parseInt(totalQuestions);
-
-    const allTurnIn = numTurnIn === numTotalQuestions;
-    
-    let anyLate = false;
-
-    // Iterate over each lab in labData
-    for (const lab in labData) {
-        if (Object.prototype.hasOwnProperty.call(labData, lab)) {
-            // Iterate over each question in the lab
-            for (const question in labData[lab]) {
-                if (question.startsWith("Q")) {
-                    // Check if the question is late
-                    if (labData[lab][question].IsLate) {
-                        anyLate = true;
-                        break; // no need to continue checking if any question is late
-                    }
-                }
-            }
-        }
-    }
-
-    let status;
-    if (allTurnIn) {
-        status = 'Success';
-    } else if (anyLate) {
-        status = 'Late';
-    } else {
-        status = 'Waiting';
-    }
-
-    const badgeClass = status === 'Success' ? 'success' : status === 'Late' ? 'warning' : 'warning';
-    const badgeText = `Submitted - (${turnInCount}/${totalQuestions})`;
-
-    return (
-        <h5>
-            <span className={`badge bg-${badgeClass}`}>
-                 {badgeText}
-            </span>
-        </h5>
-    );
-}
+  }, [classId, Email]);
 
 
 
@@ -121,77 +51,75 @@ function Index() {
       <div className="App">
         <Navbar></Navbar> 
           <br></br>
+          {ClassInfo && (
           <div className="media d-flex align-items-center">
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img className="mr-3" src="https://cdn-icons-png.flaticon.com/512/3426/3426653.png"  style={{ width: '40px', height: '40px' }} />
-             <h5>&nbsp;&nbsp;&nbsp;&nbsp; 210xxx comp prog 2566/2 sec1</h5>
+            <span style={{ margin: '0 10px' }}></span>
+            <img className="mr-3" alt="thumbnail" src={ClassInfo['Thumbnail'] ? `${host}/Thumbnail/` + ClassInfo['Thumbnail'] : "https://cdn-icons-png.flaticon.com/512/3426/3426653.png"} style={{ width: '40px', height: '40px' }} />
+            <span style={{ margin: '0 10px' }}></span>
+            <div className="card" style={{ width: '30rem', padding: '10px' }}>
+              <h5>{ClassInfo['ClassID']} {ClassInfo['ClassName']} {ClassInfo['ClassYear']}</h5>
+              <h6>Instructor: {ClassInfo['Instructor']}</h6>
+            </div>
           </div>
-
+          )}
           <br />
 
-          <div className="card text-left" style={{ marginLeft: 10 +'em', marginRight: 10 + 'em' }}>
+          <div className="card" style={{ marginLeft: 10 +'em', marginRight: 10 + 'em' }}>
             <div className="card-header">
-              <ul className="nav nav-tabs card-header-tabs">
-                <li className="nav-item">
-                  <a className="nav-link active">Assignments</a>
-                </li>
-              </ul>
+              <div className="row" style={{marginBottom:"-5px"}}>
+                <div className="col">
+                  <h5 style={{ display: 'inline-block' }}>Assignments</h5>
+                </div>
+                <div className="col-md-1">
+                  <button type="button" onClick={() => navigate("/")} className="btn btn-primary float-end">Back</button>
+                </div>
+              </div>
             </div>
-    
-             {assignmentData && Object.keys(assignmentData.Assignment).length > 0 ? (
-             <div>
-               {Object.keys(assignmentData.Assignment).map((lab) => {
-                 const labInfo = assignmentData.Assignment[lab];
-                 return (
-                   <div key={lab} className="card-body">
-                     <ol className="list-group">
-                       <button onClick={() => {sessionStorage.setItem("lab", lab.slice(-1));navigate("/Lab")}} className="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
-                         <div className="ms-2 me-auto">
-                           <div className="fw-bold">
-                             {lab}: {labInfo.Name}
-                           </div>
-                           <div className='row'>
-                           <div className='col-sm-12'>Due date: {labInfo.Due}</div>
-                           <div className='col-sm-12'>Score - ({labInfo.Score}/{labInfo.Maxscore})</div>
-                           </div>
-                         </div>
-                         {generateBadge(labInfo)}
-                       </button>
-                     </ol>
-                   </div>
-                 );
-               })}
-             </div>
-           ) : (
-            assignmentData && Object.keys(assignmentData.Assignment).length == 0 ? (
-              <div className="card-body">
-                <ol className="list-group">
-                  <button className="list-group-item list-group-item-action d-flex justify-content-between align-items-start" style={{padding:'1rem'}}>
-                    <div className="ms-2 me-auto">
-                      <div className="fw-bold" style={{fontSize:'larger'}}>
-                        There is no assignment
+            <div className="card-body" style={{ overflowY: 'scroll' }}>
+          <div>
+            {assignmentData && ((assignmentData.length !== 0) && (
+              assignmentData.map(assign => {
+                return (
+                <div key={assign["LID"]} className={`card ${((assign.TurnIn === false) ? "div-with-dot" : "")}`} style={{ marginBottom: '2rem' }} onClick={() => {sessionStorage.setItem("LID", assign["LID"]); navigate("/Lab")}}>
+                  <button  style={{ fontSize: '1.2rem', height:'4rem'}} className="fw-bold ">
+                    <div className='row'>
+                      <div className='col-2' style={{textAlign: 'Left'}}>
+                        <span style={{marginLeft: '2rem'}}>{`Lab ${assign["Lab"]}`}</span>
+                      </div>
+                      <div className='col' style={{textAlign: 'Left'}}>
+                        <span>{`${assign["Name"]}`}</span>
+                      </div>
+                      <div className='col-3'>
+                      <span style={{fontWeight:'normal', fontSize: '0.9rem'}}>
+                          {`Publish:`}
+                        </span>
+                        <span style={{fontWeight:'normal'}}>
+                          {` ${assign["Publish"]}`}
+                        </span>
+                      </div>
+                      <div className='col-3'>
+                        <span style={{fontWeight:'normal', fontSize: '0.9rem'}}>
+                          {`Due:`}
+                        </span>
+                        <span style={{fontWeight:'normal', color: `${(assign.Late === true) ? 'red' : 'black'}`}}>
+                          {` ${assign["Due"]}`}
+                        </span>
+                      </div>
+                      <div className='col-1'>
+                        <span style={{fontWeight:'normal'}}>
+                          {`${assign["Score"]}/${assign["MaxScore"]}`}
+                        </span>
                       </div>
                     </div>
                   </button>
-                </ol>
-              </div>
-            ) : 
-            (
-              <div className="card-body">
-                <ol className="list-group">
-                  <button className="list-group-item list-group-item-action d-flex justify-content-between align-items-start" style={{padding:'1rem'}}>
-                    <div className="ms-2 me-auto">
-                      <div className="fw-bold" style={{fontSize:'larger'}}>
-                        Loading...
-                      </div>
-                    </div>
-                  </button>
-                </ol>
-              </div>
-            )
-            
-            )}
+                </div>
+                )
+              })
+            ))
+            }
+          </div>
         </div>
-     
+        </div>
       </div>
   );
 }

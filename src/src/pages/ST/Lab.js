@@ -7,112 +7,93 @@ const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_AP
 
 function Lab() {
   const navigate = useNavigate();
-  // const location = useLocation();
-  // const labData = location.state;
 
-  const csyid = sessionStorage.getItem("classid");
-  const speclab = sessionStorage.getItem("lab");
-  // const schoolYear = labData.schoolyear;
+  // const [assignmentData, setAssignmentData] = useState(null);
+  // const [fileSelectedMap, setFileSelectedMap] = useState({}); // Map to track file selection for each question
+  // const [submissionResponses, setSubmissionResponses] = useState({}); // Map to hold submission responses for each question
 
-  const [assignmentData, setAssignmentData] = useState(null);
-  const [fileSelectedMap, setFileSelectedMap] = useState({}); // Map to track file selection for each question
-  const [submissionResponses, setSubmissionResponses] = useState({}); // Map to hold submission responses for each question
-  const [userData, setUserData] = useState(null);
+  const [ClassInfo, setClassInfo] = useState({})
 
   const [Email,] = useState(Cookies.get('email'));
+  const [LID,] = useState(sessionStorage.getItem("LID"))
+  const [classId,] = useState(sessionStorage.getItem("classId"))
 
   useEffect(() => {
-
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`${host}/ST/user/profile?Email=${Email}`);
-        const userdata = await response.json();
-        console.log('user:', userdata);
-        setUserData(userdata);
-        console.log(userdata.ID);
-        // Call fetchData here after setting userData
-        fetchData(userdata.ID);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
-
-    const fetchData = async (UID) => {
-      try {
-        const response = await fetch(`${host}/ST/assignment/specific?UID=${UID}&CSYID=${csyid}&speclab=${speclab}`);
+        const response = await fetch(`${host}/ST/assignment/specific?LID=${LID}&email=${Email}`);
         const data = await response.json();
-        console.log(data);
-        setAssignmentData(data);
-        // Initialize fileSelectedMap with false values for each question
-        const initialFileSelectedMap = {};
-        Object.keys(data?.Questions || {}).forEach((questionKey) => {
-          initialFileSelectedMap[questionKey] = false;
-        });
-        setFileSelectedMap(initialFileSelectedMap);
-        // Initialize submissionResponses with empty strings for each question
-        const initialSubmissionResponses = {};
-        Object.keys(data?.Questions || {}).forEach((questionKey) => {
-          initialSubmissionResponses[questionKey] = '';
-        });
-        setSubmissionResponses(initialSubmissionResponses);
+        console.log(data)
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
-    fetchUserData();
-  }, [csyid, speclab]);
+    // Class card info
+    const fetchClass = async () => {
+      try {
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const data = await response.json();
+        setClassInfo(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
 
-  function generateBadge(status) {
-    if (status){
-      return (
-          <h5>
-              <span className={`badge bg-danger`}>
-                  Late
-              </span>
-          </h5>
-      );}
-  }
+    fetchData();
+    fetchClass();
+  }, [LID, classId, Email]);
 
-  const handleFileChange = (event, questionKey) => {
-    // Update fileSelectedMap for the specific question with the file selection status
-    setFileSelectedMap((prevMap) => ({
-      ...prevMap,
-      [questionKey]: event.target.files.length > 0,
-    }));
-  };
+  // function generateBadge(status) {
+  //   if (status){
+  //     return (
+  //         <h5>
+  //             <span className={`badge bg-danger`}>
+  //                 Late
+  //             </span>
+  //         </h5>
+  //     );}
+  // }
 
-  const handleSubmit = async (event, questionKey) => {
-    event.preventDefault();
+  // const handleFileChange = (event, questionKey) => {
+  //   // Update fileSelectedMap for the specific question with the file selection status
+  //   setFileSelectedMap((prevMap) => ({
+  //     ...prevMap,
+  //     [questionKey]: event.target.files.length > 0,
+  //   }));
+  // };
+
+  // const handleSubmit = async (event, questionKey) => {
+  //   event.preventDefault();
   
-    const formData = new FormData();
-    formData.append('file', event.target.file.files[0]);
-    formData.append('UID',userData.ID)
-    formData.append('CSYID',csyid)
-    formData.append('Lab',speclab)
-    formData.append('Question',questionKey.slice(1))
+  //   const formData = new FormData();
+  //   formData.append('file', event.target.file.files[0]);
+  //   formData.append('UID',userData.ID)
+  //   formData.append('CSYID',csyid)
+  //   formData.append('Lab',speclab)
+  //   formData.append('Question',questionKey.slice(1))
   
-    try {
-      const response = await fetch(`${host}/upload/SMT`, {
-        method: 'POST',
-        body: formData,
-      });
-      const responseData = await response.json();
-      console.log(responseData);
-      // Update the submission response state for the specific question
-      setSubmissionResponses((prevResponses) => ({
-        ...prevResponses,
-        [questionKey]:responseData,
-      }));
-    } catch (error) {
-      console.error('Error submitting data:', error);
-      // Update the submission response state for the specific question if there's an error
-      setSubmissionResponses((prevResponses) => ({
-        ...prevResponses,
-        [questionKey]: 'An error occurred while uploading the file.',
-      }));
-    }
-  };
+  //   try {
+  //     const response = await fetch(`${host}/upload/SMT`, {
+  //       method: 'POST',
+  //       body: formData,
+  //     });
+  //     const responseData = await response.json();
+  //     console.log(responseData);
+  //     // Update the submission response state for the specific question
+  //     setSubmissionResponses((prevResponses) => ({
+  //       ...prevResponses,
+  //       [questionKey]:responseData,
+  //     }));
+  //   } catch (error) {
+  //     console.error('Error submitting data:', error);
+  //     // Update the submission response state for the specific question if there's an error
+  //     setSubmissionResponses((prevResponses) => ({
+  //       ...prevResponses,
+  //       [questionKey]: 'An error occurred while uploading the file.',
+  //     }));
+  //   }
+  // };
   
 
   return (
@@ -120,11 +101,34 @@ function Lab() {
       <Navbar />
       <br />
       <div className="media d-flex align-items-center">
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img className="mr-3" src="https://cdn-icons-png.flaticon.com/512/3426/3426653.png" style={{ width: '40px', height: '40px' }} alt="Icon" />
-        <h5>&nbsp;&nbsp;&nbsp;&nbsp; 210xxx comp prog 2566/2 sec1</h5>
+      <span style={{ margin: '0 10px' }}></span>
+        <img className="mr-3" alt="thumbnail" src={ClassInfo['Thumbnail'] ? `${host}/Thumbnail/` + ClassInfo['Thumbnail'] : "https://cdn-icons-png.flaticon.com/512/3426/3426653.png"} style={{ width: '40px', height: '40px' }} />
+        <span style={{ margin: '0 10px' }}></span>
+        <div className="card" style={{ width: '30rem', padding: '10px' }}>
+          <h5>{ClassInfo['ClassID']} {ClassInfo['ClassName']} {ClassInfo['ClassYear']}</h5>
+          <h6>Instructor: {ClassInfo['Instructor']}</h6>
+        </div>
       </div>
       <br />
-      <div className="container-lg p-3 mb-2 bg-light">
+
+      <div className="card" style={{ marginLeft: '10em', marginRight: '10em' }}>
+        <div className="card-header">
+          <div className="row" style={{marginBottom:"-5px"}}>
+            <div className="col">
+              <h5>Assignment</h5>
+            </div>
+            <div className="col-md-2">
+              <button type="button" className="btn btn-primary float-end" onClick={() => navigate("/Class")}>Back</button>
+            </div>
+          </div>
+        </div>
+        <div className="card-body">
+
+        </div>
+      </div>
+
+      
+      {/* <div className="container-lg p-3 mb-2 bg-light">
         <div className="row">
           <div className="col-sm-4">
             <div className="card border-primary mb-3 " style={{ padding: '10px', marginLeft: '2rem' }}>
@@ -152,8 +156,7 @@ function Lab() {
                         <h5 className="card-title col-sm-4">Question {question.QuestionNum}</h5>
                         <p className="card-text col-sm-6" style={{ textAlign: 'right' }}>{submissionResponses[questionKey].message}</p>
                         <span className="col-sm-2">{generateBadge(question.Late)}</span>
-                        
-                        {/* Upload */}
+
                         <form 
                           action={`${host}/upload`} 
                           method="POST" 
@@ -195,7 +198,7 @@ function Lab() {
             })}
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

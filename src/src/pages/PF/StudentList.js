@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Navbarprof from '../../components/Navbarprof';
+import Navbar from '../../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 
 const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
@@ -126,7 +126,7 @@ function StudentList() {
 
   return (
     <div>
-      <Navbarprof />
+      <Navbar />
       <br />
       <div className="media d-flex align-items-center">
         <span style={{ margin: '0 10px' }}></span>

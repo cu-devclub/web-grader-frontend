@@ -2,7 +2,7 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content';
 
 import React, { useState, useEffect } from 'react';
-import Navbarprof from '../../components/Navbarprof'
+import Navbar from '../../components/Navbar'
 import { useNavigate } from 'react-router-dom';
 
 const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
@@ -193,7 +193,7 @@ function AssignEdit() {
 
   return (
     <div>
-      <Navbarprof />
+      <Navbar />
       <br />
       <div className="media d-flex align-items-center">
         <span style={{ margin: '0 10px' }}></span>

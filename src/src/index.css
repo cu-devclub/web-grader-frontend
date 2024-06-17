@@ -170,3 +170,37 @@ code {
     background: #393939; 
 }
 /* ----- end scrollbar style ----- */
+
+/* ----- notification dot    ----- */
+.div-with-dot {
+    position: relative;
+}
+
+/* Blue dot */
+.div-with-dot::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 16px;
+    height: 16px;
+    background-color: rgb(46, 189, 255);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.5);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+/* ----- end notification dot ----- */

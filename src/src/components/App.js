@@ -35,7 +35,7 @@ import Lab          from '../pages/ST/Lab';
 
 
 
-
+import Test from '../pages/Test'
 
 
 
@@ -70,6 +70,7 @@ function App() {
                 <Route element={<Login />} path='/login' />
                 <Route element={<Callback />} path='/callback' />
             </Route>
+            <Route element={<Test />} path='/Test' />
             <Route element={<ErrorComp />} path='*' />
         </Routes>
     )

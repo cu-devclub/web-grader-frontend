@@ -1,7 +1,7 @@
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content';
 
-import Navbarprof from '../../components/Navbarprof'
+import Navbar from '../../components/Navbar'
 import { useNavigate} from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 // import Cookies from 'js-cookie';
@@ -243,7 +243,7 @@ function ClassEdit() {
 
   return (
     <div>
-        <Navbarprof></Navbarprof> 
+        <Navbar></Navbar> 
         <br></br>
         <div className="card" style={{ marginLeft: 10 +'em', marginRight: 10 + 'em' }}>
             <div className="card-header">
@@ -333,47 +333,6 @@ function ClassEdit() {
                     </div>
                 </div>
             </div>
-            {/* <div className="card-header">
-                <h5>Edit Class</h5> 
-            </div>
-            <div className="card-body">
-                <div className="row g-3">
-                    <div className="col-md-3">
-                        <label htmlFor="inputID" className="form-label">Class ID*</label>
-                        <input type="text" className="form-control" id="inputID" placeholder="ex. 2301233 (7 digits number)" value={classID} onChange={handleClassIDChange} />
-                    </div>
-                    <div className="col-md-3">
-                        <label htmlFor="inputYear" className="form-label">School Year/Semester*</label>
-                        <input type="text" className="form-control" id="inputYear" placeholder="ex. 2020/1" value={schoolYear} onChange={handleSchoolYearChange}/>
-                    </div>
-                    <div className="col-6">
-                        <label htmlFor="inputName" className="form-label">Class Name*</label>
-                        <input type="text" className="form-control" id="inputClass" placeholder="Name" value={className} onChange={handleClassNameChange}/>
-                    </div>
-                    <div className="col-6">
-                        <label htmlFor="formGroupExampleInput2" className="form-label">Class Picture</label>
-                        <div className="input-group">
-                            <input type="file" className="form-control" id="inputGroupFile01" aria-describedby="inputGroupFileAddon04" aria-label="Upload" />
-                            <button className="btn btn-outline-primary" type="button" id="inputGroupFileAddon04" onClick={() => handleUpload(0)}>Upload</button>
-                        </div>
-                        {timestamps[0] && <p className="card-text">Last Submitted: <span>{timestamps[0]}</span></p>}
-                    </div>
-                    <div className="col-6">
-                        <label htmlFor="formGroupExampleInput2" className="form-label">Student List</label>
-                        <div className="input-group">
-                            <input type="file" className="form-control" id="inputGroupFile02" aria-describedby="inputGroupFileAddon04" aria-label="Upload" />
-                            <button className="btn btn-outline-primary" type="button" id="inputGroupFileAddon04" onClick={() => handleUpload(1)}>Upload</button>
-                        </div>
-                        {timestamps[1] && <p className="card-text">Last Submitted: <span>{timestamps[1]}</span></p>}
-                    </div>
-                    <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button onClick={() => navigate("/", { state: { Email: Email,classid: CSYID} })} type="button" className="btn btn-primary">Back</button>
-                        <button type="button" className="btn btn-primary" disabled={isCreateButtonDisabled} onClick={handleEditClick}>Save</button>   
-                        <button type="button" className="btn btn-danger" onClick={handleShowModal}>Delete</button>
-
-                    </div>
-                </div>
-            </div> */}
         </div>
              {/* Modal */}
              <div className={`modal fade ${showModal ? 'show' : ''}`} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
