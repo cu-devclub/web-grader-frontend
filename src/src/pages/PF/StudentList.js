@@ -8,7 +8,6 @@ function StudentList() {
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [maxTotal, setMaxTotal] = useState('');
   const [showname, setshowname] = useState([])
   
   const [sections, setSections] = useState([]); //ใส่ sec ที่จะเอา]
@@ -48,7 +47,6 @@ function StudentList() {
         const response = await fetch(`${host}/TA/Student/List?CSYID=${classId}`);
         const dataname = await response.json();
         setshowname(dataname["data"]["Students"]);
-        setMaxTotal(dataname["data"]["MaxScore"])
       } catch (error) {
         console.error('Error fetching user data:', error);
         // Display an error message to the user
@@ -59,31 +57,12 @@ function StudentList() {
     fetchSection();
     fetchName();
   }, [classId]);
-  // ID,Name (English),Section,Group\n
-
-
-  // const fetchData = async () => {
-  //   try {
-  //     setIsLoading(true);
-  //     const response = await fetch(`${host}/TA/Student/List/score?CSYID=${classId}`);
-  //     const data = await response.json();
-  //     console.log(data)
-  //     setStudents(data.transformed_data);
-  //     setMaxTotal(data.TotalMax);
-  //   } catch (error) {
-  //     console.error('Error fetching data:', error);
-  //     // Display an error message to the user
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   const handleExport = async () => {
     try {
       const formData = new FormData();
       formData.append('CSV_data', JSON.stringify({
         CSV_data: showname, // Convert CSV_data to JSON string
-        MaxTotal: maxTotal,
         CSYID: classId
     }),);
 
@@ -191,67 +170,16 @@ function StudentList() {
                       <td>{element["Name (English)"]}</td>
                       <td className='text-center'>{element["Section"]}</td>
                       <td className='text-center'>{element["Group"]}</td>
-                      <td className='text-center'>{element["Score"]}/{maxTotal}</td>
+                      <td className='text-center'>{element["Score"]}/{element["MaxScore"]}</td>
                   </tr>
               ))
-          ) : (
-          <tr>
-              <th scope="row"></th>
-              <td>No data</td>
-              <td></td>
-          </tr>
-          )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            // <ol className="list-group list-group-numbered">
-            //   {showname.filter(element => {
-            //     if((element.UID + element.Name).toLowerCase().includes(searchQuery.toLowerCase()))
-            //       return element;
-            //   }).map((student, index) => (
-            //     <div key={index} className="list-group-item d-flex">
-            //       <div>
-            //         <span style={{marginLeft:'1rem'}} className="fw-bold">Section:</span> {student.Section} | <span className="fw-bold">UID:</span> {student.UID} | <span className="fw-bold">Name:</span> {student.Name}
-            //       </div>
-            //     </div>
-            //   ))}
-
-            // </ol>
-
-
-              
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            ) : (
+            <tr>
+                <th scope="row"></th>
+                <td>No data</td>
+                <td></td>
+            </tr>
+            )
           }
             </tbody>
           </table>

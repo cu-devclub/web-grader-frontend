@@ -68,7 +68,14 @@ function Index() {
             <div className="card-header">
               <div className="row" style={{marginBottom:"-5px"}}>
                 <div className="col">
-                  <h5 style={{ display: 'inline-block' }}>Assignments</h5>
+                  <ul className="nav nav-tabs card-header-tabs">
+                    <li className="nav-item">
+                      <button className="nav-link active">Assignments</button>
+                    </li>
+                    <li className="nav-item">
+                      <button className="nav-link link" onClick={() => {navigate("/Portfolio")}} >Portfolio</button>
+                    </li>
+                  </ul>
                 </div>
                 <div className="col-md-1">
                   <button type="button" onClick={() => navigate("/")} className="btn btn-primary float-end">Back</button>
@@ -76,49 +83,49 @@ function Index() {
               </div>
             </div>
             <div className="card-body" style={{ overflowY: 'scroll' }}>
-          <div>
-            {assignmentData && ((assignmentData.length !== 0) && (
-              assignmentData.map(assign => {
-                return (
-                <div key={assign["LID"]} className={`card ${((assign.TurnIn === false) ? "div-with-dot" : "")}`} style={{ marginBottom: '2rem' }} onClick={() => {sessionStorage.setItem("LID", assign["LID"]); navigate("/Lab")}}>
-                  <button  style={{ fontSize: '1.2rem', height:'4rem'}} className="fw-bold ">
-                    <div className='row'>
-                      <div className='col-2' style={{textAlign: 'Left'}}>
-                        <span style={{marginLeft: '2rem'}}>{`Lab ${assign["Lab"]}`}</span>
-                      </div>
-                      <div className='col' style={{textAlign: 'Left'}}>
-                        <span>{`${assign["Name"]}`}</span>
-                      </div>
-                      <div className='col-3'>
-                      <span style={{fontWeight:'normal', fontSize: '0.9rem'}}>
-                          {`Publish:`}
-                        </span>
-                        <span style={{fontWeight:'normal'}}>
-                          {` ${assign["Publish"]}`}
-                        </span>
-                      </div>
-                      <div className='col-3'>
-                        <span style={{fontWeight:'normal', fontSize: '0.9rem'}}>
-                          {`Due:`}
-                        </span>
-                        <span style={{fontWeight:'normal', color: `${(assign.Late === true) ? 'red' : 'black'}`}}>
-                          {` ${assign["Due"]}`}
-                        </span>
-                      </div>
-                      <div className='col-1'>
-                        <span style={{fontWeight:'normal'}}>
-                          {`${assign["Score"]}/${assign["MaxScore"]}`}
-                        </span>
-                      </div>
+              <div>
+                {assignmentData && ((assignmentData.length !== 0) && (
+                  assignmentData.map(assign => {
+                    return (
+                    <div key={assign["LID"]} className={`card ${((assign.TurnIn === false) ? "div-with-dot" : "")}`} style={{ marginBottom: '2rem' }} onClick={() => {sessionStorage.setItem("LID", assign["LID"]); navigate("/Lab")}}>
+                      <button  style={{ fontSize: '1.2rem', height:'4rem'}} className="fw-bold ">
+                        <div className='row'>
+                          <div className='col-2' style={{textAlign: 'Left'}}>
+                            <span style={{marginLeft: '2rem'}}>{`Lab ${assign["Lab"]}`}</span>
+                          </div>
+                          <div className='col' style={{textAlign: 'Left'}}>
+                            <span>{`${assign["Name"]}`}</span>
+                          </div>
+                          <div className='col-3'>
+                          <span style={{fontWeight:'normal', fontSize: '0.9rem'}}>
+                              {`Publish:`}
+                            </span>
+                            <span style={{fontWeight:'normal'}}>
+                              {` ${assign["Publish"]}`}
+                            </span>
+                          </div>
+                          <div className='col-3'>
+                            <span style={{fontWeight:'normal', fontSize: '0.9rem'}}>
+                              {`Due:`}
+                            </span>
+                            <span style={{fontWeight:'normal', color: `${(assign.Late === true) ? 'red' : 'black'}`}}>
+                              {` ${assign["Due"]}`}
+                            </span>
+                          </div>
+                          <div className='col-1'>
+                            <span style={{fontWeight:'normal'}}>
+                              {`${assign["Score"]}/${assign["MaxScore"]}`}
+                            </span>
+                          </div>
+                        </div>
+                      </button>
                     </div>
-                  </button>
-                </div>
-                )
-              })
-            ))
-            }
+                    )
+                  })
+                ))
+              }
+            </div>
           </div>
-        </div>
         </div>
       </div>
   );

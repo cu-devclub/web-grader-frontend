@@ -4,10 +4,6 @@ import PublicRoutes         from './publicRoutes'
 import ProfRoutes           from './profRoutes'
 
 
-
-
-import ClassCreate from '../pages/Not_use/ClassCreate'; // not use due to create class modal
-
 // global
 import Home         from '../pages/Home';
 // import Login        from '../pages/Login';
@@ -30,6 +26,7 @@ import TAmanage     from '../pages/PF/TAmanage'
 // Student
 import Class        from '../pages/ST/Class';
 import Lab          from '../pages/ST/Lab';
+import Portfolio    from '../pages/ST/Portfolio';
 
 
 
@@ -51,20 +48,16 @@ function App() {
                     <Route element={<AssignEdit />} path='AssignEdit' />
                     <Route element={<AssignList />} path='AssignList' />
                     <Route element={<TAmanage />} path='TAmanage' />
+                    <Route element={<Sentin />} path='Sentin' />
+                    <Route element={<StudentList />} path='StudentList' />
                 </Route>
                 <Route element={<Home />} path='/' />
                 <Route element={<Logout />} path='Logout' />
 
                 <Route element={<Class />} path='Class' />
-
-
-
-                
-                
-                <Route element={<ClassCreate />} path='ClassCreate' />
                 <Route element={<Lab />} path='Lab' />
-                <Route element={<Sentin />} path='Sentin' />
-                <Route element={<StudentList />} path='StudentList' />
+                <Route element={<Portfolio />} path='Portfolio' />
+                
             </Route>
             <Route element={<PublicRoutes />}>
                 <Route element={<Login />} path='/login' />

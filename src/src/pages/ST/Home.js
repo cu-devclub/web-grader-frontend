@@ -76,18 +76,25 @@ function HomeST() {
         <main>
           <div>
             <br></br>
-            {/* วนลูปเพื่อแสดง container แยกตามปีการศึกษา */}
-            {Object.entries(courses).map(([year, classes]) => (
-              <div key={year} className="container-lg mb-3 bg-light" style={{ padding: '10px' }}>
-                <div className="row row-cols-1 row-cols-md-5 g-2">
-                  {/* วนลูปเพื่อแสดงข้อมูลคอร์สในแต่ละปีการศึกษา */}
-                  {classes.map(course => (
-                    <div className="card" style={{width: '200px'}} key={course.ClassID}>
+            <div className="container-lg mb-3 bg-light" style={{ padding: '10px' }}>
+              <div className="row row-cols-1 row-cols-md-5 g-2">
+                {Object.entries(courses).map(([year, classes]) => (
+                  classes.map(course => (
+                    <div className="card" style={{width: '200px', marginLeft: "10px", marginRight: "10px"}} key={course.ClassID}>
                       <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
                       {/* <img class="" style="width: 198px;height: 198px;"/> */}
                       <div className="card-body">
                         <h4 className="card-title">{course.ClassName}</h4>
-                        <p className="card-text">ID: {course.ClassID}</p>
+                        <p className="card-text">
+                          <div className='row'>
+                            <div className='col'>
+                              {course.ClassID}
+                            </div>
+                            <div className='col'>
+                            {year}
+                            </div>
+                          </div>
+                        </p>
                         <button className="btn btn-primary" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);  sessionStorage.setItem("Email", Email);  navigate("/AssignList");}}>
                           View course
                         </button>
@@ -96,10 +103,10 @@ function HomeST() {
                         </button>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  ))
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </main>
       ) : (null)}
@@ -118,7 +125,7 @@ function HomeST() {
                   <div className="row row-cols-1 row-cols-md-5 g-2">
                     {/* วนลูปเพื่อแสดงข้อมูลคอร์สในแต่ละปีการศึกษา */}
                     {classes.map(course => (
-                      <div className="card" style={{width: '200px'}} key={course.ClassID}>
+                      <div className="card" style={{width: '200px', marginLeft: "10px", marginRight: "10px"}} key={course.ClassID}>
                         <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
                         {/* <img class="" style="width: 198px;height: 198px;"/> */}
                         <div className="card-body">

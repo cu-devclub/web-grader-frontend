@@ -21,7 +21,7 @@ function Login() {
                 <div className="col align-self-center">
                     <h1>Login</h1>
                     <button onClick={() => navigate("/callback")} className="btn btn-outline-dark" type="button" style={{marginTop: "20px", marginLeft: "20px"}}>
-                        <img src="/gg-con.svg" width="20" />&nbsp; with Google
+                        <img src="/gg-con.svg" width="20" alt='gg'/>&nbsp; with Google
                     </button>
                 </div>
             </div>

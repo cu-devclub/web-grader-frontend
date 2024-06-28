@@ -4,29 +4,42 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 function Test() {
     const loginRedir  = async () => {
-        const filename = "Release_1_Ch5_2 Tuple.ipynb"
-
         fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/download`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ filename: filename })
+            body: JSON.stringify({ fileRequest: `3_0_1` })
         })
         .then(response => response.json())
         .then(data => {
             // Handle JSON data
             console.log('JSON Data:', data);
-
-            // Download file
-            const blob = new Blob([data.fileContent], { type: data.fileType });
+        
+            // Decode base64-encoded file content
+            const decodedFileContent = atob(data.fileContent);
+        
+            // Convert decoded content to a Uint8Array
+            const arrayBuffer = new Uint8Array(decodedFileContent.length);
+            for (let i = 0; i < decodedFileContent.length; i++) {
+                arrayBuffer[i] = decodedFileContent.charCodeAt(i);
+            }
+        
+            // Create a Blob from the array buffer
+            const blob = new Blob([arrayBuffer], { type: data.fileType });
+        
+            // Create a temporary URL to the blob
             const url = window.URL.createObjectURL(blob);
+        
+            // Create a link element to trigger the download
             const a = document.createElement('a');
             a.style.display = 'none';
             a.href = url;
             a.download = data.downloadFilename;
             document.body.appendChild(a);
             a.click();
+        
+            // Clean up by revoking the object URL
             window.URL.revokeObjectURL(url);
         })
         .catch(error => console.error('Error:', error));

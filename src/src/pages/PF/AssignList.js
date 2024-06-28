@@ -138,26 +138,6 @@ function AssignList() {
               })
             ))
             }
-
-
-
-
-
-            {/* {Object.keys(assignmentsData.Assignment).map((labNumber, labIndex) => {
-              const lab = assignmentsData.Assignment[labNumber];
-              return (
-                <div key={labIndex} className='card ' style={{ marginBottom: '2rem' }} onClick={() => {sessionStorage.setItem("lab", labNumber);sessionStorage.setItem("labname", lab.LabName); navigate("/AssignEdit")}}>
-                  <button  style={{ fontSize: '1.2rem', height:'4rem'}} class="fw-bold ">
-                    <span>{`Lab ${labNumber}: ${lab.LabName}`}</span>
-                    {Object.keys(lab.Section).length > 0 && (
-                      <span style={{ marginLeft: '2rem', fontWeight:'normal'}}>
-                        (First Publish: {lab.Section[Object.keys(lab.Section)[0]].Publish} | Last Due: {lab.Section[Object.keys(lab.Section)[Object.keys(lab.Section).length - 1]].Due})
-                      </span>
-                    )}
-                  </button>
-                </div>
-              );
-            })} */}
           </div>
         </div>
       </div>

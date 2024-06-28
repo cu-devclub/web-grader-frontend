@@ -1,6 +1,3 @@
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content';
-
 import React from 'react'
 import { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';

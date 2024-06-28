@@ -1,7 +1,11 @@
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content';
+
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { CodeSlash, FileEarmark, Download } from 'react-bootstrap-icons';
 
 const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
 
@@ -18,12 +22,14 @@ function Lab() {
   const [LID,] = useState(sessionStorage.getItem("LID"))
   const [classId,] = useState(sessionStorage.getItem("classId"))
 
+  const [LabInfo, setLabInfo] = useState(null)
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${host}/ST/assignment/specific?LID=${LID}&email=${Email}`);
+        const response = await fetch(`${host}/ST/assignment/specific?LID=${LID}&Email=${Email}`);
         const data = await response.json();
-        console.log(data)
+        setLabInfo(data.data)
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -44,58 +50,107 @@ function Lab() {
     fetchClass();
   }, [LID, classId, Email]);
 
-  // function generateBadge(status) {
-  //   if (status){
-  //     return (
-  //         <h5>
-  //             <span className={`badge bg-danger`}>
-  //                 Late
-  //             </span>
-  //         </h5>
-  //     );}
-  // }
+  const downfile = async (t, i) => {
+      fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/download`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ fileRequest: `${t}_0_${i}`, Email: Email })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if(data.success){
+          // Decode base64-encoded file content
+          const decodedFileContent = atob(data.fileContent);
 
-  // const handleFileChange = (event, questionKey) => {
-  //   // Update fileSelectedMap for the specific question with the file selection status
-  //   setFileSelectedMap((prevMap) => ({
-  //     ...prevMap,
-  //     [questionKey]: event.target.files.length > 0,
-  //   }));
-  // };
+          // Convert decoded content to a Uint8Array
+          const arrayBuffer = new Uint8Array(decodedFileContent.length);
+          for (let i = 0; i < decodedFileContent.length; i++) {
+              arrayBuffer[i] = decodedFileContent.charCodeAt(i);
+          }
 
-  // const handleSubmit = async (event, questionKey) => {
-  //   event.preventDefault();
-  
-  //   const formData = new FormData();
-  //   formData.append('file', event.target.file.files[0]);
-  //   formData.append('UID',userData.ID)
-  //   formData.append('CSYID',csyid)
-  //   formData.append('Lab',speclab)
-  //   formData.append('Question',questionKey.slice(1))
-  
-  //   try {
-  //     const response = await fetch(`${host}/upload/SMT`, {
-  //       method: 'POST',
-  //       body: formData,
-  //     });
-  //     const responseData = await response.json();
-  //     console.log(responseData);
-  //     // Update the submission response state for the specific question
-  //     setSubmissionResponses((prevResponses) => ({
-  //       ...prevResponses,
-  //       [questionKey]:responseData,
-  //     }));
-  //   } catch (error) {
-  //     console.error('Error submitting data:', error);
-  //     // Update the submission response state for the specific question if there's an error
-  //     setSubmissionResponses((prevResponses) => ({
-  //       ...prevResponses,
-  //       [questionKey]: 'An error occurred while uploading the file.',
-  //     }));
-  //   }
-  // };
-  
+          // Create a Blob from the array buffer
+          const blob = new Blob([arrayBuffer], { type: data.fileType });
 
+          // Create a temporary URL to the blob
+          const url = window.URL.createObjectURL(blob);
+
+          // Create a link element to trigger the download
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = data.downloadFilename;
+          document.body.appendChild(a);
+          a.click();
+
+          // Clean up by revoking the object URL
+          window.URL.revokeObjectURL(url);
+        }else{
+          withReactContent(Swal).fire({
+            title: data.msg,
+            icon: "error"
+          })
+        }
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
+  const submit = async (QID, i) => {
+    try{
+      if(document.getElementById(`Q${QID}`).files.length !== 1){
+        withReactContent(Swal).fire({
+          title: `Select file to submit question ${i}`,
+          icon: "warning",
+        })
+        return;
+      }
+      withReactContent(Swal).fire({
+          title: `Are you sure to submit with\n${document.getElementById(`Q${QID}`).files[0].name}?`,
+          icon: "question",
+          showCloseButton: true,
+          showCancelButton: true,
+          focusConfirm: false,
+          confirmButtonText: `Yes`,
+          confirmButtonColor: "rgb(35, 165, 85)",
+      }).then(async ok => {
+          if(ok.isConfirmed){
+            const formData = new FormData()
+
+            formData.append(`file`, document.getElementById(`Q${QID}`).files[0]);
+            formData.append('Email', Email);
+            formData.append('QID', QID);
+
+            const response = await fetch(`${host}/upload/SMT`, {
+              method: 'POST',
+              body: formData,
+            })
+            const Data = await response.json()
+            if (Data.success){
+              withReactContent(Swal).fire({
+                  title: `Question ${i} submitted successfully`,
+                  icon: "success"
+              }).then(ok => {
+                  if(ok)
+                      window.location.reload()
+              });
+            }else{
+              withReactContent(Swal).fire({
+                title: Data.msg,
+                icon: Data.data
+              })
+            }
+          }
+      });
+    }catch (error) {
+      withReactContent(Swal).fire({
+          title: "Please contact admin!",
+          text: error,
+          icon: "error"
+      })
+    }
+  }
+  
   return (
     <div>
       <Navbar />
@@ -122,83 +177,101 @@ function Lab() {
             </div>
           </div>
         </div>
+      {LabInfo ? (
         <div className="card-body">
-
-        </div>
-      </div>
-
-      
-      {/* <div className="container-lg p-3 mb-2 bg-light">
-        <div className="row">
-          <div className="col-sm-4">
-            <div className="card border-primary mb-3 " style={{ padding: '10px', marginLeft: '2rem' }}>
-              <div className="card-body">
-                <h5 className="card-title">{assignmentData?.Lab}: {assignmentData?.Name}</h5>
-                <p className="card-text">Due Date: {new Date(assignmentData?.Due).toLocaleString()}</p>
-                <ul>
-                    {assignmentData?.Files.map((file, index) => (
-                        <li key={index}><a href={file} target="_blank">{file}</a></li>
-                    ))}
-                </ul>
+          <div className='row'>
+            <div className='col-5'>  
+              <div className='card'>
+                <div className='card-header'>
+                  <h5>Lab: {LabInfo.Info["Lab"]} {LabInfo.Info["Name"]}</h5>
+                </div>
+                <div className='card-body'>
+                  <div className='row'>
+                    <div className='col-3'>
+                      <span style={{fontWeight:'normal'}}>
+                        Published:
+                      </span><br/>
+                      <span style={{fontWeight:'normal', color: `${(LabInfo.Info["Late"] === true) ? 'red' : 'black'}`}}>
+                        Due:
+                      </span>
+                    </div>
+                    <div className='col'>
+                      <span style={{fontWeight:'normal'}}>
+                        {` ${LabInfo.Info["Publish"]}`}
+                      </span><br/>
+                      <span style={{fontWeight:'normal', color: `${(LabInfo.Info["Late"] === true) ? 'red' : 'black'}`}}>
+                        {` ${LabInfo.Info["Due"]}`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <br/>
+              <div className='card'>
+                <div className='card-header'>
+                  <h5><Download /> Files</h5>
+                </div>
+                <div className='card-body'>
+                  {LabInfo.Question.map((q, i) => {
+                    return <button key={`QD${i}`} type="button" className="btn btn-outline-dark" style={{width: "100%", textAlign: "Left", marginBottom: "0.5em"}} onClick={() => {downfile(1, q.QID)}}><span style={{color: "rgb(54, 128, 255)"}}><CodeSlash /></span> Question file: {i+1}</button>
+                  })}
+                  {LabInfo.AddFile.map((a, i) => {
+                    return <button key={`AD${i}`} type="button" className="btn btn-outline-dark" style={{width: "100%", textAlign: "Left", marginBottom: "0.5em"}} onClick={() => {downfile(0, a)}}><span style={{color: "rgb(255, 178, 62)"}}><FileEarmark /></span> Essential file: {i+1}</button>
+                  })}
+                </div>
               </div>
             </div>
-            <br />
-            <button className="btn btn-primary" style={{ marginLeft: '5em' }} onClick={() => navigate("/", { state: { Email: Email,classid: csyid } })}>Back</button>
-          </div>
-          <div className="col">
-            {assignmentData?.Questions && Object.keys(assignmentData.Questions).map((questionKey, index) => {
-              const question = assignmentData.Questions[questionKey];
-              return (
-                <div key={questionKey} className="row" style={{ marginBottom: '2rem' }}>
-                  <div className="col-sm-10">
-                    <div className="card">
-                      <div className="card-body row">
-                        <h5 className="card-title col-sm-4">Question {question.QuestionNum}</h5>
-                        <p className="card-text col-sm-6" style={{ textAlign: 'right' }}>{submissionResponses[questionKey].message}</p>
-                        <span className="col-sm-2">{generateBadge(question.Late)}</span>
-
-                        <form 
-                          action={`${host}/upload`} 
-                          method="POST" 
-                          encType="multipart/form-data" 
-                          className="row"
-                          onSubmit={(event) => handleSubmit(event, questionKey)}
-                        >
-                          <div className="input-group mb-3">
-                            <input 
-                              type="file" 
-                              name="file" 
-                              className="form-control" 
-                              onChange={(event) => handleFileChange(event, questionKey)} // Pass questionKey to handleFileChange
-                            />
-                          </div>
-                          
-                          <p className="card-text col-sm-9">Last submission: {submissionResponses[questionKey].FileName||question.Submission.FileName}</p>
-                          <div className="col-sm-10" style={{ display: 'inline' }}>
-                            <div className="row">
-                              <p className="card-text col-sm-9">At: {submissionResponses[questionKey].At ? new Date(submissionResponses[questionKey].At).toLocaleString():question.Submission.Date ? new Date(question.Submission.Date).toLocaleString():""}</p>
-                              <p className="card-text col-sm-3">Score: {submissionResponses[questionKey].Score||question.Score || '-'}/{question.MaxScore}</p>
-                            </div>
-                          </div>
-              
-                          <div className="col-sm-2" style={{ display: 'inline' }}>
-                            <input 
-                              type="submit" 
-                              className="btn btn-primary" 
-                              style={{ textAlign: 'right' }} 
-                              disabled={!fileSelectedMap[questionKey]} // Disable the button if no file is selected for the specific question
-                            />
-                          </div>
-                        </form>
+            <div className='col'>
+              {LabInfo.Question.map((q, i) => {
+                return <div key={`QS${i}`} className='card'>
+                  <div className='card-header'>
+                    <div className="row">
+                      <div className="col">
+                        <h6>Question: {i+1}</h6>
+                      </div>
+                      <div className="col-md-2">
+                        {q.Score}/{q.Max}
+                      </div>
+                    </div>
+                  </div>
+                  <div className='card-body'>
+                    <div className='row'>
+                      <div className='col'>
+                        <div className="input-group">
+                          <input type="file" className="form-control" id={`Q${q.QID}`} aria-describedby={`Q${q.QID}`} aria-label="Upload" />
+                        </div>
+                      </div>
+                      <div className='col-md-2'>
+                        <button className="btn btn-primary float-end" type="button" id={`Q${q.QID}`} onClick={() => {submit(q.QID, i+1)}} disabled={LabInfo.Info["Lock"]}>Submit</button>
+                      </div>
+                    </div>
+                    <br/>
+                    <div className='row'>
+                      <div className='col'>
+                        <span>Submitted: </span>
+                        <span style={{fontWeight:'normal', color: `${q.SMT.Late === 1 ? 'red' : 'black'}`}}>
+                          {q.SMT.SID === -1 ? 
+                            ("-") : (
+                              <span>
+                                {q.SMT.Filename} 
+                                <button type="button" className="btn btn-outline-dark" style={{width: "auto", textAlign: "Left", marginLeft: "0.5em"}} onClick={() => {downfile(2, q.SMT.SID)}}><Download /> Download</button>
+                              </span>
+                          )}
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              })}
+            </div>
           </div>
         </div>
-      </div> */}
+      ) : (
+        <div className="card-body">
+          <div>Loading</div>
+        </div>
+      )}
+      </div>
     </div>
   );
 }

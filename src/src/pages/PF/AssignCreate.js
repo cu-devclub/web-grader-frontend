@@ -7,8 +7,6 @@ import { useNavigate } from 'react-router-dom';
 
 const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
 
-
-
 function AssignCreate() {
   const navigate = useNavigate();
   const currentDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date()).replace(', ', 'T')
@@ -23,6 +21,7 @@ function AssignCreate() {
   const [labName, setLabName] = useState('');
   const [publishDate, setPublishDate] = useState(currentDate)
   const [dueDate, setDueDate] = useState('')
+  const [dueDateLock, setDueDateLock] = useState(false)
 
   // Question Sys
   const [totalQNum, setTotalQNum] = useState(1);
@@ -112,7 +111,8 @@ function AssignCreate() {
       labName !== '' &&
       dueDate !== '' &&
       new Date(publishDate) <= new Date(dueDate) &&
-      isAllQHaveFile()
+      isAllQHaveFile() &&
+      Selected.length !== 0
       // checkedSections !== null &&
       // checkedSections !== undefined &&
       // checkedSections.length > 0 &&
@@ -138,98 +138,100 @@ function AssignCreate() {
   }
   
   const handleButtonClick = async () => {
-    if(!isFormValid()){
-      withReactContent(Swal).fire({
-        title: "Please fill required field in form",
-        icon: "warning"
-      })
-      return;
-    }
-
-    const formData = new FormData()
-    const addFiles = await document.getElementById('inputlink').files
-    for(let i=0;i<addFiles.length;i++){
-      formData.append(`Add${i}`, addFiles[i])
-    }
-
-    for(let i = 0;i < Question.length;i++){
-      formData.append(`Source${i}`, document.getElementById(`QSource${Question[i].id}`).files[0])
-      formData.append(`Release${i}`, document.getElementById(`QRelease${Question[i].id}`).files[0])
-    }
-    
-    formData.append('LabNum', labNum);
-    formData.append('LabName', labName);
-    
-    formData.append("PubDate", publishDate);
-    formData.append("DueDate", dueDate);
-
-    formData.append('Creator', Email);
-    formData.append('CSYID', classId);
-
-    formData.append("IsGroup", isGroup);
-    formData.append("Selected", Selected);
-
-    formData.append("QNum", totalQNum);
-    formData.append("Question", JSON.stringify(Question))
-    
-
-    try {
-      const response = await fetch(`${host}/TA/class/Assign/Create`, {
-        method: 'POST',
-        body: formData,
-      })
-      const Data = await response.json()
-      console.log(Data)
-
-      if (Data.success){
+    try{
+      if(!isFormValid()){
         withReactContent(Swal).fire({
-            title: "Assignment created successfully",
-            icon: "success"
-        }).then(ok => {
-            if(ok)
-                window.location.href = "/AssignList"
-        });
-    }else{
-        withReactContent(Swal).fire({
-          title: Data.msg,
-          icon: Data.data
+          title: "Please fill required field in form",
+          icon: "warning"
         })
-    }
+        return;
+      }
+      withReactContent(Swal).fire({
+        title: `Are you sure to create assignment with these infomations?`,
+        html: `
+          <div class='row' style="width:100%;">
+            <div class='col-6' style="text-align:left;">
+              Lab number<br/>
+              Lab name<br/>
+              Publish<br/>
+              Due<br/>
+              Number of quesitons<br/>
+              Assign to
+            </div>
+            <div class='col' style="text-align:left">
+              ${labNum} <br/>
+              ${labName} <br/>
+              ${publishDate.replace("-", "/").replace("T", " ")} <br/>
+              ${dueDate.replace("-", "/").replace("T", " ")} <br/>
+              ${totalQNum} <br/>
+              ${Selected.toString()}
+            </div>
+          </div>`,
+        icon: "question",
+        showCloseButton: true,
+        showCancelButton: true,
+        focusConfirm: false,
+        confirmButtonText: `Yes`,
+        confirmButtonColor: "rgb(35, 165, 85)",
+      }).then(async ok => {
+        if(ok.isConfirmed){
+          const formData = new FormData()
+          const addFiles = await document.getElementById('inputlink').files
+          for(let i=0;i<addFiles.length;i++){
+            formData.append(`Add${i}`, addFiles[i])
+          }
+
+          for(let i = 0;i < Question.length;i++){
+            formData.append(`Source${i}`, document.getElementById(`QSource${Question[i].id}`).files[0])
+            formData.append(`Release${i}`, document.getElementById(`QRelease${Question[i].id}`).files[0])
+          }
+          
+          formData.append('LabNum', labNum);
+          formData.append('LabName', labName);
+          
+          formData.append("PubDate", publishDate);
+          formData.append("DueDate", dueDate);
+          formData.append('LockOnDue', dueDateLock);
+
+          formData.append('Creator', Email);
+          formData.append('CSYID', classId);
+
+          formData.append("IsGroup", isGroup);
+          formData.append("Selected", Selected);
+
+          formData.append("QNum", totalQNum);
+          formData.append("Question", JSON.stringify(Question))
+          
+          const response = await fetch(`${host}/TA/class/Assign/Create`, {
+            method: 'POST',
+            body: formData,
+          })
+          const Data = await response.json()
+          console.log(Data)
+
+          if (Data.success){
+            withReactContent(Swal).fire({
+                title: "Assignment created successfully",
+                icon: "success"
+            }).then(ok => {
+                if(ok)
+                    window.location.href = "/AssignList"
+            });
+          }else{
+            withReactContent(Swal).fire({
+              title: Data.msg,
+              icon: Data.data
+            })
+          }
+        }
+      })
     }catch (error) {
       withReactContent(Swal).fire({
-          title: "Please contact admin!",
-          text: error,
-          icon: "error"
+        title: "Please contact admin!",
+        text: error,
+        icon: "error"
       })
-  }
-
-
-    // const formData = new FormData();
-    // formData.append('Creator', Email);
-    // formData.append('labNum', labNum);
-    // formData.append('labName', labName);
-    // formData.append('CSYID', classId);
-    // formData.append('Question', JSON.stringify(Question)); // Stringify Question array
-    // formData.append('submittedDates', JSON.stringify(submittedDates)); // Stringify submittedDates object
-
-
-
-    // if (isFormValid()) {
-    //   try {
-        
-    //     const response = await fetch(`${host}/TA/class/Assign/Create`, {
-    //           method: 'POST',
-    //           body: formData,
-    //     })
-    //     console.log(response)
-
-    //   } catch (error) {
-    //     console.error('Error');
-    //   }
-    //   console.log('Form submitted!',formData);
-    // } else {
-    //   console.log('Please fill in all fields correctly.');
-    // }
+    }
   };
   
   const handlePublishDateChange = (e) => {
@@ -291,28 +293,30 @@ function AssignCreate() {
             <div className="row" style={{marginBottom: "1rem"}}>
               <div className="col">
                 <div className='row'>
-                <div className="col-md-6">
-                  <label htmlFor={`PublishDate`} className="form-label">Publish Date*</label>
-                  <input
-                    type="datetime-local"
-                    className="form-control"
-                    id={`publishdate`}
-                    value={publishDate}
-                    onChange={handlePublishDateChange}
-                    // min={currentDate}
-                  />
-                </div>
-                <div className="col-md-6">
-                  <label htmlFor={`DueDate`} className="form-label">Due Date*</label>
-                  <input
-                    type="datetime-local"
-                    className="form-control"
-                    id={`duedate`}
-                    value={dueDate}
-                    onChange={handleDueDateChange}
-                    min={publishDate}
-                  />
-                </div>
+                  <div className="col-md-6">
+                    <label htmlFor={`PublishDate`} className="form-label">Publish Date*</label>
+                    <input
+                      type="datetime-local"
+                      className="form-control"
+                      id={`publishdate`}
+                      value={publishDate}
+                      onChange={handlePublishDateChange}
+                      // min={currentDate}
+                    />
+                  </div>
+                  <div className="col-md-6">
+                    <label htmlFor={`duedate`} className="form-label">Due Date*</label>
+                    <input
+                      type="datetime-local"
+                      className="form-control"
+                      id={`duedate`}
+                      value={dueDate}
+                      onChange={handleDueDateChange}
+                      min={publishDate}
+                    />
+                    <input id={`duedatelock`} className="form-check-input" type="checkbox" checked={dueDateLock} onChange={() => setDueDateLock(!dueDateLock)}/>
+                    <label className="form-check-label" htmlFor="duedatelock" style={{marginLeft: "0.3rem"}}>Close submission on Due date</label>
+                  </div>
                 </div>
               </div>
               <div className="col-md-6">
@@ -344,24 +348,6 @@ function AssignCreate() {
                   ))}
                   </div>
                 </div>
-
-                {/* <label htmlFor="inputState" className="form-label">Section*</label>
-                <br />
-                {sections.map((section) => (
-                  <div key={section} className="form-check form-check-inline">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id={`inlineCheckbox${section}`}
-                      value={section}
-                      checked={checkedSections.includes(section)}
-                      onChange={() => handleCheckboxChange(section)}
-                    />
-                    <label className="form-check-label" htmlFor={`inlineCheckbox${section}`}>
-                      {section}
-                    </label>
-                  </div>
-                ))} */}
               </div>
               <div className='col'>
                 <div className="card">
@@ -393,39 +379,6 @@ function AssignCreate() {
               </div>
             </div>
             <br></br>
-              {/* {sections
-  .filter(section => checkedSections.includes(section))
-  .map((section) => (
-    <div key={section} className="row">
-      <div className="col-md-6">
-        <label htmlFor={`PublishDate${section}`} className="form-label">Publish Date* for sec{section}</label>
-        <input
-          type="datetime-local"
-          className="form-control"
-          id={`publishdate${section}`}
-          value={submittedDates[section]?.publishDate || ''}
-          onChange={(e) => handlePublishDateChange(e, section)}
-          // min={currentDate}
-        />
-      </div>
-      <div className="col-md-6">
-        <label htmlFor={`DueDate${section}`} className="form-label">Due Date* for sec{section}</label>
-        <input
-          type="datetime-local"
-          className="form-control"
-          id={`duedate${section}`}
-          value={submittedDates[section]?.dueDate || ''}
-          onChange={(e) => handleDueDateChange(e, section)}
-          min={submittedDates[section]?.publishDate || currentDate}
-        />
-      </div>
-    </div>
-  ))} */}
-
-            {/* <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-              <button type="button" className="btn btn-primary" onClick={() => navigate("/AssignList", { state: { Email: Email,classid:classId} })}>Back</button>
-              <button type="button" className="btn btn-primary" id="liveToastBtn" onClick={handleButtonClick} disabled={!isFormValid()}>Submit</button>
-            </div> */}
           </form>
         </div>
       </div>

@@ -4,17 +4,11 @@ import withReactContent from 'sweetalert2-react-content';
 import Navbar from '../../components/Navbar'
 import { useNavigate} from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-// import Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
+import { Download } from 'react-bootstrap-icons';
 
-// const Email = Cookies.get('email');
 const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
-// const classData = {
-//     classid: sessionStorage.getItem("classid"),
-//     ClassID: sessionStorage.getItem("ClassID"),
-//     SchoolYear: sessionStorage.getItem("SchoolYear"),
-//     ClassName: sessionStorage.getItem("ClassName"),
-//     Thumbnail: sessionStorage.getItem("Thumbnail")
-// }
+
 
 function ClassEdit() {
     const navigate = useNavigate();
@@ -25,13 +19,15 @@ function ClassEdit() {
         ClassName: sessionStorage.getItem("ClassName"),
         Thumbnail: sessionStorage.getItem("Thumbnail")
     })
-    // const [Email, setEmail] = useState(Cookies.get('email'))
 
     const CSYID = classData.classid;
 
+    const [Email,] = useState(Cookies.get('email'));
     const [classID, setClassID] = useState('');
     const [schoolYear, setSchoolYear] = useState('');
     const [className, setClassName] = useState('');
+
+    const [timestamps, setTimestamps] = useState(Array(2).fill('')); // กำหนดขนาดของอาร์เรย์ตามจำนวนที่ต้องการใช้งาน (ในที่นี้คือ 2)
 
     
     useEffect(() => {
@@ -42,37 +38,61 @@ function ClassEdit() {
             setClassName(classData.ClassName||"");
         }}
         PreData();
-        
-      }, [classData]);
+    }, [classData]);
 
     const handleEditClick = async () => {
-        const formData = new FormData();
-        formData.append('ClassName', className);
-        formData.append('ClassID',classID)
-        formData.append('SchoolYear',schoolYear)
-        formData.append('CSYID',CSYID)
-  
-        try {
-            const response = await fetch(`${host}/TA/class/edit`, {
-                method: 'POST',
-                body: formData,
+        try{
+            withReactContent(Swal).fire({
+                title: `Are you sure to update class with these infomations?`,
+                html: `
+                    <div class='row' style="width:100%;">
+                        <div class='col-4' style="text-align:left;margin-left:5em;">
+                            Class name<br/>
+                            Class ID<br/>
+                            schoolyear
+                        </div>
+                        <div class='col' style="text-align:left">
+                            ${className} <br/>
+                            ${classID} <br/>
+                            ${schoolYear}
+                        </div>
+                    </div>`,
+                icon: "question",
+                showCloseButton: true,
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText: `Yes`,
+                confirmButtonColor: "rgb(35, 165, 85)",
+            }).then(async ok => {
+                if(ok.isConfirmed){
+                    const formData = new FormData();
+                    formData.append('ClassName', className);
+                    formData.append('ClassID',classID)
+                    formData.append('SchoolYear',schoolYear)
+                    formData.append('CSYID',CSYID)
+
+                    const response = await fetch(`${host}/TA/class/edit`, {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    const responseData = await response.json();
+                    if (responseData.Status){
+                        withReactContent(Swal).fire({
+                            title: "Infomation updated successfully",
+                            icon: "success"
+                        }).then(ok => {
+                            if(ok)
+                                window.location.href = "/"
+                        });
+                    }else{
+                        withReactContent(Swal).fire({
+                        title: "Error!",
+                        icon: "error"
+                        })
+                    }
+                }
             });
-            const responseData = await response.json();
-            if (responseData.Status){
-                withReactContent(Swal).fire({
-                    title: "Infomation updated successfully",
-                    icon: "success"
-                }).then(ok => {
-                    if(ok)
-                        window.location.href = "/"
-                });
-            }else{
-                withReactContent(Swal).fire({
-                title: "Error!",
-                icon: "error"
-                })
-            }
-        } catch (error) {
+        }catch (error) {
             withReactContent(Swal).fire({
                 title: "Please contact admin!",
                 text: error,
@@ -80,119 +100,40 @@ function ClassEdit() {
             })
         }
     }
-  
-    const [timestamps, setTimestamps] = useState(Array(2).fill('')); // กำหนดขนาดของอาร์เรย์ตามจำนวนที่ต้องการใช้งาน (ในที่นี้คือ 2)
 
     const handleUpload = async (index) => {
       // Get the current date and time
-      const now = new Date();
-      const formattedTimestamp = now.toLocaleString();
-      const response = null
+        const now = new Date();
+        const formattedTimestamp = now.toLocaleString();
+        const response = null
   
 
       /* Thumbnail */
-      if(index === 0){
-        const fileInput = document.getElementById('inputGroupFile01');
-        const fileThumbnail = fileInput.files[0];
-
-        const formData = new FormData();
-        formData.append('CSYID', CSYID)
-        formData.append('file',fileThumbnail)
-
-        try {
-            const response = await fetch(`${host}/upload/Thumbnail`, {
-                method: 'POST',
-                body: formData,
-          });
-            const responseData = await response.json();
-            if (responseData["success"]){
+        if(index === 0){
+            const fileInput = document.getElementById('inputGroupFile01');
+            if(fileInput.files.length !== 1){
                 withReactContent(Swal).fire({
-                    title: "Thumbnail uploaded successfully",
-                    icon: "success"
-                }).then(ok => {
-                    if(ok)
-                        window.location.href = "/"
-                });
-            }else{
-                withReactContent(Swal).fire({
-                  title: "Error!",
-                  icon: "error"
+                    title: "Please select file!",
+                    icon: "warning"
                 })
+                return
             }
-        } catch (error) {
-            withReactContent(Swal).fire({
-                title: "Please contact admin!",
-                text: error,
-                icon: "error"
-            })
-        }
-      }
-      /* CSV */
-      if (index === 1) {
-        const fileInput = document.getElementById('inputGroupFile02');
-        const fileCSV = fileInput.files[0];
-    
-        const formData = new FormData();
-        formData.append('CSYID', CSYID)
-        formData.append('file', fileCSV)
-        try {
-            const response = await fetch(`${host}/upload/CSV`, {
-                method: 'POST',
-                body: formData,
-            });
-            const responseData = await response.json();
-            if (responseData["success"]){
-                withReactContent(Swal).fire({
-                    title: "CSV uploaded successfully",
-                    icon: "success"
-                })
-            }else{
-                withReactContent(Swal).fire({
-                  title: "Error!",
-                  icon: "error"
-                })
-            }
-        } catch (error) {
-            withReactContent(Swal).fire({
-                title: "Please contact admin!",
-                text: error,
-                icon: "error"
-            })
-        }
-    }
-    
+            const fileThumbnail = fileInput.files[0];
 
-      if(response){
-        setTimestamps(prevTimestamps => {
-            const newTimestamps = [...prevTimestamps];
-            newTimestamps[index] = formattedTimestamp;
-            return newTimestamps;
-      })};
-  };
-        const [showModal, setShowModal] = useState(false);
-
-        const handleShowModal = () => {
-            setShowModal(true);
-        };
-
-        const handleCloseModal = () => {
-            setShowModal(false);
-        };
-
-      
-        const handleDelete = async () =>{
             const formData = new FormData();
-            formData.append('CSYID',CSYID)
-  
+            formData.append('CSYID', CSYID)
+            formData.append('file',fileThumbnail)
+
             try {
-                const response = await fetch(`${host}/TA/class/delete`, {
+                const response = await fetch(`${host}/upload/Thumbnail`, {
                     method: 'POST',
                     body: formData,
                 });
                 const responseData = await response.json();
-                if (responseData.Status){
+                
+                if (responseData["success"]){
                     withReactContent(Swal).fire({
-                        title: "Class Deleted successfully",
+                        title: "Thumbnail uploaded successfully",
                         icon: "success"
                     }).then(ok => {
                         if(ok)
@@ -200,8 +141,8 @@ function ClassEdit() {
                     });
                 }else{
                     withReactContent(Swal).fire({
-                      title: "Error!",
-                      icon: "error"
+                        title: "Error!",
+                        icon: "error"
                     })
                 }
             } catch (error) {
@@ -212,34 +153,186 @@ function ClassEdit() {
                 })
             }
         }
-
-
-        const handleClassIDChange = (e) => {
-            setClassID(e.target.value);
-        }
+      /* CSV */
+        if (index === 1) {
+            const fileInput = document.getElementById('inputGroupFile02');
+            if(fileInput.files.length !== 1){
+                withReactContent(Swal).fire({
+                    title: "Please select file!",
+                    icon: "warning"
+                })
+                return
+            }
+            const fileCSV = fileInput.files[0];
         
-        const handleSchoolYearChange = (e) => {
-            setSchoolYear(e.target.value);
+            const formData = new FormData();
+            formData.append('CSYID', CSYID)
+            formData.append('Email', Email)
+            formData.append('file', fileCSV)
+            try {
+                withReactContent(Swal).fire({
+                    html: `<div class="pos-center">
+                                <div class="loader"></div>
+                            </div> `,
+                    showCloseButton: false,
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                    background: "rgba(0, 0, 0, 0)"
+                })
+                const response = await fetch(`${host}/upload/CSV`, {
+                    method: 'POST',
+                    body: formData,
+                });
+                const responseData = await response.json();
+                withReactContent(Swal).close()
+                if (responseData["success"]){
+                    withReactContent(Swal).fire({
+                        title: "CSV uploaded successfully",
+                        icon: "success"
+                    })
+                }else{
+                    withReactContent(Swal).fire({
+                    title: "Error!",
+                    icon: "error",
+                    text: responseData["msg"]
+                    })
+                }
+            } catch (error) {
+                withReactContent(Swal).fire({
+                    title: "Please contact admin!",
+                    text: error,
+                    icon: "error"
+                })
+            }
         }
-        
-        const handleClassNameChange = (e) => {
-            setClassName(e.target.value);
-        }
+    
 
-        const savebutcondi1 = classID === classData.ClassID && schoolYear === classData.SchoolYear && className === classData.ClassName;
-        const savebutcondi2 = !classID || !schoolYear || !className;
-        const isCreateButtonDisabled = savebutcondi1 || savebutcondi2;
-        
-        const handleGenTemplate = () => {
-            const url = window.URL.createObjectURL(new Blob(["ID,Name (English),Section,Group\n"], { type: 'text/csv' }));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', "StudentList-Template.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+        if(response){
+            setTimestamps(prevTimestamps => {
+                const newTimestamps = [...prevTimestamps];
+                newTimestamps[index] = formattedTimestamp;
+                return newTimestamps;
+            })
+        };
+    };
 
+      
+    const handleDelete = async () =>{
+        try {
+            withReactContent(Swal).fire({
+                title: "Are you sure to delete this Assignment?",
+                icon: "warning",
+                showCloseButton: true,
+                showCancelButton: true,
+                focusConfirm: false,
+                confirmButtonText: `Delete`,
+                confirmButtonColor: "rgb(217, 39, 39)",
+            }).then(async ok => {
+                if(ok){
+                    const formData = new FormData();
+                    formData.append('CSYID',CSYID)
+
+                    const response = await fetch(`${host}/TA/class/delete`, {
+                        method: 'POST',
+                        body: formData,
+                    });
+                    const responseData = await response.json();
+                    if (responseData.Status){
+                        withReactContent(Swal).fire({
+                            title: "Class Deleted successfully",
+                            icon: "success"
+                        }).then(ok => {
+                            if(ok)
+                                window.location.href = "/"
+                        });
+                    }else{
+                        withReactContent(Swal).fire({
+                          title: "Error!",
+                          icon: "error"
+                        })
+                    }
+                }
+            });
+        }catch (error) {
+            withReactContent(Swal).fire({
+                title: "Please contact admin!",
+                text: error,
+                icon: "error"
+            })
+        }
+    }
+
+    const handleClassIDChange = (e) => {
+        setClassID(e.target.value);
+    }
+    
+    const handleSchoolYearChange = (e) => {
+        setSchoolYear(e.target.value);
+    }
+    
+    const handleClassNameChange = (e) => {
+        setClassName(e.target.value);
+    }
+
+    const savebutcondi1 = classID === classData.ClassID && schoolYear === classData.SchoolYear && className === classData.ClassName;
+    const savebutcondi2 = !classID || !schoolYear || !className;
+    const isCreateButtonDisabled = savebutcondi1 || savebutcondi2;
+    
+    const handleGenTemplate = () => {
+        const url = window.URL.createObjectURL(new Blob(["ID,Name (English),Section,Group\n"], { type: 'text/csv' }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', "StudentList-Template.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    const downfile = async () => {
+        fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/download`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ fileRequest: `3_0_${CSYID}`, Email: Email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success){
+                // Decode base64-encoded file content
+                const decodedFileContent = atob(data.fileContent);
+      
+                // Convert decoded content to a Uint8Array
+                const arrayBuffer = new Uint8Array(decodedFileContent.length);
+                for (let i = 0; i < decodedFileContent.length; i++) {
+                    arrayBuffer[i] = decodedFileContent.charCodeAt(i);
+                }
+      
+                // Create a Blob from the array buffer
+                const blob = new Blob([arrayBuffer], { type: data.fileType });
+      
+                // Create a temporary URL to the blob
+                const url = window.URL.createObjectURL(blob);
+      
+                // Create a link element to trigger the download
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = data.downloadFilename;
+                document.body.appendChild(a);
+                a.click();
+      
+                // Clean up by revoking the object URL
+                window.URL.revokeObjectURL(url);
+              }else{
+                withReactContent(Swal).fire({
+                  title: data.msg,
+                  icon: "error"
+                })
+              }
+        })
+        .catch(error => console.error('Error:', error));
+    }
 
   return (
     <div>
@@ -259,7 +352,7 @@ function ClassEdit() {
                         </ul>
                     </div>
                     <div className="col-md-2">
-                        <button className="btn btn-danger float-end" type="button" style={{marginLeft:"20px"}} onClick={handleShowModal}>Delete</button>
+                        <button className="btn btn-danger float-end" type="button" style={{marginLeft:"20px"}} onClick={handleDelete}>Delete</button>
                         <button className="btn btn-primary float-end" type="button" onClick={() => navigate("/")}>Back</button>
                     </div>
                 </div>
@@ -291,8 +384,10 @@ function ClassEdit() {
                         <h3>Class Picture</h3>
                         <br/>
                         <div className="row">
-                            <div className="col-md-3 d-lg-flex justify-content-lg-center">
-                                <img src={(classData.Thumbnail && classData.Thumbnail !== "null") ? `${host}/Thumbnail/` + classData.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '100px', height: '100px', borderRadius: '5px'}}  alt="..."/>
+                            <div className="col-md-3">
+                                <img src={(classData.Thumbnail && classData.Thumbnail !== "null") ? `${host}/Thumbnail/` + classData.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '100px', height: '100px', borderRadius: '5px', marginLeft: "0.5em"}}  alt="..."/>
+                                <br/>
+                                {(classData.Thumbnail && classData.Thumbnail !== "null") ? (<button type="button" className="btn btn-outline-dark" style={{width: "auto", textAlign: "Left", marginTop: "0.4em"}} onClick={() => {downfile()}}><Download /> Download</button>) : (<i/>)}
                             </div>
                             <div className="col">
                                 <div className="input-group">
@@ -334,31 +429,6 @@ function ClassEdit() {
                 </div>
             </div>
         </div>
-             {/* Modal */}
-             <div className={`modal fade ${showModal ? 'show' : ''}`} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Remove Class</h5>
-                            <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            Do you want to delete this class?
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
-                                Cancel
-                            </button>
-                            <button onClick={() =>handleDelete()} type="button" className="btn btn-primary">
-                                 Delete
-                             </button>
-                             
-                        </div>
-                    </div>
-                </div>
-            </div>
-        
-      
     </div>
   )
 }
