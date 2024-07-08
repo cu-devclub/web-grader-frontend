@@ -13,7 +13,7 @@ const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_AP
 function ClassEdit() {
     const navigate = useNavigate();
     const [classData,] = useState({
-        classid: sessionStorage.getItem("classid"),
+        classid: sessionStorage.getItem("classId"),
         ClassID: sessionStorage.getItem("ClassID"),
         SchoolYear: sessionStorage.getItem("SchoolYear"),
         ClassName: sessionStorage.getItem("ClassName"),
