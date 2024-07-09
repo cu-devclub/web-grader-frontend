@@ -353,6 +353,14 @@ function AssignEdit() {
     })
   }
 
+  const selectall = () => {
+    if(Selected.length === 0){
+      setSelected(SelectList)
+    }else{
+      setSelected([])
+    }
+  }
+
   return (
     <div>
       <Navbar />
@@ -448,7 +456,14 @@ function AssignEdit() {
               <div className="col">
                 <div className="card">
                   <div className='card-header'>
-                    {(!isGroup) ? "Section" : "Group"}*
+                    <div className='row'>
+                      <div className='col'>
+                        {(!isGroup) ? "Section" : "Group"}*
+                      </div>
+                      <div className='col'>
+                        <button type="button" class="btn btn-outline-dark float-end" onClick={selectall}>{(Selected.length === 0) ? "S" : "Des"}elect all</button>
+                      </div>
+                    </div>
                   </div>
                   <div className='card-body'>
                     {SelectList.map((element) => (

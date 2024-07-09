@@ -1,3 +1,6 @@
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content';
+
 import React,{useEffect, useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -17,7 +20,7 @@ function Callback() {
         if(Email === "")
             return
 
-        await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/testCallback`, {
+        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/testCallback`, {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json; charset=UTF-8",
@@ -26,7 +29,14 @@ function Callback() {
                     'email': Email
                 })
             })
-
+        const Data = await response.json()
+        if(!Data.success){
+            withReactContent(Swal).fire({
+                title: Data.msg,
+                icon: "error"
+            })
+            return
+        }
         Cookies.set("email", Email)
         Cookies.set("uid", Email.split("@")[0])
         Cookies.set('csrf_token', "dummy")
