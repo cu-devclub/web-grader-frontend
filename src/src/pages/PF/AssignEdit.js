@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { FileEarmark, Download } from 'react-bootstrap-icons';
 
-const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
+const host = `https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
 
 function AssignEdit() {
   const navigate = useNavigate();
@@ -288,7 +288,7 @@ function AssignEdit() {
   };
 
   const downfile = async (t, l, i) => {
-    fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/download`, {
+    fetch(`https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/download`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

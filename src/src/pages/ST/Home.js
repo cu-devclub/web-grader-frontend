@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Gear, ChevronDown, ChevronRight } from 'react-bootstrap-icons';
 import Cookies from 'js-cookie';
 
-const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
+const host = `https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
 
 
 function HomeST() {

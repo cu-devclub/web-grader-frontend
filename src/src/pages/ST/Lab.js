@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { CodeSlash, FileEarmark, Download } from 'react-bootstrap-icons';
 
-const host = `http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
+const host = `https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
 
 function Lab() {
   const navigate = useNavigate();
@@ -51,7 +51,7 @@ function Lab() {
   }, [LID, classId, Email]);
 
   const downfile = async (t, i) => {
-      fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/download`, {
+      fetch(`https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/download`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json'

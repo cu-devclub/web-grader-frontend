@@ -28,14 +28,6 @@ import Class        from '../pages/ST/Class';
 import Lab          from '../pages/ST/Lab';
 import Portfolio    from '../pages/ST/Portfolio';
 
-
-
-
-
-import Test from '../pages/Test'
-
-
-
 // import Testernaja from '../pages/Testernaja';
 
 function App() {
@@ -63,7 +55,6 @@ function App() {
                 <Route element={<Login />} path='/login' />
                 <Route element={<Callback />} path='/callback' />
             </Route>
-            <Route element={<Test />} path='/Test' />
             <Route element={<ErrorComp />} path='*' />
         </Routes>
     )

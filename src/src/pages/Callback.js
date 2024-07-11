@@ -12,7 +12,7 @@ function Callback() {
     async function run(){
         try {
             //request login to backend
-            const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/callback`, {
+            const response = await fetch(`https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/callback`, {
                 method: "POST",
                 credentials: "include",
                 headers: {

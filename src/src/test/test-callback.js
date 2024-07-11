@@ -20,7 +20,7 @@ function Callback() {
         if(Email === "")
             return
 
-        const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/testCallback`, {
+        const response = await fetch(`https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/testCallback`, {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json; charset=UTF-8",
