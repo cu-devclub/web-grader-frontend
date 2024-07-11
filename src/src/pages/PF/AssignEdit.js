@@ -333,26 +333,6 @@ function AssignEdit() {
     .catch(error => console.error('Error:', error));
   }
 
-  const toggleLock = async () => {
-    fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/Assign/Lock`, {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ LID: LID})
-    })
-    .then(response => response.json())
-    .then(data => {
-      withReactContent(Swal).fire({
-        title: data.msg,
-        icon: data.success ? "success" : "error"
-      }).then(ok => {
-        if(ok)
-            window.location.reload()
-      });
-    })
-  }
-
   const selectall = () => {
     if(Selected.length === 0){
       setSelected(SelectList)
@@ -392,10 +372,6 @@ function AssignEdit() {
                 <button type="button" className="btn btn-danger float-end" style={{marginLeft:"40px"}} id="liveToastBtn" onClick={handleButtonDelete}>Delete</button>
                 <button type="button" className="btn btn-primary float-end" style={{marginLeft:"20px"}} id="liveToastBtn" onClick={handleButtonClick}>Save</button>
                 <button type="button" className="btn btn-primary float-end" onClick={() => navigate("/AssignList")}>Back</button>
-                <div class="form-check form-switch">
-                  <input className="form-check-input" type="checkbox" role="switch" id="toggleLock" checked={lock} onChange={() => toggleLock()}/>
-                  <label className="form-check-label" htmlFor="toggleLock">close assignment</label>
-                </div>
               </div>
             </div>
           </div>
@@ -461,7 +437,7 @@ function AssignEdit() {
                         {(!isGroup) ? "Section" : "Group"}*
                       </div>
                       <div className='col'>
-                        <button type="button" class="btn btn-outline-dark float-end" onClick={selectall}>{(Selected.length === 0) ? "S" : "Des"}elect all</button>
+                        <button type="button" className="btn btn-outline-dark float-end" onClick={selectall}>{(Selected.length === 0) ? "S" : "Des"}elect all</button>
                       </div>
                     </div>
                   </div>

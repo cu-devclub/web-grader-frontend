@@ -209,28 +209,28 @@ function Lab() {
               <br/>
               <div className='card'>
                 <div className='card-header'>
-                  <h5><Download /> Files</h5>
+                  <h5><Download /> Downlaod files</h5>
                 </div>
                 <div className='card-body'>
                   {LabInfo.Question.map((q, i) => {
-                    return <button key={`QD${i}`} type="button" className="btn btn-outline-dark" style={{width: "100%", textAlign: "Left", marginBottom: "0.5em"}} onClick={() => {downfile(1, q.QID)}}><span style={{color: "rgb(54, 128, 255)"}}><CodeSlash /></span> Question file: {i+1}</button>
+                    return <button key={`QD${i}`} type="button" className="btn btn-outline-dark" style={{width: "100%", textAlign: "Left", marginBottom: "0.5em"}} onClick={() => {downfile(1, q.QID)}}><span style={{color: "rgb(54, 128, 255)"}}><CodeSlash /></span> <b>Question file:</b> {i+1} {q.Date}</button>
                   })}
                   {LabInfo.AddFile.map((a, i) => {
-                    return <button key={`AD${i}`} type="button" className="btn btn-outline-dark" style={{width: "100%", textAlign: "Left", marginBottom: "0.5em"}} onClick={() => {downfile(0, a)}}><span style={{color: "rgb(255, 178, 62)"}}><FileEarmark /></span> Essential file: {i+1}</button>
+                    return <button key={`AD${i}`} type="button" className="btn btn-outline-dark" style={{width: "100%", textAlign: "Left", marginBottom: "0.5em"}} onClick={() => {downfile(0, a)}}><span style={{color: "rgb(255, 178, 62)"}}><FileEarmark /></span> <b>Essential file:</b> {i+1}</button>
                   })}
                 </div>
               </div>
             </div>
             <div className='col'>
               {LabInfo.Question.map((q, i) => {
-                return <div key={`QS${i}`} className='card'>
+                return <div key={`QS${i}`} className='card' style={{marginBottom: "1rem"}}>
                   <div className='card-header'>
                     <div className="row">
                       <div className="col">
                         <h6>Question: {i+1}</h6>
                       </div>
                       <div className="col-md-2">
-                        {q.Score}/{q.Max}
+                        <b>{q.Score}</b>/{q.Max}
                       </div>
                     </div>
                   </div>
@@ -248,12 +248,12 @@ function Lab() {
                     <br/>
                     <div className='row'>
                       <div className='col'>
-                        <span>Submitted: </span>
+                        <span><b>Submitted:</b> </span>
                         <span style={{fontWeight:'normal', color: `${q.SMT.Late === 1 ? 'red' : 'black'}`}}>
                           {q.SMT.SID === -1 ? 
                             ("-") : (
                               <span>
-                                {q.SMT.Filename} 
+                                {q.SMT.Filename} <span style={{color: "rgb(91, 91, 91)", fontSize: "0.8rem"}}>{q.SMT.Date}</span>
                                 <button type="button" className="btn btn-outline-dark" style={{width: "auto", textAlign: "Left", marginLeft: "0.5em"}} onClick={() => {downfile(2, q.SMT.SID)}}><Download /> Download</button>
                               </span>
                           )}

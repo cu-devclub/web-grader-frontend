@@ -1,3 +1,6 @@
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content';
+
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar'
 import { useNavigate } from 'react-router-dom';
@@ -14,30 +17,10 @@ function AssignList() {
   const [classId,] = useState(sessionStorage.getItem("classId"));
 
   const [assignmentsData, setAssignmentsData] = useState([]);
-
-  // const handleToggleLab = (labIndex) => {
-  //   setExpandedLabs((prevExpandedLabs) => ({
-  //     ...prevExpandedLabs,
-  //     [labIndex]: !prevExpandedLabs[labIndex],
-  //   }));
-  // };
+  
+  const [isButtonClicked, setIsButtonClicked] = useState(false);
 
   useEffect(() => {
-
-    // const fetchUserData = async () => {
-    //   try {
-    //     const response = await fetch(`${host}/ST/user/profile?Email=${Email}`);
-    //     const userdata = await response.json();
-    //     console.log('user:', userdata);
-    //     setUserData(userdata);
-    //     console.log(userdata.ID);
-    //     // Call fetchData here after setting userData
-    //     fetchData(userdata.ID);
-    //   } catch (error) {
-    //     console.error('Error fetching user data:', error);
-    //   }
-    // };
-  
     const fetchData = async () => {
       try {
         const response = await fetch(`${host}/TA/class/Assign?CSYID=${classId}`);
@@ -63,6 +46,33 @@ function AssignList() {
     fetchData()
   }, [classId]);
 
+  const toggleLock = async (event, LID) => {
+    fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/Assign/Lock`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ LID: LID})
+    })
+    .then(response => response.json())
+    .then(data => {
+      withReactContent(Swal).fire({
+        title: data.msg,
+        icon: data.success ? "success" : "error"
+      }).then(ok => {
+        if(ok)
+            window.location.reload()
+      });
+    })
+    setIsButtonClicked(false);
+  }
+
+  const handleRedirect = async (LID) => {
+    if (!isButtonClicked) {
+      sessionStorage.setItem("LID", LID);
+      navigate("/AssignEdit");
+    }
+  }
 
   return (
     <div>
@@ -106,7 +116,7 @@ function AssignList() {
             {assignmentsData && ((assignmentsData.length !== 0) && (
               assignmentsData.map(assign => {
                 return (
-                <div key={assign["LID"]} className='card' style={{ marginBottom: '2rem' }} onClick={() => {sessionStorage.setItem("LID", assign["LID"]); navigate("/AssignEdit")}}>
+                <div key={assign["LID"]} className='card' style={{ marginBottom: '2rem' }} onClick={() => handleRedirect(assign["LID"])}>
                   <button style={{ fontSize: '1.2rem', height:'4rem'}} className="fw-bold ">
                     <div className='row'>
                       <div className='col-2' style={{textAlign: 'Left'}}>
@@ -130,6 +140,15 @@ function AssignList() {
                         <span style={{fontWeight:'normal'}}>
                           {` ${assign["Due"]}`}
                         </span>
+                      </div>
+                      <div className='col'>
+                      <div className="d-flex">
+                          <p style={{fontWeight:'normal'}}>Open</p>
+                          <div className="form-check form-switch form-check-inline">
+                            <input className="form-check-input float-end" type="checkbox" role="switch" checked={assign["Lock"]} onFocus={() => setIsButtonClicked(true)} onBlur={() => setIsButtonClicked(false)} onChange={(event) => toggleLock(event, assign["LID"])}/>
+                          </div>
+                          <p style={{fontWeight:'normal'}}>Closed</p>
+                      </div>
                       </div>
                     </div>
                   </button>
