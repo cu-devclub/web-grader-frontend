@@ -11,7 +11,7 @@ function Logout(){
 
     async function run(){
         try {
-            const response = await fetch(`https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/logout`, {
+            const response = await fetch(`${process.env.REACT_APP_HOST}/glob/auth/logout`, {
                 method: "POST",
                 credentials: "include",
                 headers: {

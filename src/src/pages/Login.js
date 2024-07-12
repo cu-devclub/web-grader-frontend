@@ -7,7 +7,7 @@ import Cookies from 'js-cookie';
 
 
 const loginRedir  = async () => {
-  	var data = await fetch(`https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/login`);
+  	var data = await fetch(`${process.env.REACT_APP_HOST}/glob/auth/login`);
 
   	data = await data.json();
 	

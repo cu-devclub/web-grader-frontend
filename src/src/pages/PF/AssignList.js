@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar'
 import { useNavigate } from 'react-router-dom';
 
-const host = `https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
+const host = `${process.env.REACT_APP_HOST}`
 
 function AssignList() {
   
@@ -47,7 +47,7 @@ function AssignList() {
   }, [classId]);
 
   const toggleLock = async (event, LID) => {
-    fetch(`https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/Assign/Lock`, {
+    fetch(`${process.env.REACT_APP_HOST}/TA/class/Assign/Lock`, {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'

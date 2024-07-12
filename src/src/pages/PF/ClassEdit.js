@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie';
 import { Download } from 'react-bootstrap-icons';
 
-const host = `https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
+const host = `${process.env.REACT_APP_HOST}`
 
 
 function ClassEdit() {
@@ -289,7 +289,7 @@ function ClassEdit() {
     }
 
     const downfile = async () => {
-        fetch(`https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/download`, {
+        fetch(`${process.env.REACT_APP_HOST}/glob/download`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

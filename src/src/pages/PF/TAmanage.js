@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, X } from 'react-bootstrap-icons';
 import Cookies from 'js-cookie';
 
-const host = `https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
+const host = `${process.env.REACT_APP_HOST}`
 
 function TAmanage() {
     const navigate = useNavigate();

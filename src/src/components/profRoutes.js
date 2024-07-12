@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { usePerm } from './usePerm';
 import Cookies from 'js-cookie';
 
-const host = `https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`;
+const host = `${process.env.REACT_APP_HOST}`;
 
 function ProfRoutes() {
     const [hasPermission, setHasPermission] = useState(false);

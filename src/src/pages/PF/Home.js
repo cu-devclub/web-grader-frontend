@@ -8,7 +8,7 @@ import { Gear, ChevronDown, ChevronRight } from 'react-bootstrap-icons';
 // import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
-const host = `https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
+const host = `${process.env.REACT_APP_HOST}`
 
 function HomePF() {
   const navigate = useNavigate();

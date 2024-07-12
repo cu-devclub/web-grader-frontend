@@ -24,7 +24,7 @@ ChartJS.register(
     Legend
 );
 
-const host = `https://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}`
+const host = `${process.env.REACT_APP_HOST}`
 
 function Index() {
   const navigate = useNavigate();
