@@ -23,7 +23,6 @@ function AssignEdit() {
   const [publishDate, setPublishDate] = useState('')
   const [dueDate, setDueDate] = useState('')
   const [dueDateLock, setDueDateLock] = useState(false)
-  const [lock, setLock] = useState(false)
 
   // Question Sys
   const [totalQNum, setTotalQNum] = useState(1);
@@ -47,7 +46,6 @@ function AssignEdit() {
           setPublishDate(data.data.PubDate)
           setDueDate(data.data.DueDate)
           setDueDateLock(data.data.LOD)
-          setLock(data.data.Lock)
   
           setIsGroup(data.data.IsGroup)
           setSelectList(data.data.SelectList)

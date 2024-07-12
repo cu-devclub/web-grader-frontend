@@ -57,7 +57,7 @@ function Callback() {
 
     return (
         <div className="container align-items-center align-content-center" style={{background: "#FFF", borderWidth: "2px", borderStyle: "solid", borderRadius: "2px", width: "70vw", height: "50vh", marginTop: "25vh", marginRight: "15vw"}}>
-            <input type="email" class="form-control" placeholder='Email' value={Email} onChange={handleEmail} style={{width: "30vw"}}></input>
+            <input type="email" className="form-control" placeholder='Email' value={Email} onChange={handleEmail} style={{width: "30vw"}}></input>
             <br />
             <div className="form-check form-check-inline">
               <input
@@ -73,7 +73,7 @@ function Callback() {
             </div>
             <br />
             <br />
-            <button type="button" class="btn btn-primary" onClick={handleSub}>Submit</button>
+            <button type="button" className="btn btn-primary" onClick={handleSub}>Submit</button>
         </div>
     );
 }
