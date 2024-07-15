@@ -4,6 +4,7 @@ import withReactContent from 'sweetalert2-react-content';
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar'
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const host = `${process.env.REACT_APP_HOST}`
 
@@ -13,7 +14,6 @@ function AssignCreate() {
 
   // User Data
   const [ClassInfo, setClassInfo] = useState({});
-  const [Email,] = useState(sessionStorage.getItem("Email"));
   const [classId,] = useState(sessionStorage.getItem("classId"));
 
   // Normal field
@@ -36,7 +36,15 @@ function AssignCreate() {
     // Get list of sections
     const fetchSection = async () => {
       try {
-        const response = await fetch(`${host}/section?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/classes/section?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         setSelectList(data);
       } catch (error) {
@@ -47,7 +55,15 @@ function AssignCreate() {
     // Get list of groups
     const fetchGroup = async () => {
       try {
-        const response = await fetch(`${host}/group?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/classes/group?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         if(data.length !== 0){
           setSelectList(data);
@@ -61,7 +77,15 @@ function AssignCreate() {
     // Class card info
     const fetchClass = async () => {
       try {
-        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         setClassInfo(data);
       } catch (error) {
@@ -113,15 +137,6 @@ function AssignCreate() {
       new Date(publishDate) <= new Date(dueDate) &&
       isAllQHaveFile() &&
       Selected.length !== 0
-      // checkedSections !== null &&
-      // checkedSections !== undefined &&
-      // checkedSections.length > 0 &&
-      // checkedSections.every(section => 
-      //   submittedDates[section] && 
-      //   submittedDates[section].publishDate && 
-      //   submittedDates[section].dueDate &&
-      //   new Date(submittedDates[section].publishDate) <= new Date(submittedDates[section].dueDate)
-      // )
     );
   };
 
@@ -193,7 +208,6 @@ function AssignCreate() {
           formData.append("DueDate", dueDate);
           formData.append('LockOnDue', dueDateLock);
 
-          formData.append('Creator', Email);
           formData.append('CSYID', classId);
 
           formData.append("IsGroup", isGroup);
@@ -204,10 +218,13 @@ function AssignCreate() {
           
           const response = await fetch(`${host}/TA/class/Assign/Create`, {
             method: 'POST',
+            credentials: "include",
+            headers: {
+                "X-CSRF-TOKEN": Cookies.get("csrf_token")
+            },
             body: formData,
           })
           const Data = await response.json()
-          console.log(Data)
 
           if (Data.success){
             withReactContent(Swal).fire({
@@ -272,7 +289,6 @@ function AssignCreate() {
             </div>
             <div className="col-md-2">
               <button type="button" className="btn btn-primary float-end" style={{marginLeft:"20px"}} id="liveToastBtn" onClick={handleButtonClick}>Submit</button>
-              {/* <button type="button" className="btn btn-primary float-end" style={{marginLeft:"20px"}} id="liveToastBtn" onClick={handleButtonClick} disabled={!isFormValid()}>Submit</button> */}
               <button type="button" className="btn btn-primary float-end" onClick={() => navigate("/AssignList")}>Back</button>
             </div>
           </div>
@@ -308,7 +324,6 @@ function AssignCreate() {
                       id={`publishdate`}
                       value={publishDate}
                       onChange={handlePublishDateChange}
-                      // min={currentDate}
                     />
                   </div>
                   <div className="col-md-6">

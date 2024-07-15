@@ -11,14 +11,10 @@ const host = `${process.env.REACT_APP_HOST}`
 
 function Lab() {
   const navigate = useNavigate();
-
-  // const [assignmentData, setAssignmentData] = useState(null);
-  // const [fileSelectedMap, setFileSelectedMap] = useState({}); // Map to track file selection for each question
-  // const [submissionResponses, setSubmissionResponses] = useState({}); // Map to hold submission responses for each question
-
+  
   const [ClassInfo, setClassInfo] = useState({})
 
-  const [Email,] = useState(Cookies.get('email'));
+  const [Email,] = useState(Cookies.get('Email'));
   const [LID,] = useState(sessionStorage.getItem("LID"))
   const [classId,] = useState(sessionStorage.getItem("classId"))
 
@@ -27,7 +23,15 @@ function Lab() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${host}/ST/assignment/specific?LID=${LID}&Email=${Email}`);
+        const response = await fetch(`${host}/ST/assignment/specific?LID=${LID}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         setLabInfo(data.data)
       } catch (error) {
@@ -38,7 +42,15 @@ function Lab() {
     // Class card info
     const fetchClass = async () => {
       try {
-        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         setClassInfo(data);
       } catch (error) {
@@ -52,11 +64,14 @@ function Lab() {
 
   const downfile = async (t, i) => {
       fetch(`${process.env.REACT_APP_HOST}/glob/download`, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ fileRequest: `${t}_0_${i}`, Email: Email })
+        method: 'POST',
+        credentials: "include",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
+            "X-CSRF-TOKEN": Cookies.get("csrf_token")
+        },
+          body: JSON.stringify({ fileRequest: `${t}_0_${i}`})
       })
       .then(response => response.json())
       .then(data => {
@@ -118,11 +133,14 @@ function Lab() {
             const formData = new FormData()
 
             formData.append(`file`, document.getElementById(`Q${QID}`).files[0]);
-            formData.append('Email', Email);
             formData.append('QID', QID);
 
             const response = await fetch(`${host}/upload/SMT`, {
               method: 'POST',
+              credentials: "include",
+              headers: {
+                  "X-CSRF-TOKEN": Cookies.get("csrf_token")
+              },
               body: formData,
             })
             const Data = await response.json()

@@ -18,11 +18,19 @@ function TAmanage() {
     const [CSYID, _] = useState(sessionStorage.getItem("CSYID"))
     const [ClassCreator, setClassCreator] = useState("")
 
-    const [Email,] = useState(Cookies.get('email'));
+    const [Email,] = useState(Cookies.get('Email'));
 
     const fetchTA = async () => {
         try {
-            const response = await fetch(`${host}/TA/class/TAList?CSYID=${CSYID}`);
+            const response = await fetch(`${host}/TA/class/TAList?CSYID=${CSYID}`, {
+                method: "GET",
+                credentials: "include",
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                    "Access-Control-Allow-Origin": "*",
+                    "X-CSRF-TOKEN": Cookies.get("csrf_token")
+                }
+              });
             const data = await response.json();
             if(!data['success']){
                 console.error('Error fetching data:', data['msg']);
@@ -38,7 +46,15 @@ function TAmanage() {
     useEffect(() => {
         const fetchTA = async () => {
             try {
-                const response = await fetch(`${host}/TA/class/TAList?CSYID=${CSYID}`);
+                const response = await fetch(`${host}/TA/class/TAList?CSYID=${CSYID}`, {
+                    method: "GET",
+                    credentials: "include",
+                    headers: {
+                        "Content-type": "application/json; charset=UTF-8",
+                        "Access-Control-Allow-Origin": "*",
+                        "X-CSRF-TOKEN": Cookies.get("csrf_token")
+                    }
+                  });
                 const data = await response.json();
                 if(!data['success']){
                     console.error('Error fetching data:', data['msg']);
@@ -65,7 +81,6 @@ function TAmanage() {
                     "X-CSRF-TOKEN": Cookies.get('csrf_token')
                 },
                 body: JSON.stringify({
-                    "AEmail": Email,
                     "Email": AddMail,
                     "CSYID": CSYID
                 })
@@ -104,8 +119,7 @@ function TAmanage() {
                     "X-CSRF-TOKEN": Cookies.get('csrf_token')
                 },
                 body: JSON.stringify({
-                    "AEmail": Email,
-                    "Email": e,
+                    "Email": AddMail,
                     "CSYID": CSYID
                 })
             });
@@ -130,7 +144,6 @@ function TAmanage() {
                 icon: "error"
             })
         }
-        console.log(e)
     }
 
     const handleAddEmailChange = (e) => {

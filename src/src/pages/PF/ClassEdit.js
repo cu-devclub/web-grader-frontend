@@ -22,7 +22,6 @@ function ClassEdit() {
 
     const CSYID = classData.classid;
 
-    const [Email,] = useState(Cookies.get('email'));
     const [classID, setClassID] = useState('');
     const [schoolYear, setSchoolYear] = useState('');
     const [className, setClassName] = useState('');
@@ -73,6 +72,10 @@ function ClassEdit() {
 
                     const response = await fetch(`${host}/TA/class/edit`, {
                         method: 'POST',
+                        credentials: "include",
+                        headers: {
+                            "X-CSRF-TOKEN": Cookies.get("csrf_token")
+                        },
                         body: formData,
                     });
                     const responseData = await response.json();
@@ -127,6 +130,10 @@ function ClassEdit() {
             try {
                 const response = await fetch(`${host}/upload/Thumbnail`, {
                     method: 'POST',
+                    credentials: "include",
+                    headers: {
+                        "X-CSRF-TOKEN": Cookies.get("csrf_token")
+                    },
                     body: formData,
                 });
                 const responseData = await response.json();
@@ -167,7 +174,6 @@ function ClassEdit() {
         
             const formData = new FormData();
             formData.append('CSYID', CSYID)
-            formData.append('Email', Email)
             formData.append('file', fileCSV)
             try {
                 withReactContent(Swal).fire({
@@ -181,6 +187,10 @@ function ClassEdit() {
                 })
                 const response = await fetch(`${host}/upload/CSV`, {
                     method: 'POST',
+                    credentials: "include",
+                    headers: {
+                        "X-CSRF-TOKEN": Cookies.get("csrf_token")
+                    },
                     body: formData,
                 });
                 const responseData = await response.json();
@@ -234,6 +244,10 @@ function ClassEdit() {
 
                     const response = await fetch(`${host}/TA/class/delete`, {
                         method: 'POST',
+                        credentials: "include",
+                        headers: {
+                            "X-CSRF-TOKEN": Cookies.get("csrf_token")
+                        },
                         body: formData,
                     });
                     const responseData = await response.json();
@@ -291,10 +305,13 @@ function ClassEdit() {
     const downfile = async () => {
         fetch(`${process.env.REACT_APP_HOST}/glob/download`, {
             method: 'POST',
+            credentials: "include",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-type": "application/json; charset=UTF-8",
+                "Access-Control-Allow-Origin": "*",
+                "X-CSRF-TOKEN": Cookies.get("csrf_token")
             },
-            body: JSON.stringify({ fileRequest: `3_0_${CSYID}`, Email: Email })
+            body: JSON.stringify({ fileRequest: `3_0_${CSYID}`})
         })
         .then(response => response.json())
         .then(data => {

@@ -22,8 +22,10 @@ function Callback() {
 
         const response = await fetch(`${process.env.REACT_APP_HOST}/glob/auth/testCallback`, {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-type": "application/json; charset=UTF-8",
+                    "Access-Control-Allow-Origin": "*"
                 },
                 body: JSON.stringify({
                     'email': Email
@@ -37,9 +39,9 @@ function Callback() {
             })
             return
         }
-        Cookies.set("email", Email)
+        Cookies.set("Email", Email)
         Cookies.set("uid", Email.split("@")[0])
-        Cookies.set('csrf_token', "dummy")
+        Cookies.set('csrf_token', Data["data"]["csrf_token"])
         if(Role){
             Cookies.set("role", 2)
         }else{

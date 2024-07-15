@@ -14,13 +14,20 @@ function Index() {
   const classId = sessionStorage.getItem("classId")
 
   const [ClassInfo, setClassInfo] = useState(null)
-  const [Email,] = useState(Cookies.get('email'));
 
 
   useEffect(() => {
-    const fetchData = async (userId) => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`${host}/ST/assignment/all?SID=${userId}&CID=${classId}`);
+        const response = await fetch(`${host}/ST/assignment/all?CID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         setAssignmentData(data.data);
       } catch (error) {
@@ -30,7 +37,15 @@ function Index() {
 
     const fetchClass = async () => {
       try {
-        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         setClassInfo(data);
       } catch (error) {
@@ -39,9 +54,9 @@ function Index() {
     };
 
     fetchClass()
-    fetchData(Email.split("@")[0]);
+    fetchData();
     
-  }, [classId, Email]);
+  }, [classId]);
 
 
 

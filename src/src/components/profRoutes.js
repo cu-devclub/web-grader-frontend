@@ -26,10 +26,18 @@ function ProfRoutes() {
                     background: "rgba(0, 0, 0, 0)"
                 })
                 const CSYID = sessionStorage.getItem("classId");
-                const Email = Cookies.get('email');
+                const Email = Cookies.get('Email');
 
                 if (CSYID && Email) {
-                    const response = await fetch(`${host}/glob/checkperm?Email=${Email}&CSYID=${CSYID}`);
+                    const response = await fetch(`${host}/glob/auth/checkperm?CSYID=${CSYID}`,{
+                        method: "GET",
+                        credentials: "include",
+                        headers: {
+                            "Content-type": "application/json; charset=UTF-8",
+                            "Access-Control-Allow-Origin": "*",
+                            "X-CSRF-TOKEN": Cookies.get("csrf_token")
+                        }
+                    });
                     const data = await response.json();
                     withReactContent(Swal).close()
                     setHasPermission(data.success);
@@ -40,14 +48,13 @@ function ProfRoutes() {
                 console.error('Error checking permissions:', error);
                 setHasPermission(false);
             } finally {
-                setLoading(false); // Set loading to false after permissions check completes
+                setLoading(false);
             }
         }
 
         checkPermissions();
     }, []);
 
-    // Render based on loading state and permissions
     if (loading) {
         return <div></div>;
     }

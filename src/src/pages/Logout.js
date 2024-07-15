@@ -24,7 +24,7 @@ function Logout(){
             var data = await response.json();
 
             if(data['success']){
-                Cookies.remove('email')
+                Cookies.remove('Email')
                 Cookies.remove('uid')
                 Cookies.remove('role')
                 Cookies.remove('csrf_token')

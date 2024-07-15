@@ -42,20 +42,22 @@ function App() {
                     <Route element={<TAmanage />} path='TAmanage' />
                     <Route element={<Sentin />} path='Sentin' />
                     <Route element={<StudentList />} path='StudentList' />
+
                 </Route>
                 <Route element={<Home />} path='/' />
-                <Route element={<Logout />} path='Logout' />
-
                 <Route element={<Class />} path='Class' />
                 <Route element={<Lab />} path='Lab' />
                 <Route element={<Portfolio />} path='Portfolio' />
+                <Route element={<Logout />} path='Logout' />
                 
             </Route>
             <Route element={<PublicRoutes />}>
-                <Route element={<Login />} path='/login' />
-                <Route element={<Callback />} path='/callback' />
+                <Route element={<Login />} path='login' />
+                <Route element={<Callback />} path='callback' />
+
             </Route>
             <Route element={<ErrorComp />} path='*' />
+
         </Routes>
     )
 }

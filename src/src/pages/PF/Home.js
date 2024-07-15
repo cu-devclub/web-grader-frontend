@@ -5,7 +5,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../../components/Navbar'
 import { useNavigate } from 'react-router-dom';
 import { Gear, ChevronDown, ChevronRight } from 'react-bootstrap-icons';
-// import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 const host = `${process.env.REACT_APP_HOST}`
@@ -13,7 +12,7 @@ const host = `${process.env.REACT_APP_HOST}`
 function HomePF() {
   const navigate = useNavigate();
 
-  const [Email,] = useState(Cookies.get('email'));
+  const [Email,] = useState(Cookies.get('Email'));
   const [courses, setCourses] = useState(null);
   const [expanded, setExpanded] = useState(false);
   const [ready, setReady] = useState(null);
@@ -37,7 +36,15 @@ function HomePF() {
 
   const fetchCourses = useCallback(async () => {
     try {
-      const response = await fetch(`${host}/TA/class/classes?Email=${Email}`);
+      const response = await fetch(`${host}/TA/class/classes`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
+            "X-CSRF-TOKEN": Cookies.get("csrf_token")
+        }
+      });
       const data = await response.json();
       const sortedCourses = Object.fromEntries(Object.entries(data).sort((a, b) => b[0].localeCompare(a[0])));
   
@@ -45,7 +52,7 @@ function HomePF() {
     } catch (error) {
       console.error('Error fetching class data:', error);
     }
-  }, [Email])
+  }, [])
   
   
 
@@ -85,17 +92,18 @@ function HomePF() {
   
   const handleCreateClick = async (e) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
     try {
       const response = await fetch(`${host}/TA/class/create`, {
-        headers: {
-          "Content-type": "application/json; charset=UTF-8"
-        },
         method: 'POST',
+        credentials: "include",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
+            "X-CSRF-TOKEN": Cookies.get("csrf_token")
+        },
         body: JSON.stringify(formData)
       });
       const responseData = await response.json();
-      console.log(response)
       if (responseData.Status) {
         fetchCourses();
         handleCancel()
@@ -176,7 +184,6 @@ function HomePF() {
                     {classes.map(course => (
                       <div className="card" style={{width: '200px', marginLeft: "10px", marginRight: "10px"}} key={course.ClassID}>
                         <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
-                        {/* <img class="" style="width: 198px;height: 198px;"/> */}
                         <div className="card-body">
                           <h4 className="card-title">{course.ClassName}</h4>
                           <p className="card-text">ID: {course.ClassID}</p>

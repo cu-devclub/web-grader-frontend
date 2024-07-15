@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar'
 import { useNavigate } from 'react-router-dom';
-// import Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 
 
 const host = `${process.env.REACT_APP_HOST}`
@@ -9,7 +9,6 @@ const host = `${process.env.REACT_APP_HOST}`
 function Sentin() {
   const navigate = useNavigate();
 
-  // const [Email,] = useState(Cookies.get("Email"));
   const [classId,] = useState(sessionStorage.getItem("classId"));
   const [LID,] = useState(sessionStorage.getItem("LID"))
   const [ClassInfo, setClassInfo] = useState({});
@@ -22,7 +21,15 @@ function Sentin() {
   useEffect(() => {
     const fetchScores = async () => {
       try {
-        const response = await fetch(`${host}/TA/class/score?LID=${LID}`);
+        const response = await fetch(`${host}/TA/class/score?LID=${LID}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         if(data.success){
           setScores(data.data);
@@ -33,7 +40,15 @@ function Sentin() {
     };
     const fetchClass = async () => {
       try {
-        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         setClassInfo(data);
       } catch (error) {
@@ -107,7 +122,6 @@ function Sentin() {
                 </tr>
               </thead>
               <tbody>
-                {/* {console.log(Scores)} */}
                 {Scores ? (
                   Scores["Students"].filter(element => (
                     (element["UID"] + element["Name"]).toLowerCase().includes(searchQuery.toLowerCase())

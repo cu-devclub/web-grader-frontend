@@ -33,7 +33,6 @@ function Index() {
   const classId = sessionStorage.getItem("classId")
 
   const [ClassInfo, setClassInfo] = useState(null)
-  const [Email,] = useState(Cookies.get('email'));
 
   const [data, setData] = useState({
     labels: ['0-9', '10-19', '20-29', '30-39', '40-49', '50-59', '60-69', '70-79', '80-89', '90-100'],
@@ -62,7 +61,15 @@ function Index() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${host}/ST/class/rank?Email=${Email}&CSYID=${classId}`);
+        const response = await fetch(`${host}/ST/class/rank?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         setRank(data.data);
         setData({
@@ -82,7 +89,15 @@ function Index() {
 
     const fetchClass = async () => {
       try {
-        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         setClassInfo(data);
       } catch (error) {
@@ -93,7 +108,7 @@ function Index() {
     fetchClass()
     fetchData();
     
-  }, [classId, Email]);
+  }, [classId]);
 
 
 

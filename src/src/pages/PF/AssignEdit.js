@@ -15,7 +15,6 @@ function AssignEdit() {
   const [ClassInfo, setClassInfo] = useState({});
   const [classId,] = useState(sessionStorage.getItem("classId"));
   const [LID,] = useState(sessionStorage.getItem("LID"));
-  const [Email,] = useState(Cookies.get('email'));
 
   // Normal field
   const [labNum, setLabNum] = useState('');
@@ -37,7 +36,15 @@ function AssignEdit() {
   useEffect(() => {
     const fetchLab = async () => {
       try {
-        const response = await fetch(`${host}/TA/class/Assign/data?LID=${LID}`);
+        const response = await fetch(`${host}/TA/class/Assign/data?LID=${LID}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         if(data.success){
           setLabNum(data.data.LabNum)
@@ -64,7 +71,15 @@ function AssignEdit() {
 
     const fetchClass = async () => {
       try {
-        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         // setAssignmentsData(data);
         setClassInfo(data);
@@ -181,6 +196,10 @@ function AssignEdit() {
           try {
             const response = await fetch(`${host}/TA/class/Assign/Edit`, {
               method: 'POST',
+              credentials: "include",
+              headers: {
+                  "X-CSRF-TOKEN": Cookies.get("csrf_token")
+              },
               body: formData,
             })
             const Data = await response.json()
@@ -225,16 +244,6 @@ function AssignEdit() {
       dueDate !== '' &&
       new Date(publishDate) <= new Date(dueDate) &&
       Selected.length !== 0
-      // isAllQHaveFile()
-      // checkedSections !== null &&
-      // checkedSections !== undefined &&
-      // checkedSections.length > 0 &&
-      // checkedSections.every(section => 
-      //   submittedDates[section] && 
-      //   submittedDates[section].publishDate && 
-      //   submittedDates[section].dueDate &&
-      //   new Date(submittedDates[section].publishDate) <= new Date(submittedDates[section].dueDate)
-      // )
     );
   };
 
@@ -252,8 +261,11 @@ function AssignEdit() {
           if(ok.isConfirmed){
             const response = await fetch(`${host}/TA/class/Assign/delete`, {
               method: 'POST',
+              credentials: "include",
               headers: {
-                'Content-Type': 'application/json'
+                  "Content-type": "application/json; charset=UTF-8",
+                  "Access-Control-Allow-Origin": "*",
+                  "X-CSRF-TOKEN": Cookies.get("csrf_token")
               },
               body: JSON.stringify({ LabID: LID }),
             })
@@ -288,10 +300,12 @@ function AssignEdit() {
   const downfile = async (t, l, i) => {
     fetch(`${process.env.REACT_APP_HOST}/glob/download`, {
         method: 'POST',
+        credentials: "include",
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json; charset=UTF-8',
+            "X-CSRF-TOKEN": await Cookies.get("csrf_token")
         },
-        body: JSON.stringify({ fileRequest: `${t}_${l}_${i}`, Email: Email })
+        body: JSON.stringify({ fileRequest: `${t}_${l}_${i}`})
     })
     .then(response => response.json())
     .then(data => {

@@ -33,7 +33,6 @@ function Callback() {
                 Cookies.set("uid", data["data"]["uid"])
                 Cookies.set('csrf_token', data["data"]["csrf_token"])
 
-                // Cookies.set("role", data["data"]["role"])
                 Cookies.set("role", 2)
 
                 withReactContent(Swal).fire({

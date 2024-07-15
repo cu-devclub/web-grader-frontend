@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const host = `${process.env.REACT_APP_HOST}`
 
@@ -10,7 +11,7 @@ function StudentList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showname, setshowname] = useState([])
   
-  const [sections, setSections] = useState([]); //ใส่ sec ที่จะเอา]
+  const [sections, setSections] = useState([]);
   const [checkedSections, setCheckedSections] = useState([])
 
   const [ClassInfo, setClassInfo] = useState({});
@@ -22,10 +23,16 @@ function StudentList() {
   useEffect(() => {
     const fetchClass = async () => {
       try {
-        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
-        console.log(data);
-        // setAssignmentsData(data);
         setClassInfo(data);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -34,7 +41,15 @@ function StudentList() {
 
     const fetchSection = async () => {
       try {
-        const response = await fetch(`${host}/section?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/classes/section?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         setSections(data);
       } catch (error) {
@@ -44,7 +59,15 @@ function StudentList() {
   
     const fetchName = async () => {
       try {
-        const response = await fetch(`${host}/TA/Student/List?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/Student/List?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const dataname = await response.json();
         setshowname(dataname["data"]["Students"]);
       } catch (error) {
@@ -67,7 +90,11 @@ function StudentList() {
     }),);
 
       const response = await fetch(`${host}/TA/Student/List/CSV`, {
-            method: 'POST',
+        method: 'POST',
+        credentials: "include",
+        headers: {
+            "X-CSRF-TOKEN": Cookies.get("csrf_token")
+        },
             body: formData
       })
       const data = await response.json();
@@ -97,11 +124,6 @@ function StudentList() {
       setCheckedSections([...checkedSections, e])
     }
   }
-
-  // const filteredStudents = students.filter(student => {
-  //   const { UID, Name } = student;
-  //   return UID.includes(searchQuery) || Name.toLowerCase().includes(searchQuery.toLowerCase());
-  // });
 
   return (
     <div>
@@ -186,7 +208,7 @@ function StudentList() {
           </div>
           <br />
           <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button type="button" className="btn btn-primary" onClick={() => navigate("/AssignList", { state: { Email, classid: classId } })}>Back</button>
+            <button type="button" className="btn btn-primary" onClick={() => navigate("/AssignList")}>Back</button>
           </div>
         </div>
       </div>

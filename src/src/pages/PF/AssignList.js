@@ -4,12 +4,12 @@ import withReactContent from 'sweetalert2-react-content';
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar'
 import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const host = `${process.env.REACT_APP_HOST}`
 
 function AssignList() {
   
-  // const [expandedLabs, setExpandedLabs] = useState({});
   const navigate = useNavigate();
   const [ClassInfo, setClassInfo] = useState({});
   
@@ -23,7 +23,15 @@ function AssignList() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${host}/TA/class/Assign?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/Assign?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         setAssignmentsData(data.data.Assignment);
       } catch (error) {
@@ -33,7 +41,15 @@ function AssignList() {
 
     const fetchClass = async () => {
       try {
-        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`);
+        const response = await fetch(`${host}/TA/class/class?CSYID=${classId}`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         setClassInfo(data);
       } catch (error) {
@@ -42,15 +58,17 @@ function AssignList() {
     };
 
     fetchClass();
-    // fetchUserData();
     fetchData()
   }, [classId]);
 
   const toggleLock = async (event, LID) => {
     fetch(`${process.env.REACT_APP_HOST}/TA/class/Assign/Lock`, {
       method: 'POST',
+      credentials: "include",
       headers: {
-          'Content-Type': 'application/json'
+          "Content-type": "application/json; charset=UTF-8",
+          "Access-Control-Allow-Origin": "*",
+          "X-CSRF-TOKEN": Cookies.get("csrf_token")
       },
       body: JSON.stringify({ LID: LID})
     })
@@ -88,23 +106,18 @@ function AssignList() {
           <h5>{ClassInfo['ClassID']} {ClassInfo['ClassName']} {ClassInfo['ClassYear']}</h5>
           <h6>Instructor: {ClassInfo['Instructor']}</h6>
         </div>
-          <button type="button" className="btn btn-secondary" onClick={() => navigate("/StudentList", { state: { Email: Email,classid:classId} })} style={{ marginLeft: 40 + 'em' }}>Student lists</button>
+          <button type="button" className="btn btn-secondary" onClick={() => navigate("/StudentList")} style={{ marginLeft: 40 + 'em' }}>Student lists</button>
       </div>
       )}
 
       <br></br>
       <div className="card" style={{ marginLeft: 10 + 'em', marginRight: 10 + 'em' }}>
-        {/* <div className="card-header">
-          <h5 style={{ display: 'inline-block' }}>Assignments</h5>
-          <span style={{ margin: '0 10px' }}></span>
-          <button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={() => navigate("/AssignCreate", { state: { Email: Email,classid:classId} })} >+ New</button>
-        </div> */}
         <div className="card-header">
           <div className="row" style={{marginBottom:"-5px"}}>
               <div className="col">
                 <h5 style={{ display: 'inline-block' }}>Assignments</h5>
                 <span style={{ margin: '0 10px' }}></span>
-                <button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={() => navigate("/AssignCreate", { state: { Email: Email,classid:classId} })} >+ New</button>
+                <button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={() => navigate("/AssignCreate")} >+ New</button>
               </div>
               <div className="col-md-1">
                 <button type="button" onClick={() => navigate("/")} className="btn btn-primary float-end">Back</button>

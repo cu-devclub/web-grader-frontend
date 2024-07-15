@@ -16,7 +16,7 @@ function HomeST() {
   const [expandedYear, setExpandedYear] = useState(null);
   const [ready, setReady] = useState(null);
 
-  const [Email,] = useState(Cookies.get('email'));
+  const [Email,] = useState(Cookies.get('Email'));
 
   useEffect(() => {
     setUserData({ID: Cookies.get("uid")})
@@ -24,13 +24,29 @@ function HomeST() {
     const fetchData = async () => {
       try {
         // Fetch user data
-        const userResponse = await fetch(`${host}/ST/user/profile?Email=${Email}`);
+        const userResponse = await fetch(`${host}/ST/user/profile`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const userData = await userResponse.json();
         setUserData(userData);
   
         // Fetch class data if user data is available
         if (userData) {
-          const classResponse = await fetch(`${host}/ST/class/classes?UID=${userData.ID}`);
+          const classResponse = await fetch(`${host}/ST/class/classes`, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "Access-Control-Allow-Origin": "*",
+                "X-CSRF-TOKEN": Cookies.get("csrf_token")
+            }
+          });
           const classData = await classResponse.json();
           const sortedCourses = Object.fromEntries(Object.entries(classData).sort((a, b) => b[0].localeCompare(a[0])));
           setClasses(sortedCourses);
@@ -42,7 +58,15 @@ function HomeST() {
 
     const fetchCourses = async () => {
       try {
-        const response = await fetch(`${host}/TA/class/classes?Email=${Email}`);
+        const response = await fetch(`${host}/TA/class/classes`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+              "Content-type": "application/json; charset=UTF-8",
+              "Access-Control-Allow-Origin": "*",
+              "X-CSRF-TOKEN": Cookies.get("csrf_token")
+          }
+        });
         const data = await response.json();
         const sortedCourses = Object.fromEntries(Object.entries(data).sort((a, b) => b[0].localeCompare(a[0])));
     
@@ -82,10 +106,9 @@ function HomeST() {
                   classes.map(course => (
                     <div className="card" style={{width: '200px', marginLeft: "10px", marginRight: "10px"}} key={course.ClassID}>
                       <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
-                      {/* <img class="" style="width: 198px;height: 198px;"/> */}
                       <div className="card-body">
                         <h4 className="card-title">{course.ClassName}</h4>
-                        <p className="card-text">
+                        <div className="card-text">
                           <div className='row'>
                             <div className='col'>
                               {course.ClassID}
@@ -94,7 +117,7 @@ function HomeST() {
                             {year}
                             </div>
                           </div>
-                        </p>
+                        </div>
                         <button className="btn btn-primary" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);  sessionStorage.setItem("Email", Email);  navigate("/AssignList");}}>
                           View course
                         </button>
@@ -127,7 +150,6 @@ function HomeST() {
                     {classes.map(course => (
                       <div className="card" style={{width: '200px', marginLeft: "10px", marginRight: "10px"}} key={course.ClassID}>
                         <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
-                        {/* <img class="" style="width: 198px;height: 198px;"/> */}
                         <div className="card-body">
                           <h4 className="card-title">{course.ClassName}</h4>
                           <p className="card-text">ID: {course.ClassID}</p>

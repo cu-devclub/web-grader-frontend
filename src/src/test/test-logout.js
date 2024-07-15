@@ -6,7 +6,15 @@ function Logout(){
     const [isRun, _] = useState(0);
 
     async function run(){
-        Cookies.remove('email')
+        await fetch(`${process.env.REACT_APP_HOST}/glob/auth/logout`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "X-CSRF-TOKEN": Cookies.get("csrf_token")
+            }
+        })
+
+        Cookies.remove('Email')
         Cookies.remove('uid')
         Cookies.remove('role')
         Cookies.remove('csrf_token')
