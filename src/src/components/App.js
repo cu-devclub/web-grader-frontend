@@ -6,13 +6,13 @@ import ProfRoutes           from './profRoutes'
 
 // global
 import Home         from '../pages/Home';
-// import Login        from '../pages/Login';
-// import Callback     from '../pages/Callback';
-import Login        from '../test/test-login';
-import Callback     from '../test/test-callback';
+import Login        from '../pages/Login';
+import Callback     from '../pages/Callback';
+// import Login        from '../test/test-login';
+// import Callback     from '../test/test-callback';
 import ErrorComp    from '../pages/error';
-// import Logout       from '../pages/Logout';
-import Logout       from '../test/test-logout';
+import Logout       from '../pages/Logout';
+// import Logout       from '../test/test-logout';
 
 // Professor
 import ClassEdit    from '../pages/PF/ClassEdit';
