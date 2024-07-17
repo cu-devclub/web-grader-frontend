@@ -108,6 +108,7 @@ function HomeST() {
                       <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
                       <div className="card-body">
                         <h4 className="card-title">{course.ClassName}</h4>
+                        <p style={{fontSize: "1 rem",color: "rgb(96, 96, 96)", display: (course.Archive ? "block" : "none")}}>{" (Archived)"}</p>
                         <div className="card-text">
                           <div className='row'>
                             <div className='col'>
@@ -121,7 +122,7 @@ function HomeST() {
                         <button className="btn btn-primary" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);  sessionStorage.setItem("Email", Email);  navigate("/AssignList");}}>
                           View course
                         </button>
-                        <button className="btn btn-warning float-end" type="button" onClick={() => {sessionStorage.setItem("Thumbnail", course.Thumbnail);sessionStorage.setItem("classId", course.ID);sessionStorage.setItem("ClassID", course.ClassID);sessionStorage.setItem("SchoolYear", year);sessionStorage.setItem("ClassName", course.ClassName);navigate("/ClassEdit")}}>
+                        <button className="btn btn-warning float-end" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);navigate("/ClassEdit")}}>
                           <Gear />
                         </button>
                       </div>

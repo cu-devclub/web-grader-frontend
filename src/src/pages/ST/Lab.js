@@ -273,6 +273,7 @@ function Lab() {
                               <span>
                                 {q.SMT.Filename} <span style={{color: "rgb(91, 91, 91)", fontSize: "0.8rem"}}>{q.SMT.Date}</span>
                                 <button type="button" className="btn btn-outline-dark" style={{width: "auto", textAlign: "Left", marginLeft: "0.5em"}} onClick={() => {downfile(2, q.SMT.SID)}}><Download /> Download</button>
+                                <br/><span style={{color: "rgb(101, 101, 101)",fontSize: "1 rem"}}>{'('}<b>Original</b>: {q.SMT.OriginalName}{')'}</span>
                               </span>
                           )}
                         </span>

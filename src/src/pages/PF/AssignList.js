@@ -13,7 +13,6 @@ function AssignList() {
   const navigate = useNavigate();
   const [ClassInfo, setClassInfo] = useState({});
   
-  const [Email,] = useState(sessionStorage.getItem("Email"));
   const [classId,] = useState(sessionStorage.getItem("classId"));
 
   const [assignmentsData, setAssignmentsData] = useState([]);
@@ -156,11 +155,11 @@ function AssignList() {
                       </div>
                       <div className='col'>
                       <div className="d-flex">
-                          <p style={{fontWeight:'normal'}}>Open</p>
-                          <div className="form-check form-switch form-check-inline">
-                            <input className="form-check-input float-end" type="checkbox" role="switch" checked={assign["Lock"]} onFocus={() => setIsButtonClicked(true)} onBlur={() => setIsButtonClicked(false)} onChange={(event) => toggleLock(event, assign["LID"])}/>
-                          </div>
                           <p style={{fontWeight:'normal'}}>Closed</p>
+                          <div className="form-check form-switch form-check-inline">
+                            <input className="form-check-input float-end" type="checkbox" role="switch" checked={!assign["Lock"]} onFocus={() => setIsButtonClicked(true)} onBlur={() => setIsButtonClicked(false)} onChange={(event) => toggleLock(event, assign["LID"])}/>
+                          </div>
+                          <p style={{fontWeight:'normal'}}>Open</p>
                       </div>
                       </div>
                     </div>

@@ -186,6 +186,7 @@ function HomePF() {
                         <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
                         <div className="card-body">
                           <h4 className="card-title">{course.ClassName}</h4>
+                          <p style={{fontSize: "1 rem",color: "rgb(96, 96, 96)", display: (course.Archive ? "block" : "none")}}>{" (Archived)"}</p>
                           <p className="card-text">ID: {course.ClassID}</p>
                           <button className="btn btn-primary" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);  sessionStorage.setItem("Email", Email);  navigate("/AssignList");}}>
                             View course

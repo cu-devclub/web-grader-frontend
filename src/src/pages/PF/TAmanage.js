@@ -108,7 +108,7 @@ function TAmanage() {
         }
     }
 
-    const handleRemove = async (e) => {
+    const handleRemove = async () => {
         try {
             const response = await fetch(`${host}/TA/class/TADelete`, {
                 method: 'POST',
@@ -180,17 +180,18 @@ function TAmanage() {
                     <div className='row'>
                         <div className='col'>
                             <div className="input-group mb-3">
-                                <input type="text" className="form-control" placeholder='Search...' value={Keyword} onChange={handleSearchChange}/>
-                                <div className="input-group-append">
-                                    <span className="input-group-text" style={{height: "37.6px", backgroundColor: "transparent", borderTopLeftRadius: "0", borderBottomLeftRadius: "0"}}><Search /></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='col'>
-                            <div className="input-group mb-3">
                                 <input type="text" className="form-control" placeholder="Email of new TA" onChange={handleAddEmailChange}/>
                                 <div className="input-group-append">
                                     <button className="btn btn-success" type="button" onClick={handleAdd}>Add</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div className='col'></div>
+                        <div className='col'>
+                            <div className="input-group mb-3">
+                                <input type="text" className="form-control" placeholder='Search...' value={Keyword} onChange={handleSearchChange}/>
+                                <div className="input-group-append">
+                                    <span className="input-group-text" style={{height: "37.6px", backgroundColor: "transparent", borderTopLeftRadius: "0", borderBottomLeftRadius: "0"}}><Search /></span>
                                 </div>
                             </div>
                         </div>

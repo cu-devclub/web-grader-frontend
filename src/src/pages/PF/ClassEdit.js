@@ -12,32 +12,50 @@ const host = `${process.env.REACT_APP_HOST}`
 
 function ClassEdit() {
     const navigate = useNavigate();
-    const [classData,] = useState({
-        classid: sessionStorage.getItem("classId"),
-        ClassID: sessionStorage.getItem("ClassID"),
-        SchoolYear: sessionStorage.getItem("SchoolYear"),
-        ClassName: sessionStorage.getItem("ClassName"),
-        Thumbnail: sessionStorage.getItem("Thumbnail")
-    })
 
-    const CSYID = classData.classid;
+    const [CSYID, ] = useState(sessionStorage.getItem("classId"));
+
+    const [classData, setClassData] = useState(null)
 
     const [classID, setClassID] = useState('');
     const [schoolYear, setSchoolYear] = useState('');
     const [className, setClassName] = useState('');
+    const [Archive, setArchive] = useState(sessionStorage.getItem("Archive"))
 
     const [timestamps, setTimestamps] = useState(Array(2).fill('')); // กำหนดขนาดของอาร์เรย์ตามจำนวนที่ต้องการใช้งาน (ในที่นี้คือ 2)
 
     
     useEffect(() => {
-        const PreData = async () => {
-            if (classData) {
-            setClassID(classData.ClassID||"");
-            setSchoolYear(classData.SchoolYear||"");
-            setClassName(classData.ClassName||"");
-        }}
-        PreData();
-    }, [classData]);
+        const fetchClass = async () => {
+        try {
+            const response = await fetch(`${host}/TA/class/class?CSYID=${CSYID}`, {
+            method: "GET",
+            credentials: "include",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "Access-Control-Allow-Origin": "*",
+                "X-CSRF-TOKEN": Cookies.get("csrf_token")
+            }
+            });
+            const data = await response.json();
+            setClassData({
+                classid: CSYID,
+                ClassID: data["ClassID"],
+                SchoolYear: data["ClassYear"],
+                ClassName: data["ClassName"],
+                Thumbnail: data["Thumbnail"],
+                Archive: data["Archive"]
+            });
+            setClassID(data["ClassID"]);
+            setSchoolYear(data["ClassYear"]);
+            setClassName(data["ClassName"])
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };  
+      
+        fetchClass()
+    }, [CSYID]);
 
     const handleEditClick = async () => {
         try{
@@ -226,45 +244,88 @@ function ClassEdit() {
         };
     };
 
-      
-    const handleDelete = async () =>{
+    // Too danger
+    // const handleDelete = async () =>{
+    //     try {
+    //         withReactContent(Swal).fire({
+    //             title: "Are you sure to delete this class?",
+    //             icon: "warning",
+    //             showCloseButton: true,
+    //             showCancelButton: true,
+    //             focusConfirm: false,
+    //             confirmButtonText: `Delete`,
+    //             confirmButtonColor: "rgb(217, 39, 39)",
+    //         }).then(async ok => {
+    //             if(ok.isConfirmed){
+    //                 const formData = new FormData();
+    //                 formData.append('CSYID',CSYID)
+
+    //                 const response = await fetch(`${host}/TA/class/delete`, {
+    //                     method: 'POST',
+    //                     credentials: "include",
+    //                     headers: {
+    //                         "X-CSRF-TOKEN": Cookies.get("csrf_token")
+    //                     },
+    //                     body: formData,
+    //                 });
+    //                 const responseData = await response.json();
+    //                 if (responseData.Status){
+    //                     withReactContent(Swal).fire({
+    //                         title: "Class Deleted successfully",
+    //                         icon: "success"
+    //                     }).then(ok => {
+    //                         if(ok)
+    //                             window.location.href = "/"
+    //                     });
+    //                 }else{
+    //                     withReactContent(Swal).fire({
+    //                       title: "Error!",
+    //                       icon: "error"
+    //                     })
+    //                 }
+    //             }
+    //         });
+    //     }catch (error) {
+    //         withReactContent(Swal).fire({
+    //             title: "Please contact admin!",
+    //             text: error,
+    //             icon: "error"
+    //         })
+    //     }
+    // }
+
+    const handleArchive = async () =>{
         try {
             withReactContent(Swal).fire({
-                title: "Are you sure to delete this Assignment?",
+                title: `Are you sure to ${Archive ? "una" : "a"}rchive this class?`,
                 icon: "warning",
                 showCloseButton: true,
                 showCancelButton: true,
                 focusConfirm: false,
-                confirmButtonText: `Delete`,
+                confirmButtonText: `${Archive ? "Una" : "A"}rchive`,
                 confirmButtonColor: "rgb(217, 39, 39)",
             }).then(async ok => {
-                if(ok){
+                if(ok.isConfirmed){
                     const formData = new FormData();
                     formData.append('CSYID',CSYID)
 
-                    const response = await fetch(`${host}/TA/class/delete`, {
+                    fetch(`${host}/TA/class/Archive`, {
                         method: 'POST',
                         credentials: "include",
                         headers: {
                             "X-CSRF-TOKEN": Cookies.get("csrf_token")
                         },
                         body: formData,
-                    });
-                    const responseData = await response.json();
-                    if (responseData.Status){
+                    })
+                    .then(response => response.json())
+                    .then(data => {
                         withReactContent(Swal).fire({
-                            title: "Class Deleted successfully",
-                            icon: "success"
-                        }).then(ok => {
-                            if(ok)
-                                window.location.href = "/"
+                            title: data.msg,
+                            icon: data.success ? "success" : "error"
+                        }).then(() => {
+                            setArchive(!Archive)
                         });
-                    }else{
-                        withReactContent(Swal).fire({
-                          title: "Error!",
-                          icon: "error"
-                        })
-                    }
+                    })
                 }
             });
         }catch (error) {
@@ -288,9 +349,13 @@ function ClassEdit() {
         setClassName(e.target.value);
     }
 
-    const savebutcondi1 = classID === classData.ClassID && schoolYear === classData.SchoolYear && className === classData.ClassName;
-    const savebutcondi2 = !classID || !schoolYear || !className;
-    const isCreateButtonDisabled = savebutcondi1 || savebutcondi2;
+    let isCreateButtonDisabled = true
+
+    if(classData) {
+        const savebutcondi1 = classID === classData.ClassID && schoolYear === classData.SchoolYear && className === classData.ClassName;
+        const savebutcondi2 = !classID || !schoolYear || !className;
+        isCreateButtonDisabled = savebutcondi1 || savebutcondi2;
+    }
     
     const handleGenTemplate = () => {
         const url = window.URL.createObjectURL(new Blob(["ID,Name (English),Section,Group\n"], { type: 'text/csv' }));
@@ -355,6 +420,7 @@ function ClassEdit() {
     <div>
         <Navbar></Navbar> 
         <br></br>
+        {classData ? (
         <div className="card" style={{ marginLeft: 10 +'em', marginRight: 10 + 'em' }}>
             <div className="card-header">
                 <div className="row" style={{marginBottom:"-5px"}}>
@@ -369,8 +435,11 @@ function ClassEdit() {
                         </ul>
                     </div>
                     <div className="col-md-2">
-                        <button className="btn btn-danger float-end" type="button" style={{marginLeft:"20px"}} onClick={handleDelete}>Delete</button>
-                        <button className="btn btn-primary float-end" type="button" onClick={() => navigate("/")}>Back</button>
+                        {/* <button className="btn btn-danger float-end" type="button" style={{marginLeft:"20px"}} onClick={handleDelete}>Delete</button> */}
+                        {/* <button className="btn btn-danger float-end" type="button" style={{marginLeft:"20px"}} onClick={handleArchive}>{classData.Archive ? "Unarchive" : "Archive"}</button> */}
+                        <button className="btn btn-primary float-end" type="button" style={{marginLeft:"20px"}} onClick={() => navigate("/")}>Back</button>
+                        <input type="checkbox" className="btn-check float-end" id="btn-check-outlined" checked={Archive} autoComplete="off"/>
+                        <label className="btn btn-outline-secondary float-end" htmlFor="btn-check-outlined" onClick={handleArchive}>{Archive ? "Unarchive" : "Archive"}</label><br></br>
                     </div>
                 </div>
             </div>
@@ -446,6 +515,9 @@ function ClassEdit() {
                 </div>
             </div>
         </div>
+        ) : (
+            <div>Loading...</div>
+        )}
     </div>
   )
 }
