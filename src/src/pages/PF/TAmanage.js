@@ -108,7 +108,7 @@ function TAmanage() {
         }
     }
 
-    const handleRemove = async () => {
+    const handleRemove = async (toRemove) => {
         try {
             const response = await fetch(`${host}/TA/class/TADelete`, {
                 method: 'POST',
@@ -119,7 +119,7 @@ function TAmanage() {
                     "X-CSRF-TOKEN": Cookies.get('csrf_token')
                 },
                 body: JSON.stringify({
-                    "Email": AddMail,
+                    "Email": toRemove,
                     "CSYID": CSYID
                 })
             });
