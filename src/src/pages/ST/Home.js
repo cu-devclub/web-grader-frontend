@@ -122,7 +122,7 @@ function HomeST() {
                         <button className="btn btn-primary" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);  sessionStorage.setItem("Email", Email);  navigate("/AssignList");}}>
                           View course
                         </button>
-                        <button className="btn btn-warning float-end" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);sessionStorage.setItem("Archive", course.Archive);navigate("/ClassEdit")}}>
+                        <button className="btn btn-warning float-end" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);sessionStorage.setItem("Archive", course.Archive == 'true');navigate("/ClassEdit")}}>
                           <Gear />
                         </button>
                       </div>
