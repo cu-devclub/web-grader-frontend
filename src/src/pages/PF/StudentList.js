@@ -17,7 +17,7 @@ function StudentList() {
   const [ClassInfo, setClassInfo] = useState({});
 
   
-  const [Email,] = useState(sessionStorage.getItem("Email"));
+  // const [Email,] = useState(sessionStorage.getItem("Email"));
   const [classId,] = useState(sessionStorage.getItem("classId"));
 
   useEffect(() => {
@@ -142,7 +142,14 @@ function StudentList() {
       <br />
       <div className="card" style={{ marginLeft: '10em', marginRight: '10em', maxHeight: "70vh"}}>
         <div className="card-header">
-          <h5>Student Name List</h5>
+          <div className="row" style={{marginBottom:"-5px"}}>
+            <div className='col'>
+              <h5>Student Name List</h5>
+            </div>
+            <div className='col-md-2'>
+              <button type="button" className="btn btn-primary float-end" onClick={() => navigate("/AssignList")}>Back</button>
+            </div>
+          </div>
         </div>
         <div className="card-body" style={{ overflowY: 'scroll' }}>
           {/* Search input */}
@@ -207,9 +214,6 @@ function StudentList() {
           </table>
           </div>
           <br />
-          <div className="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button type="button" className="btn btn-primary" onClick={() => navigate("/AssignList")}>Back</button>
-          </div>
         </div>
       </div>
     </div>

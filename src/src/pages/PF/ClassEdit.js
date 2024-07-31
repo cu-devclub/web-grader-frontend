@@ -20,7 +20,7 @@ function ClassEdit() {
     const [classID, setClassID] = useState('');
     const [schoolYear, setSchoolYear] = useState('');
     const [className, setClassName] = useState('');
-    const [Archive, setArchive] = useState(sessionStorage.getItem("Archive") == 'true')
+    const [Archive, setArchive] = useState(sessionStorage.getItem("Archive") === 'true')
 
     const [timestamps, setTimestamps] = useState(Array(2).fill('')); // กำหนดขนาดของอาร์เรย์ตามจำนวนที่ต้องการใช้งาน (ในที่นี้คือ 2)
 

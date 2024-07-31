@@ -129,7 +129,7 @@ function Index() {
                           </div>
                           <div className='col-1'>
                             <span style={{fontWeight:'normal'}}>
-                              {`${assign["Score"]}/${assign["MaxScore"]}`}
+                              {`${assign["hideScore"] ? ("-") : (assign["Score"])}/${assign["MaxScore"]}`}
                             </span>
                           </div>
                         </div>

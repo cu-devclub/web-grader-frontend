@@ -22,6 +22,7 @@ function AssignCreate() {
   const [publishDate, setPublishDate] = useState(currentDate)
   const [dueDate, setDueDate] = useState('')
   const [dueDateLock, setDueDateLock] = useState(false)
+  const [showLock, setShowLock] = useState(false)
 
   // Question Sys
   const [totalQNum, setTotalQNum] = useState(1);
@@ -207,6 +208,7 @@ function AssignCreate() {
           formData.append("PubDate", publishDate);
           formData.append("DueDate", dueDate);
           formData.append('LockOnDue', dueDateLock);
+          formData.append('ShowOnLock', showLock);
 
           formData.append('CSYID', classId);
 
@@ -344,6 +346,8 @@ function AssignCreate() {
               <div className="col-md-6">
                 <label htmlFor="inputQnum" className="form-label">Total Question Number*</label>
                 <input type="number" min="1" className="form-control" id="inputQnum" value={totalQNum} onChange={handleTotalQNumChange} />
+                <input id={`showlock`} className="form-check-input" type="checkbox" checked={showLock} onChange={() => setShowLock(!showLock)}/>
+                <label className="form-check-label" htmlFor="showlock" style={{marginLeft: "0.3rem"}}>Show the score only after lab is locked.</label>
               </div>
             </div>
             <div className="row">
@@ -355,26 +359,26 @@ function AssignCreate() {
                         {(!isGroup) ? "Section" : "Group"}*
                       </div>
                       <div className='col'>
-                        <button type="button" class="btn btn-outline-dark float-end" onClick={selectall}>{(Selected.length === 0) ? "S" : "Des"}elect all</button>
+                        <button type="button" className="btn btn-outline-dark float-end" onClick={selectall}>{(Selected.length === 0) ? "S" : "Des"}elect all</button>
                       </div>
                     </div>
                   </div>
                   <div className='card-body'>
                     {SelectList.map((element) => (
-                    <div key={element} className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        id={`inlineCheckbox${element}`}
-                        value={element}
-                        checked={Selected.includes(element)}
-                        onChange={() => handleCheckboxChange(element)}
-                      />
-                      <label className="form-check-label" htmlFor={`inlineCheckbox${element}`}>
-                        {element}
-                      </label>
-                    </div>
-                  ))}
+                      <div key={element} className="form-check form-check-inline">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={`inlineCheckbox${element}`}
+                          value={element}
+                          checked={Selected.includes(element)}
+                          onChange={() => handleCheckboxChange(element)}
+                        />
+                        <label className="form-check-label" htmlFor={`inlineCheckbox${element}`}>
+                          {element}
+                        </label>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>

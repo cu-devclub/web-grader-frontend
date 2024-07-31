@@ -248,7 +248,7 @@ function Lab() {
                         <h6>Question: {i+1}</h6>
                       </div>
                       <div className="col-md-2">
-                        <b>{q.Score}</b>/{q.Max}
+                        <b>{q.hideScore ? ("-") : (q.Score)}</b>/{q.Max}
                       </div>
                     </div>
                   </div>

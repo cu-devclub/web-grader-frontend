@@ -6,19 +6,20 @@ import ProfRoutes           from './profRoutes'
 
 // global
 import Home         from '../pages/Home';
-import Login        from '../pages/Login';
-import Callback     from '../pages/Callback';
-// import Login        from '../test/test-login';
-// import Callback     from '../test/test-callback';
+// import Login        from '../pages/Login';
+// import Callback     from '../pages/Callback';
+// import Logout       from '../pages/Logout';
+import Login        from '../test/test-login';
+import Callback     from '../test/test-callback';
+import Logout       from '../test/test-logout';
 import ErrorComp    from '../pages/error';
-import Logout       from '../pages/Logout';
-// import Logout       from '../test/test-logout';
 
 // Professor
 import ClassEdit    from '../pages/PF/ClassEdit';
 import AssignList   from '../pages/PF/AssignList';
 import AssignCreate from '../pages/PF/AssignCreate';
 import AssignEdit   from '../pages/PF/AssignEdit';
+import AssignSus   from '../pages/PF/AssignSus';
 import Sentin       from '../pages/PF/Sentin';
 import StudentList  from '../pages/PF/StudentList';
 import TAmanage     from '../pages/PF/TAmanage'
@@ -39,6 +40,7 @@ function App() {
                     <Route element={<AssignCreate />} path='AssignCreate' />
                     <Route element={<AssignEdit />} path='AssignEdit' />
                     <Route element={<AssignList />} path='AssignList' />
+                    <Route element={<AssignSus />} path='AssignSus' />
                     <Route element={<TAmanage />} path='TAmanage' />
                     <Route element={<Sentin />} path='Sentin' />
                     <Route element={<StudentList />} path='StudentList' />

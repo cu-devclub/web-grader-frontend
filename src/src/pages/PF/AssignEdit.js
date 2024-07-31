@@ -22,6 +22,7 @@ function AssignEdit() {
   const [publishDate, setPublishDate] = useState('')
   const [dueDate, setDueDate] = useState('')
   const [dueDateLock, setDueDateLock] = useState(false)
+  const [showLock, setShowLock] = useState(false)
 
   // Question Sys
   const [totalQNum, setTotalQNum] = useState(1);
@@ -53,6 +54,7 @@ function AssignEdit() {
           setPublishDate(data.data.PubDate)
           setDueDate(data.data.DueDate)
           setDueDateLock(data.data.LOD)
+          setShowLock(data.data.ShowOnLock)
   
           setIsGroup(data.data.IsGroup)
           setSelectList(data.data.SelectList)
@@ -182,6 +184,7 @@ function AssignEdit() {
           formData.append("PubDate", publishDate);
           formData.append("DueDate", dueDate);
           formData.append("LOD", dueDateLock);
+          formData.append('ShowOnLock', showLock);
 
           formData.append('CSYID', classId);
 
@@ -378,6 +381,9 @@ function AssignEdit() {
                   <li className="nav-item">
                       <button className="nav-link link" onClick={() =>{sessionStorage.setItem("LID", LID);sessionStorage.setItem("classId", classId);navigate("/Sentin")}} >Sent in</button>
                   </li>
+                  <li className="nav-item">
+                      <button className="nav-link link" onClick={() =>{sessionStorage.setItem("LID", LID);sessionStorage.setItem("classId", classId);navigate("/AssignSus")}} >Suspicious</button>
+                  </li>
                 </ul>
               </div>
               <div className="col-md-5">
@@ -438,6 +444,8 @@ function AssignEdit() {
               <div className="col-md-6">
                 <label htmlFor="inputQnum" className="form-label">Total Question Number*</label>
                 <input type="number" min="1" className="form-control" id="inputQnum" value={totalQNum} onChange={handleTotalQNumChange} />
+                <input id={`showlock`} className="form-check-input" type="checkbox" checked={showLock} onChange={() => setShowLock(!showLock)}/>
+                <label className="form-check-label" htmlFor="showlock" style={{marginLeft: "0.3rem"}}>Show the score only after lab is locked.</label>
               </div>
             </div>
             <div className="row">
