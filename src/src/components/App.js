@@ -13,7 +13,7 @@ import ClassEdit    from '../pages/PF/ClassEdit';
 import AssignList   from '../pages/PF/AssignList';
 import AssignCreate from '../pages/PF/AssignCreate';
 import AssignEdit   from '../pages/PF/AssignEdit';
-import AssignSus    from '../pages/PF/AssignSus';
+import AssignSus   from '../pages/PF/AssignSus';
 import Sentin       from '../pages/PF/Sentin';
 import StudentList  from '../pages/PF/StudentList';
 import TAmanage     from '../pages/PF/TAmanage'

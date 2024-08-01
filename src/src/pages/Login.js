@@ -1,4 +1,6 @@
 import React,{useEffect} from 'react';
+import withReactContent from 'sweetalert2-react-content';
+import Swal from 'sweetalert2'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
 import Cookies from 'js-cookie';
@@ -14,6 +16,70 @@ const loginRedir  = async () => {
 }
 
 function Login() {
+
+  // pre write for cunet
+
+  // const [username, setUsername] = useState('');
+  // const [password, setPassword] = useState('');
+
+  // async function loginRedir(){
+  //   //validate input
+  //   if(username.length != 10){
+  //     withReactContent(Swal).fire({
+  //       title: "Username must be 10 characters!",
+  //       icon: "error"
+  //     })
+  //     return
+  //   }
+
+  //   if(isNaN(username)){
+  //     withReactContent(Swal).fire({
+  //       title: "Username must contain only numbers!",
+  //       icon: "error"
+  //     })
+  //     return
+  //   }
+    
+  //   if(password.length <= 0){
+  //     withReactContent(Swal).fire({
+  //       title: "Password is require!",
+  //       icon: "error"
+  //     })
+  //     return
+  //   }
+    
+  //   //request login to backend
+  //   const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/glob/auth/login`, {
+  //     method: "POST",
+  //     credentials: "include",
+  //     headers: {
+  //       "Content-type": "application/json; charset=UTF-8",
+  //       "Access-Control-Allow-Origin": "*"
+  //     },
+  //     body: JSON.stringify({
+  //       "username": username,
+  //       "password": password
+  //     })
+  //   })
+
+  //   var data = await response.json();
+  //   //if user valid set cookie and sent to Home
+  //   if(data['success']){
+  //     Cookies.set("UID", data["data"]["uid"])
+  //     Cookies.set("type", data["data"]["type"])
+  //     withReactContent(Swal).fire({
+  //       title: "Login successfully!",
+  //       icon: "success"
+  //     }).then((result) => {
+  //       window.location.href = "/"
+  //     })
+  //   }else{
+  //     withReactContent(Swal).fire({
+  //       title: "Username or Password is invalid!",
+  //       icon: "error"
+  //     });
+  //   }
+  // }
 
   useEffect(() => {
     document.body.style.backgroundColor = "#F2F2F2"
