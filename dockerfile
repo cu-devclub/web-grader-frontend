@@ -30,6 +30,8 @@ COPY nginx.conf /etc/nginx/nginx.conf
 # Expose ports 80 and 443
 EXPOSE 80
 EXPOSE 443
+EXPOSE 8080
+EXPOSE 8443
 
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
