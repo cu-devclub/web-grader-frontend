@@ -23,7 +23,6 @@ import Class        from '../pages/ST/Class';
 import Lab          from '../pages/ST/Lab';
 import Portfolio    from '../pages/ST/Portfolio';
 
-
 const isDev     = process.env.REACT_APP_DEV.toLowerCase() === 'true';
 const Login     = isDev ? require('../test/test-login').default : require('../pages/Login').default;
 const Callback  = isDev ? require('../test/test-callback').default : require('../pages/Callback').default;
