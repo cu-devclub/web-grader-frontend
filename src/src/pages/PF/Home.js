@@ -1,29 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import Navbarprof from '../components/Navbarprof'
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content';
 
+import React, { useState, useEffect, useCallback } from 'react';
+import Navbar from '../../components/Navbar'
+import { useNavigate } from 'react-router-dom';
+import { Gear, ChevronDown, ChevronRight } from 'react-bootstrap-icons';
+import Cookies from 'js-cookie';
 
-function Homeprof() {
+const host = `${process.env.REACT_APP_HOST}`
+
+function HomePF() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const classData = location.state;
-  const Email = '9876543210@student.chula.ac.th';
-  /* const Email = classData.Email; */
-  console.log(classData)
 
-  const [userData, setUserData] = useState(null);
+  const [Email,] = useState(Cookies.get('Email'));
   const [courses, setCourses] = useState(null);
-  const [showAlert, setShowAlert] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [ready, setReady] = useState(null);
-  const [deleteAlert, setDeleteAlert] = useState(true);
-
   const [expandedYear, setExpandedYear] = useState(null);
-  const [isdelete, setdelete] = useState(false);
   
-
   
 
   const handleChange = (e) => {
@@ -40,38 +34,32 @@ function Homeprof() {
     SchoolYear: ''
   });
 
-  const fetchUserData = async () => {
+  const fetchCourses = useCallback(async () => {
     try {
-      const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/ST/user/profile?Email=${Email}`);
+      const response = await fetch(`${host}/TA/class/classes`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
+            "X-CSRF-TOKEN": Cookies.get("csrf_token")
+        }
+      });
       const data = await response.json();
-      console.log('user:', data);
-      setUserData(data);
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
-
-  const fetchCourses = async () => {
-    try {
-      const response = await fetch(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/classes?Email=${Email}`);
-      const data = await response.json();
-      console.log('class:', data);
       const sortedCourses = Object.fromEntries(Object.entries(data).sort((a, b) => b[0].localeCompare(a[0])));
   
       setCourses(sortedCourses);
     } catch (error) {
       console.error('Error fetching class data:', error);
     }
-  };
+  }, [])
   
   
 
   useEffect(() => {
-    try{if(location.state.delete)setdelete(true)}catch{setdelete(false)}
-    fetchUserData();
     fetchCourses();
     setReady(true);
-  }, []);
+  }, [ready, fetchCourses]);
   
 
   const toggleYear = (year) => {
@@ -85,7 +73,7 @@ function Homeprof() {
   const handleToggleExpand = () => {
     setExpanded(!expanded);
     setFormData({
-      Creator: userData.Email,
+      Creator: Email,
       ClassName: '',
       ClassID: '',
       SchoolYear: ''
@@ -101,48 +89,46 @@ function Homeprof() {
     });
     setExpanded(false);
   };
-
-  const handleAlertClose = () => {
-    setShowAlert(false);
-  };
-
-  const handleDeleteClose = () => {
-    setDeleteAlert(false);
-  };
   
   const handleCreateClick = async (e) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
     try {
-      
-      const response = await axios.post(`http://${process.env.REACT_APP_BACKENDHOST}:${process.env.REACT_APP_BACKENDPORT}/TA/class/create`, formData)
-      console.log(response)
-      if (response.data.Status) {
+      const response = await fetch(`${host}/TA/class/create`, {
+        method: 'POST',
+        credentials: "include",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
+            "X-CSRF-TOKEN": Cookies.get("csrf_token")
+        },
+        body: JSON.stringify(formData)
+      });
+      const responseData = await response.json();
+      if (responseData.Status) {
         fetchCourses();
-        setShowAlert(true);
-      } else {
+        handleCancel()
+        withReactContent(Swal).fire({
+            title: "Class created successfully",
+            icon: "success"
+        })
+      }else{
+        withReactContent(Swal).fire({
+          title: "Error!",
+          icon: "error"
+        })
       }
     } catch (error) {
-      console.error('Error');
+      withReactContent(Swal).fire({
+        title: "Please contact admin!",
+        text: error,
+        icon: "error"
+      })
     }
   };
 
   return (
     <div>
-      <Navbarprof />
-      {isdelete && deleteAlert ? (
-                  <div className="alert alert-danger d-flex align-items-center" role="alert">
-                    Class delete successfully
-                    <button type="button" className="btn-close align-items-right" aria-label="Close" onClick={handleDeleteClose}></button>
-                  </div>
-                ):(null)}
-
-      {showAlert && (
-                  <div className="alert alert-success d-flex align-items-center" role="alert">
-                    Class created successfully
-                    <button type="button" className="btn-close align-items-right" aria-label="Close" onClick={handleAlertClose}></button>
-                  </div>
-                )}
+      <Navbar />
       <br />
       <div className="d-flex align-items-center">
         <h5 className="me-2" style={{marginLeft:'10px'}}>Course</h5>
@@ -189,27 +175,25 @@ function Homeprof() {
             {/* วนลูปเพื่อแสดง container แยกตามปีการศึกษา */}
             {Object.entries(courses).map(([year, classes]) => (
               <div key={year} className="container-lg mb-3 bg-light" style={{ padding: '10px' }}>
-                <h5 onClick={() => toggleYear(year)} style={{ cursor: 'pointer' }}>
-                  {year} {expandedYear === year ? " (- Click to collapse)" : " (+ Click to expand)"}
+                <h5 className='unselectable' onClick={() => toggleYear(year)} style={{ cursor: 'pointer' }}>
+                  {expandedYear === year ? <ChevronDown /> : <ChevronRight />} {year}
                 </h5>
                 {expandedYear === year && (
                   <div className="row row-cols-1 row-cols-md-5 g-2">
                     {/* วนลูปเพื่อแสดงข้อมูลคอร์สในแต่ละปีการศึกษา */}
                     {classes.map(course => (
-                      <div key={course.ID} className="col">
-                        <div className="card h-100" style={{width: '15rem'}}><div>
-                          
-                          <img src={course.Thumbnail ? "/Thumbnail/" + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} className="card-img-top" style={{ padding:'15px',width: '100%', height: '100%'}}  alt="..."/>
-
-                          </div>
-                          <div className="card-body" style={{ overflowY: 'scroll' }}>
-                            <h5 className="card-title">{course.ClassName}</h5>
-                            <p className="card-text">{course.ClassID}</p>
-                            <button onClick={() => navigate("/AssignList", { state: { Email: Email,classid: course.ID} })} className="btn btn-primary">View course</button>
-                          </div>
-                          <div class="card-footer">
-                            <div style={{textDecoration: 'underline',color: 'blue',cursor: 'pointer',}} onClick={() => navigate("/ClassEdit", { state: { Email: Email,classid: course.ID, ClassID:course.ClassID, SchoolYear:year, ClassName:course.ClassName} })}>Edit</div>
-                          </div>
+                      <div className="card" style={{width: '200px', marginLeft: "10px", marginRight: "10px"}} key={course.ClassID}>
+                        <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
+                        <div className="card-body">
+                          <h4 className="card-title">{course.ClassName}</h4>
+                          <p style={{fontSize: "1 rem",color: "rgb(96, 96, 96)", display: (course.Archive ? "block" : "none")}}>{" (Archived)"}</p>
+                          <p className="card-text">ID: {course.ClassID}</p>
+                          <button className="btn btn-primary" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);  sessionStorage.setItem("Email", Email);  navigate("/AssignList");}}>
+                            View course
+                          </button>
+                          <button className="btn btn-warning float-end" type="button" onClick={() => {sessionStorage.setItem("Thumbnail", course.Thumbnail);sessionStorage.setItem("classId", course.ID);sessionStorage.setItem("ClassID", course.ClassID);sessionStorage.setItem("SchoolYear", year);sessionStorage.setItem("ClassName", course.ClassName);sessionStorage.setItem("Archive", course.Archive);navigate("/ClassEdit")}}>
+                            <Gear />
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -226,4 +210,4 @@ function Homeprof() {
   )
 }
 
-export default Homeprof
+export default HomePF

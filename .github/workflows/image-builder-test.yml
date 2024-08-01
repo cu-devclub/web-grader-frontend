@@ -1,12 +1,12 @@
-name: FRONTEND
+name: WEB-Test
 
 on:
   push:
-    branches: [main, testing, latest]
+    branches: [testing]
     paths: [src/**]
     tags: [ v* ]
   pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
+    types: [closed]
     paths: [src/**]
 
 env:
@@ -31,11 +31,56 @@ jobs:
         name: Make ENVFILE
         uses: SpicyPizza/create-envfile@v2.0
         with:
-          envkey_PORT: ${{ secrets.PORT }}
-          envkey_BACKENDPORT: ${{ secrets.BACKENDPORT }}
-          envkey_BACKENDHOST: ${{ secrets.BACKENDHOST }}
+          envkey_PORT: ${{ secrets.TEST_PORT1 }}
+          envkey_REACT_APP_HOST: ${{ secrets.TEST_API }}
+          envkey_REACT_APP_DEV: ${{ secrets.TEST_DEV }}
           file_name: .env
           directory: ./src/
+      - 
+        name: Generate Nginx configuration file
+        run: |
+          cat <<EOT >> ./nginx.conf
+          events {
+              worker_connections 1024;
+          }
+
+          http {
+              server {
+                  listen ${{ secrets.TEST_PORT1 }};
+                  server_name sci.cugrader.com www.sci.cugrader.com;
+
+                  # Redirect HTTP to HTTPS
+                  location / {
+                      return 301 https://\$host\$request_uri;
+                  }
+              }
+
+              server {
+                  listen ${{ secrets.TEST_PORT2 }} ssl;
+                  server_name sci.cugrader.com www.sci.cugrader.com;
+
+                  ssl_certificate ${{ secrets.TEST_CERT }};
+                  ssl_certificate_key ${{ secrets.TEST_CERTKEY }};
+
+                  ssl_protocols TLSv1.2 TLSv1.3;
+                  ssl_prefer_server_ciphers on;
+
+                  location / {
+                      root /usr/share/nginx/html;
+                      index index.html;
+                      try_files \$uri \$uri/ /index.html;
+                  }
+
+                  location /api {
+                      proxy_pass ${{ secrets.TEST_API }};
+                      proxy_set_header Host \$host;
+                      proxy_set_header X-Real-IP \$remote_addr;
+                      proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                      proxy_set_header X-Forwarded-Proto \$scheme;
+                  }
+              }
+          }
+          EOT
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -59,7 +104,7 @@ jobs:
             type=semver,pattern={{major}}
       -
         name: Log into registry ${{ env.REGISTRY }}
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
@@ -75,7 +120,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: "."
-          push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha

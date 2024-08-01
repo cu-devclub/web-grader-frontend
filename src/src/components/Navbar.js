@@ -3,9 +3,7 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
 function Navbar() {
-        const handleButtonClick = () => {
-          console.log('Button clicked. Preparing to navigate to page...');
-        };
+        const handleButtonClick = () => {};
       
         const [showModal, setShowModal] = useState(false);
       
@@ -16,14 +14,18 @@ function Navbar() {
         const handleCloseModal = () => {
           setShowModal(false);
         };
+
+        const handleLogout = async () => {
+          window.location.href = "/Logout"
+        };
     
 
   return (
     <div>
          <nav className="navbar navbar-dark bg-primary justify-content-between ">
-          <a className="navbar-brand" href="#"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Grader</a>
+          <a className="navbar-brand" href="/"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Grader</a>
           <form className="form-inline">
-          <Link to="/Home">
+          <Link to="/">
               <button onClick={handleButtonClick} className="btn btn-outline-light" type="button">Home
                 </button>
                 </Link>
@@ -39,18 +41,18 @@ function Navbar() {
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title" id="exampleModalLabel">Exit</h5>
+              <h5 className="modal-title" id="exampleModalLabel">Logout</h5>
               <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Close"></button>
             </div>
             <div className="modal-body">
-              Do you want to leave this site?
+              Do you want to logout?
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
                 Cancel
               </button>
-              <button type="button" className="btn btn-primary">
-                Exit
+              <button type="button" className="btn btn-primary" onClick={handleLogout}>
+                Logout
               </button>
             </div>
           </div>
