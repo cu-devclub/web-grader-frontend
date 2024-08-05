@@ -22,19 +22,19 @@ function Callback() {
                 },
                 body: JSON.stringify({
                     url: window.location.href,
-                    state: Cookies.get("state")
+                    // state: Cookies.get("state")
                 })
             })
 
             var data = await response.json();
             //if user valid set cookie and sent to Home
             if(data['success']){
-                Cookies.remove('state')
+                // Cookies.remove('state')
                 Cookies.set("email", data["data"]["email"])
                 Cookies.set("uid", data["data"]["uid"])
                 Cookies.set('csrf_token', data["data"]["csrf_token"])
 
-                Cookies.set("role", 2)
+                Cookies.set("role", data["data"]["role"])
 
                 withReactContent(Swal).fire({
                     title: "Login successfully!",

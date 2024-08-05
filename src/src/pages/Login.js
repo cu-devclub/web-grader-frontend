@@ -7,14 +7,14 @@ import Cookies from 'js-cookie';
 
 
 const loginRedir  = async () => {
-  	var data = await fetch(`${process.env.REACT_APP_HOST}/glob/auth/login`);
+  	// var data = await fetch(`${process.env.REACT_APP_HOST}/glob/auth/login`);
 
-  	data = await data.json();
+  	// data = await data.json();
 	
-    // localStorage.setItem("state", data["data"]["state"])
-    // sessionStorage.setItem("state", data["data"]["state"])
-  	Cookies.set("state", data["data"]["state"])
-  	window.location.href = data["data"]["url"]
+    // // localStorage.setItem("state", data["data"]["state"])
+    // // sessionStorage.setItem("state", data["data"]["state"])
+  	// Cookies.set("state", data["data"]["state"])
+  	window.location.href = "/auth/login"
 }
 
 function Login() {
