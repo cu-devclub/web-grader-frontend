@@ -11,7 +11,7 @@ const loginRedir  = async () => {
 
   	data = await data.json();
 	
-    localStorage.setItem("state", data["data"]["state"])
+    // localStorage.setItem("state", data["data"]["state"])
     // sessionStorage.setItem("state", data["data"]["state"])
   	Cookies.set("state", data["data"]["state"])
   	window.location.href = data["data"]["url"]
