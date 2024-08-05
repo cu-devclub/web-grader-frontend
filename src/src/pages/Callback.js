@@ -11,6 +11,7 @@ function Callback() {
 
     async function run(){
         try {
+            const state = localStorage.getItem("state")
             //request login to backend
             const response = await fetch(`${process.env.REACT_APP_HOST}/glob/auth/callback`, {
                 method: "POST",
@@ -21,7 +22,7 @@ function Callback() {
                 },
                 body: JSON.stringify({
                     url: window.location.href,
-                    state: Cookies.get("state")
+                    state: state //Cookies.get("state")
                 })
             })
 
