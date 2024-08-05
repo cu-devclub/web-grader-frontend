@@ -21,8 +21,7 @@ function Callback() {
                 },
                 body: JSON.stringify({
                     url: window.location.href,
-                    state: sessionStorage.getItem("state")
-                    // state: Cookies.get("state")
+                    state: Cookies.get("state")
                 })
             })
 
