@@ -4,6 +4,7 @@ import Swal from 'sweetalert2'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'; 
 import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 
 const loginRedir  = async () => {
@@ -82,6 +83,8 @@ function Login() {
   //     });
   //   }
   // }
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.style.backgroundColor = "#F2F2F2"
