@@ -195,7 +195,15 @@ function AssignEdit() {
           formData.append("Question", JSON.stringify(Question))
 
           
-
+          withReactContent(Swal).fire({
+            html: `<div class="pos-center">
+                        <div class="loader"></div>
+                    </div> `,
+            showCloseButton: false,
+            showCancelButton: false,
+            showConfirmButton: false,
+            background: "rgba(0, 0, 0, 0)"
+          })
           try {
             const response = await fetch(`${host}/TA/class/Assign/Edit`, {
               method: 'POST',
@@ -206,6 +214,7 @@ function AssignEdit() {
               body: formData,
             })
             const Data = await response.json()
+            withReactContent(Swal).close()
 
             if (Data.success){
               withReactContent(Swal).fire({
