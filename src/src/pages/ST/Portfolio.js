@@ -40,7 +40,7 @@ function Index() {
       {
         label: "Number of students",
         data: [0,0,0,0,0,0,0,0,0,0],
-        backgroundColor: 'rgb(118, 191, 247)',
+        backgroundColor: 'rgb(0, 0, 0, 0)',
       },
     ],
   });
@@ -166,8 +166,18 @@ function Index() {
                             <span>Your current rank in this course: {Rank["Rank"]} of {Rank["Amount"]}</span>
                         </center>
                     </div>
-                    <div className='col'>
-                        <Bar options={options} data={data} />
+                    <div className='col' style={{textAlign: "center", color: "rgb(123, 123, 123)"}}>
+                      <div className='row'>
+                        <div className='col-1'>
+                          <div className='text-rotated' style={{marginTop: "12em"}}>
+                            Number of students
+                          </div>
+                        </div>
+                        <div className='col'>
+                          <Bar options={options} data={data} />
+                          Score percentage
+                        </div>
+                      </div>
                     </div>
                 </div>
                 ) : (
