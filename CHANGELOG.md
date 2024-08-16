@@ -1,6 +1,16 @@
 
 # Change Log
 
+## [v1.1.2] - 2024-08-16
+ 
+### Added
+
+### Changed
+ 
+### Fixed
+- css not load when build
+
+
 ## [v1.1.1] - 2024-08-16
  
 ### Added
