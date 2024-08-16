@@ -204,8 +204,3 @@ code {
     }
 }
 /* ----- end notification dot ----- */
-
-.text-rotated {
-    transform: rotate(-90deg);
-    white-space: nowrap;
-}

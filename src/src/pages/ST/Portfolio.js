@@ -169,7 +169,7 @@ function Index() {
                     <div className='col' style={{textAlign: "center", color: "rgb(123, 123, 123)"}}>
                       <div className='row'>
                         <div className='col-1'>
-                          <div className='text-rotated' style={{marginTop: "12em"}}>
+                          <div style={{marginTop: "12em", transform: "rotate(-90deg)", whiteSpace: "nowrap"}}>
                             Number of students
                           </div>
                         </div>

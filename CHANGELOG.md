@@ -1,6 +1,16 @@
 
 # Change Log
 
+## [v1.1.1] - 2024-08-16
+ 
+### Added
+
+### Changed
+ 
+### Fixed
+- Rotate text
+
+
 ## [v1.1.0] - 2024-08-15
  
 ### Added
