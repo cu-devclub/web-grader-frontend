@@ -1,6 +1,16 @@
 
 # Change Log
 
+## [v1.1.3] - 2024-08-16
+ 
+### Added
+
+### Changed
+ 
+### Fixed
+- Embedded style in to index.
+
+
 ## [v1.1.2] - 2024-08-16
  
 ### Added
