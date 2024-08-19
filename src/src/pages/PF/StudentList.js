@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import {PencilSquare} from 'react-bootstrap-icons'
 
 const host = `${process.env.REACT_APP_HOST}`
 
@@ -125,6 +126,24 @@ function StudentList() {
     }
   }
 
+  const handleEditStudent = async (toEdit) => {
+  }
+
+  const handleAddStudent = async () => {
+  }
+
+  const UpdateStudent = async () => {
+
+  }
+
+  const RemoveStudent = async () => {
+    
+  }
+
+  const AddStudent = async () => {
+    
+  }
+
   return (
     <div>
       <Navbar />
@@ -137,23 +156,39 @@ function StudentList() {
           <h5>{ClassInfo['ClassID']} {ClassInfo['ClassName']} {ClassInfo['ClassYear']}</h5>
           <h6>Instructor: {ClassInfo['Instructor']}</h6>
         </div>
-        <button type="button" className="btn btn-secondary" style={{ marginLeft: '40em' }} onClick={handleExport}>Export</button>
       </div>
       <br />
       <div className="card" style={{ marginLeft: '10em', marginRight: '10em', maxHeight: "70vh"}}>
         <div className="card-header">
-          <div className="row" style={{marginBottom:"-5px"}}>
+          {/* <div className="row" style={{marginBottom:"-5px"}}>
             <div className='col'>
               <h5>Student Name List</h5>
             </div>
             <div className='col-md-2'>
               <button type="button" className="btn btn-primary float-end" onClick={() => navigate("/AssignList")}>Back</button>
             </div>
+          </div> */}
+          <div className="row" style={{marginBottom:"-5px"}}>
+            <div className="col">
+              <ul className="nav nav-tabs card-header-tabs">
+                <li className="nav-item">
+                  <button className="nav-link link" onClick={() => navigate("/AssignList")}>Assignments</button>
+                </li>
+                <li className="nav-item">
+                  <button className="nav-link active">Student List</button>
+                </li>
+                <button style={{marginLeft: "1.5rem"}} className="btn btn-outline-success" type="button" id="button-addon2" onClick={() => handleAddStudent()} >+ Add</button>
+              </ul>
+            </div>
+            <div className="col-md-2">
+              <button className="btn btn-primary float-end" type="button" style={{marginLeft:"20px"}} onClick={() => navigate("/")}>Back</button>
+              <button className="btn btn-secondary float-end" type="button" style={{ marginLeft: '20px' }} onClick={handleExport}>Export</button>
+            </div>
           </div>
         </div>
         <div className="card-body" style={{ overflowY: 'scroll' }}>
           {/* Search input */}
-          <form className="d-flex">
+          <form className="d-flex" style={{marginBottom: "8px"}}>
             <input className="form-control me-2" type="search" placeholder="Search ID or Name" aria-label="Search" onChange={handleSearch} />
           </form>
           <b>Section: </b>
@@ -184,6 +219,7 @@ function StudentList() {
                       <th scope="col" className="col-1 text-center">Section</th>
                       <th scope="col" className="col-1 text-center">Group</th>
                       <th scope="col" className="col-1 text-center">Score</th>
+                      <th scope="col" className="col-1 text-center">Edit</th>
                   </tr>
               </thead>
               <tbody>
@@ -200,6 +236,7 @@ function StudentList() {
                       <td className='text-center'>{element["Section"]}</td>
                       <td className='text-center'>{element["Group"]}</td>
                       <td className='text-center'>{element["Score"]}/{element["MaxScore"]}</td>
+                      <td className='text-center'><button type="button" className="btn btn-warning" onClick={() => {handleEditStudent(element)}}><PencilSquare/></button></td>
                   </tr>
               ))
             ) : (

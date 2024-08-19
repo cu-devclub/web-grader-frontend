@@ -47,8 +47,9 @@ function HomePF() {
       });
       const data = await response.json();
       const sortedCourses = Object.fromEntries(Object.entries(data).sort((a, b) => b[0].localeCompare(a[0])));
-  
+      
       setCourses(sortedCourses);
+      if(Object.keys(sortedCourses).length > 0) setExpandedYear(Object.keys(sortedCourses)[0])
     } catch (error) {
       console.error('Error fetching class data:', error);
     }

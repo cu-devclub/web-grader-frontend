@@ -105,14 +105,14 @@ function AssignList() {
           <h5>{ClassInfo['ClassID']} {ClassInfo['ClassName']} {ClassInfo['ClassYear']}</h5>
           <h6>Instructor: {ClassInfo['Instructor']}</h6>
         </div>
-          <button type="button" className="btn btn-secondary" onClick={() => navigate("/StudentList")} style={{ marginLeft: 40 + 'em' }}>Student lists</button>
+          {/* <button type="button" className="btn btn-secondary" onClick={() => navigate("/StudentList")} style={{ marginLeft: 40 + 'em' }}>Student lists</button> */}
       </div>
       )}
 
       <br></br>
       <div className="card" style={{ marginLeft: 10 + 'em', marginRight: 10 + 'em' }}>
         <div className="card-header">
-          <div className="row" style={{marginBottom:"-5px"}}>
+          {/* <div className="row" style={{marginBottom:"-5px"}}>
               <div className="col">
                 <h5 style={{ display: 'inline-block' }}>Assignments</h5>
                 <span style={{ margin: '0 10px' }}></span>
@@ -121,6 +121,22 @@ function AssignList() {
               <div className="col-md-1">
                 <button type="button" onClick={() => navigate("/")} className="btn btn-primary float-end">Back</button>
               </div>
+          </div> */}
+          <div className="row" style={{marginBottom:"-5px"}}>
+            <div className="col">
+              <ul className="nav nav-tabs card-header-tabs">
+                <li className="nav-item">
+                  <button className="nav-link active">Assignments</button>
+                </li>
+                <li className="nav-item">
+                  <button className="nav-link link" onClick={() => navigate("/StudentList")} >Student List</button>
+                </li>
+                <button style={{marginLeft: "1.5rem"}} className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={() => navigate("/AssignCreate")} >+ New</button>
+              </ul>
+            </div>
+            <div className="col-md-2">
+              <button className="btn btn-primary float-end" type="button" style={{marginLeft:"20px"}} onClick={() => navigate("/")}>Back</button>
+            </div>
           </div>
         </div>
         <div className="card-body" style={{ overflowY: 'scroll' }}>
@@ -128,7 +144,7 @@ function AssignList() {
             {assignmentsData && ((assignmentsData.length !== 0) && (
               assignmentsData.map(assign => {
                 return (
-                <div key={assign["LID"]} className='card' style={{ marginBottom: '2rem' }} onClick={() => handleRedirect(assign["LID"])}>
+                <div key={assign["LID"]} className='card' style={{ marginBottom: '0.5rem' }} onClick={() => handleRedirect(assign["LID"])}>
                   <button style={{ fontSize: '1.2rem', height:'4rem'}} className="fw-bold ">
                     <div className='row'>
                       <div className='col-2' style={{textAlign: 'Left'}}>
