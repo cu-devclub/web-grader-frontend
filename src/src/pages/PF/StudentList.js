@@ -17,7 +17,9 @@ function StudentList() {
 
   const [ClassInfo, setClassInfo] = useState({});
 
-  
+  const [showModal, setShowModal] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+
   // const [Email,] = useState(sessionStorage.getItem("Email"));
   const [classId,] = useState(sessionStorage.getItem("classId"));
 
@@ -127,13 +129,17 @@ function StudentList() {
   }
 
   const handleEditStudent = async (toEdit) => {
+      setShowModal(true);
+      setIsEdit(true);
   }
 
   const handleAddStudent = async () => {
+      setShowModal(true);
+      setIsEdit(false)
   }
 
   const UpdateStudent = async () => {
-
+      
   }
 
   const RemoveStudent = async () => {
@@ -143,6 +149,10 @@ function StudentList() {
   const AddStudent = async () => {
     
   }
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
 
   return (
     <div>
@@ -251,6 +261,68 @@ function StudentList() {
           </table>
           </div>
           <br />
+        </div>
+      </div>
+      <div className={`modal fade ${showModal ? 'show' : ''}`} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="exampleModalLabel"> {isEdit ? "Edit" : "Add"}  </h5>
+              <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+            {isEdit ? (<form>
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Name</label>
+                      <input type="text" class="form-control" id="nameEdit" placeholder="Enter name"/>
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Section</label>
+                      <input type="text" class="form-control" id="sectionEdit" placeholder="Enter section"/>
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Group</label>
+                      <input type="text" class="form-control" id="groupEdit" placeholder="Enter group"/>
+                    </div>
+                  </form>
+                  ) : (<form>
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Stundent ID</label>
+                      <input type="text" class="form-control" id="studentIdAdd" placeholder="Enter student"/>
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Name</label>
+                      <input type="text" class="form-control" id="nameAdd" placeholder="Enter name"/>
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Section</label>
+                      <input type="text" class="form-control" id="sectionAdd" placeholder="Enter section"/>
+                    </div>
+                    <div class="form-group">
+                      <label for="exampleInputEmail1">Group</label>
+                      <input type="text" class="form-control" id="groupAdd" placeholder="Enter group"/>
+                    </div>
+                  </form>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" style={{justifyContent: "flex-start"}} onClick={handleCloseModal}>
+                Cancel
+              </button>
+              {isEdit ? (
+                <button type="button" className="btn btn-secondary" style={{justifyContent: "flex-start"}} onClick={handleCloseModal}>
+                  Remove
+                </button>
+              ):(
+                ""
+              )}
+              <button type="button" className="btn btn-secondary" style={{justifyContent: "flex-start"}} onClick={handleCloseModal}>
+                  Save
+              </button>
+              
+              
+            </div>
+          </div>
         </div>
       </div>
     </div>
