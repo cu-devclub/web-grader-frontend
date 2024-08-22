@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-import {PencilSquare} from 'react-bootstrap-icons'
+// import {PencilSquare} from 'react-bootstrap-icons'
 
 const host = `${process.env.REACT_APP_HOST}`
 
@@ -187,7 +187,7 @@ function StudentList() {
                 <li className="nav-item">
                   <button className="nav-link active">Student List</button>
                 </li>
-                <button style={{marginLeft: "1.5rem"}} className="btn btn-outline-success" type="button" id="button-addon2" onClick={() => handleAddStudent()} >+ Add</button>
+                {/* <button style={{marginLeft: "1.5rem"}} className="btn btn-outline-success" type="button" id="button-addon2" onClick={() => handleAddStudent()} >+ Add</button> */}
               </ul>
             </div>
             <div className="col-md-2">
@@ -229,7 +229,7 @@ function StudentList() {
                       <th scope="col" className="col-1 text-center">Section</th>
                       <th scope="col" className="col-1 text-center">Group</th>
                       <th scope="col" className="col-1 text-center">Score</th>
-                      <th scope="col" className="col-1 text-center">Edit</th>
+                      {/* <th scope="col" className="col-1 text-center">Edit</th> */}
                   </tr>
               </thead>
               <tbody>
@@ -246,7 +246,7 @@ function StudentList() {
                       <td className='text-center'>{element["Section"]}</td>
                       <td className='text-center'>{element["Group"]}</td>
                       <td className='text-center'>{element["Score"]}/{element["MaxScore"]}</td>
-                      <td className='text-center'><button type="button" className="btn btn-warning" onClick={() => {handleEditStudent(element)}}><PencilSquare/></button></td>
+                      {/* <td className='text-center'><button type="button" className="btn btn-warning" onClick={() => {handleEditStudent(element)}}><PencilSquare/></button></td> */}
                   </tr>
               ))
             ) : (
