@@ -220,9 +220,9 @@ function ClassEdit() {
                     })
                 }else{
                     withReactContent(Swal).fire({
-                    title: "Error!",
-                    icon: "error",
-                    text: responseData["msg"]
+                        title: "Error!",
+                        icon: "error",
+                        text: responseData["msg"]
                     })
                 }
             } catch (error) {
