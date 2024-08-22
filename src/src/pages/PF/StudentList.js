@@ -19,6 +19,12 @@ function StudentList() {
 
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [gonEdit, setGonEdit] = useState("");
+
+  const [ID, setID] = useState("");
+  const [name, setName] = useState("");
+  const [group, setGroup] = useState("");
+  const [section, setSection] = useState("");
 
   // const [Email,] = useState(sessionStorage.getItem("Email"));
   const [classId,] = useState(sessionStorage.getItem("classId"));
@@ -129,17 +135,37 @@ function StudentList() {
   }
 
   const handleEditStudent = async (toEdit) => {
-      setShowModal(true);
+      console.log(toEdit)
       setIsEdit(true);
+      setID(toEdit["ID"]);
+      setName(toEdit["Name (English)"]);
+      setSection(toEdit["Section"]);
+      setGroup(toEdit["Group"]);
+      console.log(toEdit["ID"]);
+      setShowModal(true);
+      document.getElementById("SID").disabled = true;
+      
+  }
+
+  const handleChangeGonEdit = async (k, v) => {
+    var x = gonEdit
+    x[k] = v
+    console.log(x)
+    setGonEdit(x)
   }
 
   const handleAddStudent = async () => {
       setShowModal(true);
-      setIsEdit(false)
+      setIsEdit(false);
+      document.getElementById("SID").disabled = false
+      setID("");
+      setName("");
+      setGroup("");
+      setSection("");
   }
 
   const UpdateStudent = async () => {
-      
+
   }
 
   const RemoveStudent = async () => {
@@ -271,52 +297,38 @@ function StudentList() {
               <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Close"></button>
             </div>
             <div className="modal-body">
-            {isEdit ? (<form>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Name</label>
-                      <input type="text" class="form-control" id="nameEdit" placeholder="Enter name"/>
+                  <form>
+                    <div className="form-group">
+                      <label htmlFor="studentId">Student ID</label>
+                        <input type="text" className="form-control" id="SID" placeholder="Student ID" value={ID} onChange={(e) => {setID(e.target.value)}}/>
                     </div>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Section</label>
-                      <input type="text" class="form-control" id="sectionEdit" placeholder="Enter section"/>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Name</label>
+                      <input type="text" className="form-control" id="nameEdit" placeholder="Enter name" value={name} onChange={(e) => {setName(e.target.value)}}/>
                     </div>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Group</label>
-                      <input type="text" class="form-control" id="groupEdit" placeholder="Enter group"/>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Section</label>
+                      <input type="text" className="form-control" id="sectionEdit" placeholder="Enter section" value={section} onChange={(e) => {setSection(e.target.value)}}/>
                     </div>
-                  </form>
-                  ) : (<form>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Stundent ID</label>
-                      <input type="text" class="form-control" id="studentIdAdd" placeholder="Enter student"/>
-                    </div>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Name</label>
-                      <input type="text" class="form-control" id="nameAdd" placeholder="Enter name"/>
-                    </div>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Section</label>
-                      <input type="text" class="form-control" id="sectionAdd" placeholder="Enter section"/>
-                    </div>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Group</label>
-                      <input type="text" class="form-control" id="groupAdd" placeholder="Enter group"/>
+                    <div className="form-group">
+                      <label htmlFor="exampleInputEmail1">Group</label>
+                      <input type="text" className="form-control" id="groupEdit" placeholder="Enter group" value={group} onChange={(e) => {setGroup(e.target.value)}}/>
                     </div>
                   </form>
-              )}
+              
             </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" style={{justifyContent: "flex-start"}} onClick={handleCloseModal}>
+            <div className="modal-footer" style={{justifyContent: "flex-start"}}>
+              <button type="button" className="btn btn-outline-secondary" onClick={handleCloseModal}>
                 Cancel
               </button>
               {isEdit ? (
-                <button type="button" className="btn btn-secondary" style={{justifyContent: "flex-start"}} onClick={handleCloseModal}>
+                <button type="button" className="btn btn-danger" onClick={handleCloseModal}>
                   Remove
                 </button>
               ):(
                 ""
               )}
-              <button type="button" className="btn btn-secondary" style={{justifyContent: "flex-start"}} onClick={handleCloseModal}>
+              <button type="button" className="btn btn-success" onClick={handleCloseModal}>
                   Save
               </button>
               
