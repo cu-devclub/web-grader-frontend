@@ -13,7 +13,7 @@ function HomeST() {
   const [userData, setUserData] = useState(null);
   const [courses, setCourses] = useState(null);
   const [classes, setClasses] = useState(null);
-  const [expandedYear, setExpandedYear] = useState(null);
+  const [expandedYear, setExpandedYear] = useState();
   const [ready, setReady] = useState(null);
 
   const [Email,] = useState(Cookies.get('Email'));
@@ -50,6 +50,7 @@ function HomeST() {
           const classData = await classResponse.json();
           const sortedCourses = Object.fromEntries(Object.entries(classData).sort((a, b) => b[0].localeCompare(a[0])));
           setClasses(sortedCourses);
+          if(Object.keys(sortedCourses).length > 0) setExpandedYear(Object.keys(sortedCourses)[0])
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -69,7 +70,6 @@ function HomeST() {
         });
         const data = await response.json();
         const sortedCourses = Object.fromEntries(Object.entries(data).sort((a, b) => b[0].localeCompare(a[0])));
-    
         setCourses(sortedCourses);
       } catch (error) {
         console.error('Error fetching class data:', error);
@@ -96,7 +96,8 @@ function HomeST() {
         <Navbar userData={userData}/>
         <br />
       </div>
-      {courses && ready ? (
+      {(courses && ready) ? (
+        Object.keys(courses).length !== 0 ? (
         <main>
           <div>
             <br></br>
@@ -133,13 +134,13 @@ function HomeST() {
             </div>
           </div>
         </main>
-      ) : (null)}
+      ) : (null)) : (null)}
 
       {(classes && Object.keys(classes).length > 0) && ready ? (
           <div>
             <br></br>
             {/* วนลูปเพื่อแสดง container แยกตามปีการศึกษา */}
-            {Object.entries(classes).map(([year, classes]) => (
+            {Object.entries(classes).map(([year, classes], i) => (
               <div key={year} className="container-lg mb-3 bg-light" style={{ padding: '10px' }}>
                 <h5 className='unselectable' onClick={() => toggleYear(year)} style={{ cursor: 'pointer' }}>
                   {expandedYear === year ? <ChevronDown /> : <ChevronRight />} {year}
@@ -148,7 +149,7 @@ function HomeST() {
                 {expandedYear === year && (
                   <div className="row row-cols-1 row-cols-md-5 g-2">
                     {/* วนลูปเพื่อแสดงข้อมูลคอร์สในแต่ละปีการศึกษา */}
-                    {classes.map(course => (
+                    {classes.map((course) => (
                       <div className="card" style={{width: '200px', marginLeft: "10px", marginRight: "10px"}} key={course.ClassID}>
                         <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
                         <div className="card-body">
