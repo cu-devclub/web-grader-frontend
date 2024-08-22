@@ -317,18 +317,18 @@ function StudentList() {
                   </form>
               
             </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" style={{justifyContent: "flex-start"}} onClick={handleCloseModal}>
+            <div className="modal-footer" style={{justifyContent: "flex-start"}}>
+              <button type="button" className="btn btn-outline-secondary" onClick={handleCloseModal}>
                 Cancel
               </button>
               {isEdit ? (
-                <button type="button" className="btn btn-secondary" style={{justifyContent: "flex-start"}} onClick={handleCloseModal}>
+                <button type="button" className="btn btn-danger" onClick={handleCloseModal}>
                   Remove
                 </button>
               ):(
                 ""
               )}
-              <button type="button" className="btn btn-secondary" style={{justifyContent: "flex-start"}} onClick={handleCloseModal}>
+              <button type="button" className="btn btn-success" onClick={handleCloseModal}>
                   Save
               </button>
               
