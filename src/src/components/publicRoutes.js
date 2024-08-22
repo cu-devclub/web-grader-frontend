@@ -39,11 +39,13 @@ function PublicRoutes() {
                     setToken(false);
                     return;
                 }
-
-                Cookies.set('Name', dt['data']['Name']);
-                Cookies.set('Email', dt['data']['Email']);
-                Cookies.set('uid', dt['data']['ID']);
-                Cookies.set('role', dt['data']['Role']);
+                const isDev = process.env.REACT_APP_DEV.toLowerCase() === 'true';
+                if(!isDev) {
+                    Cookies.set('Name', dt['data']['Name']);
+                    Cookies.set('Email', dt['data']['Email']);
+                    Cookies.set('uid', dt['data']['ID']);
+                    Cookies.set('role', dt['data']['Role']);
+                }
 
                 setToken(true);
             } catch (error) {
