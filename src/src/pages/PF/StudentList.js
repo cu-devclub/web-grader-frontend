@@ -397,7 +397,7 @@ function StudentList() {
                 </div>
                 <div className="form-group">
                   <label>Section</label>
-                  <input type="text" className="form-control" placeholder="Section" value={Section} onChange={(e) => {setSection(e.target.value)}}/>
+                  <input type="number" className="form-control" placeholder="Section" value={Section} onChange={(e) => {setSection(e.target.value)}}/>
                 </div>
                 <div className="form-group">
                   <label>Group</label>
