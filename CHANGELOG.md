@@ -1,6 +1,36 @@
 
 # Change Log
 
+## [v1.3.1] - 2024-08-22
+ 
+### Added
+
+### Changed
+ - Change datatype of section to number
+
+### Fixed
+
+
+## [v1.3.0] - 2024-08-22
+ 
+### Added
+ - Add, Edit, Remove student function.
+
+### Changed
+
+### Fixed
+
+
+## [v1.2.0] - 2024-08-22
+ 
+### Added
+
+### Changed
+ - Move student list button into card.
+
+### Fixed
+
+
 ## [v1.1.3] - 2024-08-16
  
 ### Added
