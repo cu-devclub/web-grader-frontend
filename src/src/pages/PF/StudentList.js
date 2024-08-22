@@ -1,14 +1,18 @@
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content';
+
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
-// import {PencilSquare} from 'react-bootstrap-icons'
+import {PencilSquare} from 'react-bootstrap-icons'
 
 const host = `${process.env.REACT_APP_HOST}`
 
 function StudentList() {
   const navigate = useNavigate();
 
+  const [id, ] = useState(Cookies.get('uid'))
   const [searchQuery, setSearchQuery] = useState('');
   const [showname, setshowname] = useState([])
   
@@ -19,9 +23,32 @@ function StudentList() {
 
   const [showModal, setShowModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
+  const [UID,setUID] = useState("");
+  const [Name,setName] = useState("");
+  const [Section,setSection] = useState("");
+  const [Group,setGroup] = useState("");
 
-  // const [Email,] = useState(sessionStorage.getItem("Email"));
+  // const [Email,] = useState(Cookies.get("email"));
   const [classId,] = useState(sessionStorage.getItem("classId"));
+
+  const fetchName = async () => {
+    try {
+      const response = await fetch(`${host}/TA/Student/List?CSYID=${classId}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
+            "X-CSRF-TOKEN": Cookies.get("csrf_token")
+        }
+      });
+      const dataname = await response.json();
+      setshowname(dataname["data"]["Students"]);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      // Display an error message to the user
+    }
+  };
 
   useEffect(() => {
     const fetchClass = async () => {
@@ -60,25 +87,6 @@ function StudentList() {
       }
     };
   
-    const fetchName = async () => {
-      try {
-        const response = await fetch(`${host}/TA/Student/List?CSYID=${classId}`, {
-          method: "GET",
-          credentials: "include",
-          headers: {
-              "Content-type": "application/json; charset=UTF-8",
-              "Access-Control-Allow-Origin": "*",
-              "X-CSRF-TOKEN": Cookies.get("csrf_token")
-          }
-        });
-        const dataname = await response.json();
-        setshowname(dataname["data"]["Students"]);
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        // Display an error message to the user
-      }
-    };
-
     fetchClass();
     fetchSection();
     fetchName();
@@ -129,24 +137,126 @@ function StudentList() {
   }
 
   const handleEditStudent = async (toEdit) => {
-      setShowModal(true);
-      setIsEdit(true);
+    setUID(toEdit["ID"])
+    setName(toEdit["Name (English)"])
+    setSection(toEdit["Section"])
+    setGroup(toEdit["Group"])
+    setShowModal(true);
+    setIsEdit(true);
   }
 
   const handleAddStudent = async () => {
-      setShowModal(true);
-      setIsEdit(false)
-  }
-
-  const UpdateStudent = async () => {
-      
+    setUID("")
+    setName("")
+    setSection("")
+    setGroup(showname.length > 0 ? (showname[0]["Group"] === '-' ? '-' : '') : '')
+    setShowModal(true);
+    setIsEdit(false)
   }
 
   const RemoveStudent = async () => {
-    
+    const bd = JSON.stringify({
+      "SID": UID,
+      "CSYID": classId
+    })
+
+    try {
+      withReactContent(Swal).fire({
+        html: `<div class="pos-center">
+                    <div class="loader"></div>
+                </div> `,
+        showCloseButton: false,
+        showCancelButton: false,
+        showConfirmButton: false,
+        background: "rgba(0, 0, 0, 0)"
+      })
+      const response = await fetch(`${host}/TA/Student/remove`, {
+        method: 'POST',
+        credentials: "include",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          "Access-Control-Allow-Origin": "*",
+          "X-CSRF-TOKEN": Cookies.get('csrf_token')
+        },
+        body: bd
+      });
+      const responseData = await response.json();
+      withReactContent(Swal).close()
+      if (responseData["success"]){
+        withReactContent(Swal).fire({
+          title: responseData["msg"],
+          icon: "success"
+        })
+        fetchName()
+      }else{
+        withReactContent(Swal).fire({
+          title: "Error!",
+          icon: "error",
+          text: responseData["msg"]
+        })
+      }
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      withReactContent(Swal).close()
+      withReactContent(Swal).fire({
+        title: "There is error!",
+        icon: "error"
+      })
+    }
   }
 
-  const AddStudent = async () => {
+  const SaveStudent = async () => {
+    const bd = JSON.stringify({
+      "SID": UID,
+      "Name": Name,
+      "Section": Section,
+      "Group": Group,
+      "CSYID": classId
+    })
+
+    try {
+      withReactContent(Swal).fire({
+        html: `<div class="pos-center">
+                    <div class="loader"></div>
+                </div> `,
+        showCloseButton: false,
+        showCancelButton: false,
+        showConfirmButton: false,
+        background: "rgba(0, 0, 0, 0)"
+      })
+      const response = await fetch(`${host}/TA/Student/${isEdit?"edit":"add"}`, {
+        method: 'POST',
+        credentials: "include",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          "Access-Control-Allow-Origin": "*",
+          "X-CSRF-TOKEN": Cookies.get('csrf_token')
+        },
+        body: bd
+      });
+      const responseData = await response.json();
+      withReactContent(Swal).close()
+      if (responseData["success"]){
+        withReactContent(Swal).fire({
+          title: responseData["msg"],
+          icon: "success"
+        })
+        fetchName()
+      }else{
+        withReactContent(Swal).fire({
+          title: "Error!",
+          icon: "error",
+          text: responseData["msg"]
+        })
+      }
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      withReactContent(Swal).close()
+      withReactContent(Swal).fire({
+        title: "There is error!",
+        icon: "error"
+      })
+    }
     
   }
 
@@ -187,7 +297,7 @@ function StudentList() {
                 <li className="nav-item">
                   <button className="nav-link active">Student List</button>
                 </li>
-                {/* <button style={{marginLeft: "1.5rem"}} className="btn btn-outline-success" type="button" id="button-addon2" onClick={() => handleAddStudent()} >+ Add</button> */}
+                <button style={{marginLeft: "1.5rem"}} className="btn btn-outline-success" type="button" id="button-addon2" onClick={() => handleAddStudent()} >+ Add</button>
               </ul>
             </div>
             <div className="col-md-2">
@@ -229,7 +339,7 @@ function StudentList() {
                       <th scope="col" className="col-1 text-center">Section</th>
                       <th scope="col" className="col-1 text-center">Group</th>
                       <th scope="col" className="col-1 text-center">Score</th>
-                      {/* <th scope="col" className="col-1 text-center">Edit</th> */}
+                      <th scope="col" className="col-1 text-center">Edit</th>
                   </tr>
               </thead>
               <tbody>
@@ -246,7 +356,7 @@ function StudentList() {
                       <td className='text-center'>{element["Section"]}</td>
                       <td className='text-center'>{element["Group"]}</td>
                       <td className='text-center'>{element["Score"]}/{element["MaxScore"]}</td>
-                      {/* <td className='text-center'><button type="button" className="btn btn-warning" onClick={() => {handleEditStudent(element)}}><PencilSquare/></button></td> */}
+                      {id !== element["ID"] ? (<td className='text-center'><button type="button" className="btn btn-warning" onClick={() => {handleEditStudent(element)}}><PencilSquare/></button></td>):(null)}
                   </tr>
               ))
             ) : (
@@ -263,6 +373,11 @@ function StudentList() {
           <br />
         </div>
       </div>
+
+
+
+
+
       <div className={`modal fade ${showModal ? 'show' : ''}`} tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{ display: showModal ? 'block' : 'none' }}>
         <div className="modal-dialog">
           <div className="modal-content">
@@ -271,56 +386,37 @@ function StudentList() {
               <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Close"></button>
             </div>
             <div className="modal-body">
-            {isEdit ? (<form>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Name</label>
-                      <input type="text" class="form-control" id="nameEdit" placeholder="Enter name"/>
-                    </div>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Section</label>
-                      <input type="text" class="form-control" id="sectionEdit" placeholder="Enter section"/>
-                    </div>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Group</label>
-                      <input type="text" class="form-control" id="groupEdit" placeholder="Enter group"/>
-                    </div>
-                  </form>
-                  ) : (<form>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Stundent ID</label>
-                      <input type="text" class="form-control" id="studentIdAdd" placeholder="Enter student"/>
-                    </div>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Name</label>
-                      <input type="text" class="form-control" id="nameAdd" placeholder="Enter name"/>
-                    </div>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Section</label>
-                      <input type="text" class="form-control" id="sectionAdd" placeholder="Enter section"/>
-                    </div>
-                    <div class="form-group">
-                      <label for="exampleInputEmail1">Group</label>
-                      <input type="text" class="form-control" id="groupAdd" placeholder="Enter group"/>
-                    </div>
-                  </form>
-              )}
+              <form>
+                <div className="form-group">
+                  <label>Student ID</label>
+                  <input type="text" className="form-control" placeholder="Student ID" value={UID} onChange={(e) => {setUID(e.target.value)}} disabled={isEdit}/>
+                </div>
+                <div className="form-group">
+                  <label>Name</label>
+                  <input type="text" className="form-control" placeholder="Name" value={Name} onChange={(e) => {setName(e.target.value)}}/>
+                </div>
+                <div className="form-group">
+                  <label>Section</label>
+                  <input type="text" className="form-control" placeholder="Section" value={Section} onChange={(e) => {setSection(e.target.value)}}/>
+                </div>
+                <div className="form-group">
+                  <label>Group</label>
+                  <input type="text" className="form-control" placeholder="Group" value={Group} onChange={(e) => {setGroup(e.target.value)}} disabled={Group === "-"}/>
+                </div>
+              </form>
             </div>
-            <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" style={{justifyContent: "flex-start"}} onClick={handleCloseModal}>
+            <div className="modal-footer" style={{justifyContent: "flex-start"}}>
+              <button type="button" className="btn btn-outline-secondary" onClick={handleCloseModal}>
                 Cancel
               </button>
-              {isEdit ? (
-                <button type="button" className="btn btn-secondary" style={{justifyContent: "flex-start"}} onClick={handleCloseModal}>
-                  Remove
-                </button>
-              ):(
-                ""
-              )}
-              <button type="button" className="btn btn-secondary" style={{justifyContent: "flex-start"}} onClick={handleCloseModal}>
-                  Save
+            {isEdit ? (
+              <button type="button" className="btn btn-danger" onClick={RemoveStudent}>
+                Remove
               </button>
-              
-              
+            ):(null)}
+              <button type="button" className="btn btn-success" onClick={SaveStudent}>
+                {isEdit ? "Save" : "Add"}
+              </button>
             </div>
           </div>
         </div>
