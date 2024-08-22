@@ -14,6 +14,7 @@ function HomePF() {
 
   const [Email,] = useState(Cookies.get('Email'));
   const [courses, setCourses] = useState(null);
+  const [classes, setClasses] = useState(null);
   const [expanded, setExpanded] = useState(false);
   const [ready, setReady] = useState(null);
   const [expandedYear, setExpandedYear] = useState(null);
@@ -46,10 +47,24 @@ function HomePF() {
         }
       });
       const data = await response.json();
-      const sortedCourses = Object.fromEntries(Object.entries(data).sort((a, b) => b[0].localeCompare(a[0])));
+      var sortedCourses = Object.fromEntries(Object.entries(data).sort((a, b) => b[0].localeCompare(a[0])));
       
       setCourses(sortedCourses);
       if(Object.keys(sortedCourses).length > 0) setExpandedYear(Object.keys(sortedCourses)[0])
+
+      const classResponse = await fetch(`${host}/ST/class/classes`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "Access-Control-Allow-Origin": "*",
+            "X-CSRF-TOKEN": Cookies.get("csrf_token")
+        }
+      });
+      const classData = await classResponse.json();
+      sortedCourses = Object.fromEntries(Object.entries(classData).sort((a, b) => b[0].localeCompare(a[0])));
+      setClasses(sortedCourses);
+
     } catch (error) {
       console.error('Error fetching class data:', error);
     }
@@ -206,7 +221,38 @@ function HomePF() {
         </main>
       ) : (
         "")}
+        
+      {(classes && Object.keys(classes).length > 0) && ready ? (
+          <div>
+            <br></br>
+            {/* วนลูปเพื่อแสดง container แยกตามปีการศึกษา */}
+            {Object.entries(classes).map(([year, classes], i) => (
+              <div key={year} className="container-lg mb-3 bg-light" style={{ padding: '10px' }}>
+                <h5 className='unselectable' onClick={() => toggleYear(year)} style={{ cursor: 'pointer' }}>
+                  {expandedYear === year ? <ChevronDown /> : <ChevronRight />} {year} (Student view)
+                </h5>
 
+                {expandedYear === year && (
+                  <div className="row row-cols-1 row-cols-md-5 g-2">
+                    {/* วนลูปเพื่อแสดงข้อมูลคอร์สในแต่ละปีการศึกษา */}
+                    {classes.map((course) => (
+                      <div className="card" style={{width: '200px', marginLeft: "10px", marginRight: "10px"}} key={course.ClassID}>
+                        <img className="card-img-top w-100 d-block" src={course.Thumbnail ? `${host}/Thumbnail/` + course.Thumbnail : "https://cdn-icons-png.flaticon.com/512/3643/3643327.png"} style={{ width: '190px', height: '190px', paddingTop: '5px', borderRadius: '5px'}}  alt="..."/>
+                        <div className="card-body">
+                          <h4 className="card-title">{course.ClassName}</h4>
+                          <p className="card-text">ID: {course.ClassID}</p>
+                          <button className="btn btn-primary" type="button" onClick={() => {sessionStorage.setItem("classId", course.ID);  sessionStorage.setItem("Email", Email);  navigate("/Class");}}>
+                            View course
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+      ) : (null)}
     </div>
   )
 }
