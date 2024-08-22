@@ -28,7 +28,8 @@ function Callback() {
                     "Access-Control-Allow-Origin": "*"
                 },
                 body: JSON.stringify({
-                    'email': Email
+                    'email': Email,
+                    'role': Role ? 2 : 1
                 })
             })
         const Data = await response.json()
